@@ -1,0 +1,12 @@
+[submodule "Dependencies/FreeImage"]
+	path = Dependencies/FreeImage
+	url = git://github.com/Kanma/Athena-Dependencies-FreeImage.git
+[submodule "Dependencies/freetype"]
+	path = Dependencies/freetype
+	url = git://github.com/Kanma/Athena-Dependencies-FreeType.git
+[submodule "Dependencies/zlib"]
+	path = Dependencies/zlib
+	url = git://github.com/Kanma/Athena-Dependencies-zlib.git
+[submodule "Dependencies/zziplib"]
+	path = Dependencies/zziplib
+	url = git://github.com/Kanma/Athena-Dependencies-zziplib.git
