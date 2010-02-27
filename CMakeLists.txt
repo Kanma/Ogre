@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(OGRE)
 
+include(CMakeDependentOption)
+
 
 # Options
 if (NOT CMAKE_BUILD_TYPE)
@@ -29,6 +31,10 @@ endif()
 
 if (NOT OGRE_CG_PATH)
     set(OGRE_CG_PATH "" CACHE STRING "Path to Cg (by default: $OGRE_DEPENDENCIES_PATH/Cg)")
+endif()
+
+if (NOT OGRE_BOOST_PATH)
+    set(OGRE_BOOST_PATH "" CACHE STRING "Path to Boost (by default: $OGRE_DEPENDENCIES_PATH/boost)")
 endif()
 
 if (NOT OGRE_CONFIG_ALLOCATOR)
@@ -60,6 +66,22 @@ if (NOT ATHENA_DOUBLE_PRECISION)
 endif()
 
 
+# Find the render system dependencies
+set(CMAKE_MODULE_PATH CMake)
+
+find_package(OpenGL)
+if (WIN32)
+	find_package(DirectX)
+endif()
+
+
+# Settings for the render systems
+cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D9 "Build Direct3D9 RenderSystem" TRUE "WIN32;DirectX_FOUND" FALSE)
+cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D10 "Build Direct3D10 RenderSystem" TRUE "WIN32;DirectX_D3D10_FOUND" FALSE)
+cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D11 "Build Direct3D11 RenderSystem" TRUE "WIN32;DirectX_D3D11_FOUND" FALSE)
+cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_GL "Build OpenGL RenderSystem" TRUE "OPENGL_FOUND" FALSE)
+
+
 # Set the output path
 if (NOT ATHENA_BINARY_DIR)
     set(ATHENA_BINARY_DIR "${OGRE_BINARY_DIR}")
@@ -79,6 +101,12 @@ set(OGRE_VERSION_MAJOR 1)
 set(OGRE_VERSION_MINOR 7)
 set(OGRE_VERSION_PATCH 0)
 set(OGRE_VERSION "${OGRE_VERSION_MAJOR}.${OGRE_VERSION_MINOR}.${OGRE_VERSION_PATCH}")
+
+# We only support Intel 32bits builds
+if (APPLE)
+    set(CMAKE_OSX_ARCHITECTURES "i386")
+    set(CMAKE_OSX_ARCHITECTURES_DEFAULT "ppc")
+endif()
 
 set(OGRE_CONFIG_THREADS OFF)
 set(OGRE_THREAD_PROVIDER 0)
@@ -131,9 +159,16 @@ endif()
 
 set(OGRE_ZZIPLIB_INCLUDE_PATH "${OGRE_ZZIPLIB_PATH}")
 
+if (NOT OGRE_BOOST_PATH)
+    set(OGRE_BOOST_PATH "${OGRE_DEPENDENCIES_PATH}/boost")
+endif()
+
+set(OGRE_BOOST_INCLUDE_PATH "${OGRE_BOOST_PATH}")
+
 
 # Subdirectories to process
 add_subdirectory(OgreMain)
+add_subdirectory(RenderSystems)
 
 if (OGRE_DEPENDENCIES_PATH STREQUAL "${OGRE_SOURCE_DIR}/Dependencies")
     add_subdirectory(Dependencies)
