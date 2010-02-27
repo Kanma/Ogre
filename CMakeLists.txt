@@ -31,6 +31,34 @@ if (NOT OGRE_CG_PATH)
     set(OGRE_CG_PATH "" CACHE STRING "Path to Cg (by default: $OGRE_DEPENDENCIES_PATH/Cg)")
 endif()
 
+if (NOT OGRE_CONFIG_ALLOCATOR)
+    set(OGRE_CONFIG_ALLOCATOR 4 CACHE STRING "Specify the memory allocator to use. Possible values: 1 - Standard allocator, 2 - nedmalloc, 3 - User-provided allocator, 4 - nedmalloc with pooling")
+endif()
+
+if (NOT OGRE_CONFIG_CONTAINERS_USE_CUSTOM_ALLOCATOR)
+    set(OGRE_CONFIG_CONTAINERS_USE_CUSTOM_ALLOCATOR ON CACHE BOOL "STL containers in Ogre use the custom allocator")
+endif()
+
+if (NOT OGRE_CONFIG_STRING_USE_CUSTOM_ALLOCATOR)
+    set(OGRE_CONFIG_STRING_USE_CUSTOM_ALLOCATOR OFF CACHE BOOL "Ogre String uses the custom allocator")
+endif()
+
+if (NOT OGRE_CONFIG_MEMTRACK_DEBUG)
+    set(OGRE_CONFIG_MEMTRACK_DEBUG OFF CACHE BOOL "Enable Ogre's memory tracker in debug mode")
+endif()
+
+if (NOT OGRE_CONFIG_MEMTRACK_RELEASE)
+    set(OGRE_CONFIG_MEMTRACK_RELEASE OFF CACHE BOOL "Enable Ogre's memory tracker in release mode")
+endif()
+
+if (NOT OGRE_CONFIG_NEW_COMPILERS)
+    set(OGRE_CONFIG_NEW_COMPILERS ON CACHE BOOL "Use the new script compilers.")
+endif()
+
+if (NOT ATHENA_DOUBLE_PRECISION)
+    set(OGRE_DOUBLE_PRECISION OFF CACHE BOOL "Use double-precision floating point numbers")
+endif()
+
 
 # Set the output path
 if (NOT ATHENA_BINARY_DIR)
@@ -41,8 +69,71 @@ if (NOT ATHENA_BINARY_DIR)
 endif()
 
 
+# Determine system endianess
+include(TestBigEndian)
+test_big_endian(OGRE_TEST_BIG_ENDIAN)
+
+
+# Settings
+set(OGRE_VERSION_MAJOR 1)
+set(OGRE_VERSION_MINOR 7)
+set(OGRE_VERSION_PATCH 0)
+set(OGRE_VERSION "${OGRE_VERSION_MAJOR}.${OGRE_VERSION_MINOR}.${OGRE_VERSION_PATCH}")
+
+set(OGRE_CONFIG_THREADS OFF)
+set(OGRE_THREAD_PROVIDER 0)
+
+set(OGRE_USE_BOOST OFF)
+
+if (ATHENA_DOUBLE_PRECISION)
+    add_definitions(-DATHENA_DOUBLE_PRECISION=1)
+else()
+    add_definitions(-DATHENA_DOUBLE_PRECISION=0)
+endif()
+
+if (OGRE_TEST_BIG_ENDIAN)
+    set(OGRE_CONFIG_BIG_ENDIAN ON)
+else()
+    set(OGRE_CONFIG_LITTLE_ENDIAN ON)
+endif()
+
+
+# Paths to the dependencies
+if (NOT OGRE_CG_PATH)
+    set(OGRE_CG_PATH "${OGRE_DEPENDENCIES_PATH}/Cg")
+endif()
+
+if (WIN32)
+    set(OGRE_CG_INCLUDE_PATH "${OGRE_CG_PATH}/include")
+endif()
+
+if (NOT OGRE_FREEIMAGE_PATH)
+    set(OGRE_FREEIMAGE_PATH "${OGRE_DEPENDENCIES_PATH}/FreeImage")
+endif()
+
+set(OGRE_FREEIMAGE_INCLUDE_PATH "${OGRE_FREEIMAGE_PATH}")
+
+if (NOT OGRE_FREETYPE_PATH)
+    set(OGRE_FREETYPE_PATH "${OGRE_DEPENDENCIES_PATH}/freetype")
+endif()
+
+set(OGRE_FREETYPE_INCLUDE_PATH "${OGRE_FREETYPE_PATH}/include")
+
+if (NOT OGRE_ZLIB_PATH)
+    set(OGRE_ZLIB_PATH "${OGRE_DEPENDENCIES_PATH}/zlib")
+endif()
+
+set(OGRE_ZLIB_INCLUDE_PATH "${OGRE_ZLIB_PATH}")
+
+if (NOT OGRE_ZZIPLIB_PATH)
+    set(OGRE_ZZIPLIB_PATH "${OGRE_DEPENDENCIES_PATH}/zziplib")
+endif()
+
+set(OGRE_ZZIPLIB_INCLUDE_PATH "${OGRE_ZZIPLIB_PATH}")
+
+
 # Subdirectories to process
-# add_subdirectory(OgreMain)
+add_subdirectory(OgreMain)
 
 if (OGRE_DEPENDENCIES_PATH STREQUAL "${OGRE_SOURCE_DIR}/Dependencies")
     add_subdirectory(Dependencies)

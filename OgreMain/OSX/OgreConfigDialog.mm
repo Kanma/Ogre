@@ -343,7 +343,11 @@ namespace Ogre {
     return [[[mOptions keyEnumerator] allObjects] objectAtIndex:rowIndex];
 }
 
+#if defined(MAC_OS_X_VERSION_10_5) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
+#else
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
+#endif
 {
     return [mOptions count];
 }
