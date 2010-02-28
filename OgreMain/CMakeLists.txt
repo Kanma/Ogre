@@ -422,6 +422,7 @@ set (SOURCE_FILES
   OgreTextureUnitState.cpp
   OgreUnifiedHighLevelGpuProgram.cpp
   OgreUserObjectBindings.cpp
+  OgreUTFString.cpp
   OgreVector2.cpp
   OgreVector3.cpp
   OgreVector4.cpp
@@ -466,7 +467,6 @@ elseif (APPLE)
     include_directories("${OGRE_SOURCE_DIR}/include/Ogre/OSX")
 
     set(PLATFORM_HEADER_FILES
-	  ${OGRE_SOURCE_DIR}/include/Ogre/OSX/config.h
       ${OGRE_SOURCE_DIR}/include/Ogre/OSX/macUtils.h
       ${OGRE_SOURCE_DIR}/include/Ogre/OSX/OgreConfigDialogImp.h
       ${OGRE_SOURCE_DIR}/include/Ogre/OSX/OgreErrorDialogImp.h
@@ -491,6 +491,26 @@ elseif (APPLE)
     source_group(Resources FILES ${RESOURCE_FILES})
 
     set(PLATFORM_LIBS "-framework Cocoa" "-framework Carbon")
+
+elseif (UNIX)
+
+  include_directories(include/GLX ${X11_INCLUDE_DIR})
+
+  set(PLATFORM_HEADER_FILES
+    ${OGRE_SOURCE_DIR}/include/GLX/OgreConfigDialogImp.h
+    ${OGRE_SOURCE_DIR}/include/GLX/OgreErrorDialogImp.h
+    ${OGRE_SOURCE_DIR}/include/GLX/OgreTimerImp.h
+  )
+  
+  set(PLATFORM_SOURCE_FILES
+    GLX/GLX_backdrop.h
+    GLX/OgreConfigDialog.cpp
+    GLX/OgreErrorDialog.cpp
+    GLX/OgreTimer.cpp
+    OgreSearchOps.cpp
+  )
+  
+  set(PLATFORM_LIBS ${X11_LIBRARIES} ${X11_Xt_LIB} ${XAW_LIBRARY} pthread dl)
 
 endif ()
 
@@ -566,34 +586,14 @@ if (APPLE)
        INSTALL_NAME_DIR "@rpath"
     )
 
-    set(PUBLIC_HEADERS ${HEADER_FILES} ${PLATFORM_HEADER_FILES} ${THREAD_HEADER_FILES})
-    foreach(HEADER ${PUBLIC_HEADERS})
-        if (${HEADER} STREQUAL ${ATHENA_BINARY_DIR}/include/Ogre/OgreBuildSettings.h)
-            string(REPLACE ${OGRE_SOURCE_DIR}/include/Ogre/ ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/ HEADER_DST ${HEADER})
-        elseif (${HEADER} STREQUAL ${OGRE_SOURCE_DIR}/include/Ogre/OSX/config.h)
-            set(HEADER_DST ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/config.h)
-        else()
-            set(HEADER ${ATHENA_BINARY_DIR}/include/Ogre/OgreBuildSettings.h)
-            set(HEADER_DST ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OgreBuildSettings.h)
-        endif()
-        
-        configure_file(${HEADER} ${HEADER_DST} COPYONLY)
-    endforeach()
+    set_target_properties(OgreMain PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 
-    configure_file(${OGRE_SOURCE_DIR}/include/Ogre/OgrePrerequisites.h
-                   ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/OgrePrerequisites.h
-                   COPYONLY)
-
-    #     get_target_property(BLAH OgreMain OUTPUT_NAME)
-    #     message(STATUS ${BLAH})
-    # 
-    #     # Note: If we don't do it exactly like that, some headers aren't put into the framework
-    #     set(PUBLIC_HEADERS ${HEADER_FILES} ${PLATFORM_HEADER_FILES} ${THREAD_HEADER_FILES})
-    # 
-    #     set_target_properties(OgreMain PROPERTIES PUBLIC_HEADER "${PUBLIC_HEADERS}")
-    # set_source_files_properties("${HEADER_FILES}" PROPERTIES MACOSX_PACKAGE_LOCATION Headers)
-    # set_source_files_properties("${PLATFORM_HEADER_FILES}" PROPERTIES MACOSX_PACKAGE_LOCATION Headers/OSX)
-    # set_source_files_properties("${THREAD_HEADER_FILES}" PROPERTIES MACOSX_PACKAGE_LOCATION Headers/Threading)
+    add_custom_command(TARGET OgreMain POST_BUILD
+      COMMAND mkdir ARGS -p ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
+	  COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/Threading/* ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
+      COMMAND mkdir ARGS -p ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX
+      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/OSX/*.h ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/	
+	)
 
 	set_target_properties(OgreMain PROPERTIES RESOURCE "${RESOURCE_FILES}")
 	set_source_files_properties("${RESOURCE_FILES}" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)

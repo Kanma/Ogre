@@ -1,6 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
 project(OGRE)
 
+# Use relative paths
+# This is mostly to reduce path size for command-line limits on windows
+if(WIN32)
+  # This seems to break Xcode projects so definitely don't enable on Apple builds
+  set(CMAKE_USE_RELATIVE_PATHS true)
+  set(CMAKE_SUPPRESS_REGENERATION true)
+endif()
+
+
 include(CMakeDependentOption)
 
 
@@ -77,8 +86,8 @@ endif()
 
 # Settings for the render systems
 cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D9 "Build Direct3D9 RenderSystem" TRUE "WIN32;DirectX_FOUND" FALSE)
-cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D10 "Build Direct3D10 RenderSystem" TRUE "WIN32;DirectX_D3D10_FOUND" FALSE)
-cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D11 "Build Direct3D11 RenderSystem" TRUE "WIN32;DirectX_D3D11_FOUND" FALSE)
+cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D10 "Build Direct3D10 RenderSystem [EXPERIMENTAL]" FALSE "WIN32;DirectX_D3D10_FOUND" FALSE)
+cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D11 "Build Direct3D11 RenderSystem [EXPERIMENTAL]" FALSE "WIN32;DirectX_D3D11_FOUND" FALSE)
 cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_GL "Build OpenGL RenderSystem" TRUE "OPENGL_FOUND" FALSE)
 
 

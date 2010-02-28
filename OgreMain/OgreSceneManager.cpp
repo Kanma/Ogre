@@ -118,6 +118,8 @@ mShadowCasterPlainBlackPass(0),
 mShadowReceiverPass(0),
 mDisplayNodes(false),
 mShowBoundingBoxes(false),
+mActiveCompositorChain(0),
+mLateMaterialResolving(false),
 mShadowTechnique(SHADOWTYPE_NONE),
 mDebugShadows(false),
 mShadowColour(ColourValue(0.25, 0.25, 0.25)),
@@ -152,9 +154,7 @@ mCameraRelativeRendering(false),
 mLastLightHash(0),
 mLastLightLimit(0),
 mLastLightHashGpuProgram(0),
-mGpuParamsDirty((uint16)GPV_ALL),
-mActiveCompositorChain(0),
-mLateMaterialResolving(false)
+mGpuParamsDirty((uint16)GPV_ALL)
 {
 
     // init sky
@@ -1154,7 +1154,7 @@ const Pass* SceneManager::_setPass(const Pass* pass, bool evenIfSuppressed,
 				if (!currentChain)
 				{
 					OGRE_EXCEPT(Exception::ERR_INVALID_STATE,
-						"An pass that wishes to reference a compositor texutre "
+						"A pass that wishes to reference a compositor texutre "
 						"attempted to render in a pipeline without a compositor",
 						"SceneManager::_setPass");
 				}

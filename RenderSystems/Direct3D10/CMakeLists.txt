@@ -72,12 +72,6 @@ link_directories(${DirectX_LIBRARY_DIR})
 add_definitions(-D_USRDLL)
 
 add_library(RenderSystem_Direct3D10 SHARED ${HEADER_FILES} ${SOURCE_FILES})
-target_link_libraries(RenderSystem_Direct3D10 OgreMain
-                                              d3d10
-                                              d3dx10
-                                              dxgi
-                                              dxerr
-                                              dxguid
-)
+target_link_libraries(RenderSystem_Direct3D10 OgreMain ${DirectX_D3D10_LIBRARIES})
 
 set_target_properties(RenderSystem_Direct3D10 PROPERTIES COMPILE_DEFINITIONS OGRED3DENGINEDLL_EXPORTS)

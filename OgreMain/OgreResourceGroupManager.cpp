@@ -48,7 +48,6 @@ namespace Ogre {
     }
 	String ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME = "General";
 	String ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME = "Internal";
-	String ResourceGroupManager::BOOTSTRAP_RESOURCE_GROUP_NAME = "Bootstrap";
 	String ResourceGroupManager::AUTODETECT_RESOURCE_GROUP_NAME = "Autodetect";
 	// A reference count of 3 means that only RGM and RM have references
 	// RGM has one (this one) and RM has 2 (by name and by handle)
@@ -221,6 +220,8 @@ namespace Ogre {
 
 					fireResourcePrepareEnded();
 
+					++n;
+
 					// Did the resource change group? if so, our iterator will have
 					// been invalidated
 					if (res->getGroup() != name)
@@ -231,7 +232,6 @@ namespace Ogre {
 					else
 					{
 						++l;
-						++n;
 					}
 				}
 			}
@@ -317,6 +317,8 @@ namespace Ogre {
 
 					fireResourceLoadEnded();
 
+					++n;
+
 					// Did the resource change group? if so, our iterator will have
 					// been invalidated
 					if (res->getGroup() != name)
@@ -327,7 +329,6 @@ namespace Ogre {
 					else
 					{
 						++l;
-						++n;
 					}
 				}
 			}

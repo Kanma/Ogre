@@ -201,8 +201,8 @@ namespace Ogre {
 
         // Then the Ogre logo out of the framework bundle
         mOgreLogo = [[NSImageView alloc] initWithFrame:NSMakeRect(0, 295, 512, 220)];
-        NSMutableString *logoPath = [[[NSBundle mainBundle] bundlePath] mutableCopy];
-        [logoPath appendString:@"/Contents/Frameworks/Ogre.framework/Resources/ogrelogo.png"];
+        NSMutableString *logoPath = [[[NSBundle bundleForClass:[self class]] resourcePath] mutableCopy];
+        [logoPath appendString:@"/ogrelogo.png"];
 
         NSImage *image = [[NSImage alloc] initWithContentsOfFile:logoPath];
         [logoPath release];
@@ -343,11 +343,7 @@ namespace Ogre {
     return [[[mOptions keyEnumerator] allObjects] objectAtIndex:rowIndex];
 }
 
-#if defined(MAC_OS_X_VERSION_10_5) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_5
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
-#else
 - (int)numberOfRowsInTableView:(NSTableView *)aTableView
-#endif
 {
     return [mOptions count];
 }

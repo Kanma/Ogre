@@ -73,13 +73,6 @@ add_definitions(-D_USRDLL)
 
 add_library(RenderSystem_Direct3D11 SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
-target_link_libraries(RenderSystem_Direct3D11 OgreMain
-                                              d3d11
-                                              d3dx11
-                                              dxgi
-                                              dxerr
-                                              dxguid
-                                              d3dcompiler
-)
+target_link_libraries(RenderSystem_Direct3D11 OgreMain ${DirectX_D3D11_LIBRARIES})
 
 set_target_properties(RenderSystem_Direct3D11 PROPERTIES COMPILE_DEFINITIONS OGRED3DENGINEDLL_EXPORTS)
