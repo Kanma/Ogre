@@ -82,6 +82,14 @@ cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D11 "Build Direct3D11 RenderSys
 cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_GL "Build OpenGL RenderSystem" TRUE "OPENGL_FOUND" FALSE)
 
 
+# Settings for the plugins
+option(OGRE_BUILD_PLUGIN_BSP "Build BSP SceneManager plugin" TRUE)
+option(OGRE_BUILD_PLUGIN_OCTREE "Build Octree SceneManager plugin" TRUE)
+option(OGRE_BUILD_PLUGIN_PCZ "Build PCZ SceneManager plugin" TRUE)
+option(OGRE_BUILD_PLUGIN_PFX "Build ParticleFX plugin" TRUE)
+option(OGRE_BUILD_PLUGIN_CG "Build ParticleFX plugin" TRUE)
+
+
 # Set the output path
 if (NOT ATHENA_BINARY_DIR)
     set(ATHENA_BINARY_DIR "${OGRE_BINARY_DIR}")
@@ -168,6 +176,7 @@ set(OGRE_BOOST_INCLUDE_PATH "${OGRE_BOOST_PATH}")
 
 # Subdirectories to process
 add_subdirectory(OgreMain)
+add_subdirectory(PlugIns)
 add_subdirectory(RenderSystems)
 
 if (OGRE_DEPENDENCIES_PATH STREQUAL "${OGRE_SOURCE_DIR}/Dependencies")
