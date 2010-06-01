@@ -10,3 +10,6 @@
 [submodule "Dependencies/zziplib"]
 	path = Dependencies/zziplib
 	url = git://github.com/Kanma/Athena-Dependencies-zziplib.git
+[submodule "Dependencies/xmake"]
+	path = Dependencies/xmake
+	url = git://github.com/Kanma/XMake.git

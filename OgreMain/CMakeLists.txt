@@ -554,18 +554,21 @@ configure_file(${OGRE_SOURCE_DIR}/include/Ogre/OgreBuildSettings.h.in
 
 
 # Add needed definitions and nedmalloc include dir
-add_definitions(-DOGRE_NONCLIENT_BUILD -DFREEIMAGE_LIB -D_MT -D_USRDLL)
+add_definitions(-DOGRE_NONCLIENT_BUILD -D_MT -D_USRDLL ${XMAKE_FREEIMAGE_COMPILE_DEFINITIONS})
 include_directories(
     ${OGRE_SOURCE_DIR}/include/Ogre
     ${ATHENA_BINARY_DIR}/include/Ogre
-    ${CMAKE_CURRENT_SOURCE_DIR}/nedmalloc
-    ${OGRE_FREEIMAGE_INCLUDE_PATH}
-    ${OGRE_FREETYPE_INCLUDE_PATH}
-    ${OGRE_ZLIB_INCLUDE_PATH}
-    ${OGRE_ZZIPLIB_INCLUDE_PATH}
-)
+    ${CMAKE_CURRENT_SOURCE_DIR}/nedmalloc)
 
-set(LIBRARIES zlib zziplib freeimage freetype jpeg mng openexr openjpeg png rawlite tiff ${PLATFORM_LIBS})
+xmake_include_directories(FREEIMAGE)
+xmake_include_directories(FREETYPE)
+xmake_include_directories(ZLIB)
+xmake_include_directories(ZZIPLIB)
+
+set(LIBRARIES "${XMAKE_FREEIMAGE_LINK_TARGETS}"
+              "${XMAKE_FREETYPE_LINK_TARGETS}"
+              "${XMAKE_ZZIPLIB_LINK_TARGETS}"
+              ${PLATFORM_LIBS})
 
 if (OGRE_CONFIG_THREADS)
   list(APPEND LIBRARIES ${OGRE_THREAD_LIBRARIES})

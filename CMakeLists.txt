@@ -18,32 +18,12 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif()
 
-if (NOT OGRE_DEPENDENCIES_PATH)
-    set(OGRE_DEPENDENCIES_PATH "${OGRE_SOURCE_DIR}/Dependencies" CACHE STRING "Path to the dependencies of Ogre (by default: ${OGRE_SOURCE_DIR}/Dependencies)")
-endif()
-
-if (NOT OGRE_FREEIMAGE_PATH)
-    set(OGRE_FREEIMAGE_PATH "" CACHE STRING "Path to FreeImage (by default: $OGRE_DEPENDENCIES_PATH/FreeImage)")
-endif()
-
-if (NOT OGRE_FREETYPE_PATH)
-    set(OGRE_FREETYPE_PATH "" CACHE STRING "Path to FreeType (by default: $OGRE_DEPENDENCIES_PATH}/freetype)")
-endif()
-
-if (NOT OGRE_ZLIB_PATH)
-    set(OGRE_ZLIB_PATH "" CACHE STRING "Path to ZLib (by default: $OGRE_DEPENDENCIES_PATH/zlib)")
-endif()
-
-if (NOT OGRE_ZZIPLIB_PATH)
-    set(OGRE_ZZIPLIB_PATH "" CACHE STRING "Path to zziplib (by default: $OGRE_DEPENDENCIES_PATH/zziplib)")
-endif()
-
 if (NOT OGRE_CG_PATH)
-    set(OGRE_CG_PATH "" CACHE STRING "Path to Cg (by default: $OGRE_DEPENDENCIES_PATH/Cg)")
+    set(OGRE_CG_PATH "" CACHE STRING "Path to Cg (by default: ${OGRE_SOURCE_DIR}/Dependencies/Cg)")
 endif()
 
 if (NOT OGRE_BOOST_PATH)
-    set(OGRE_BOOST_PATH "" CACHE STRING "Path to Boost (by default: $OGRE_DEPENDENCIES_PATH/boost)")
+    set(OGRE_BOOST_PATH "" CACHE STRING "Path to Boost (by default: ${OGRE_SOURCE_DIR}/Dependencies/boost)")
 endif()
 
 if (NOT OGRE_CONFIG_ALLOCATOR)
@@ -70,8 +50,10 @@ if (NOT OGRE_CONFIG_NEW_COMPILERS)
     set(OGRE_CONFIG_NEW_COMPILERS ON CACHE BOOL "Use the new script compilers.")
 endif()
 
-if (NOT ATHENA_DOUBLE_PRECISION)
+if (NOT DEFINED ATHENA_DOUBLE_PRECISION)
     set(OGRE_DOUBLE_PRECISION OFF CACHE BOOL "Use double-precision floating point numbers")
+else()
+    set(OGRE_DOUBLE_PRECISION ATHENA_DOUBLE_PRECISION CACHE INTERNAL "" FORCE)
 endif()
 
 
@@ -108,6 +90,38 @@ if (NOT ATHENA_BINARY_DIR)
 endif()
 
 
+# We only support Intel 32bits builds
+if (APPLE)
+    set(CMAKE_OSX_ARCHITECTURES "i386" CACHE INTERNAL "" FORCE)
+    set(CMAKE_OSX_ARCHITECTURES_DEFAULT "ppc" CACHE INTERNAL "" FORCE)
+endif()
+
+
+# Import XMake
+if (EXISTS "${OGRE_SOURCE_DIR}/Dependencies/xmake/XMake.cmake")
+    include("${OGRE_SOURCE_DIR}/Dependencies/xmake/XMake.cmake")
+endif()
+
+
+# Process the dependencies
+add_subdirectory(Dependencies)
+
+
+# XMake settings
+if (APPLE)
+    xmake_init_framework(OGRE)
+    xmake_add_link_paths(OGRE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    xmake_add_link_flags(OGRE "-F${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" "-framework Ogre" "-framework Carbon" "-framework Cocoa")
+else()
+    xmake_init_dynamic(OGRE)
+    xmake_add_link_paths(OGRE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+    xmake_add_link_targets(OGRE Ogre)
+endif()
+
+xmake_add_include_paths(OGRE ${OGRE_SOURCE_DIR}/include
+                             ${ATHENA_BINARY_DIR}/include)
+
+
 # Determine system endianess
 include(TestBigEndian)
 test_big_endian(OGRE_TEST_BIG_ENDIAN)
@@ -119,22 +133,10 @@ set(OGRE_VERSION_MINOR 7)
 set(OGRE_VERSION_PATCH 0)
 set(OGRE_VERSION "${OGRE_VERSION_MAJOR}.${OGRE_VERSION_MINOR}.${OGRE_VERSION_PATCH}")
 
-# We only support Intel 32bits builds
-if (APPLE)
-    set(CMAKE_OSX_ARCHITECTURES "i386")
-    set(CMAKE_OSX_ARCHITECTURES_DEFAULT "ppc")
-endif()
-
 set(OGRE_CONFIG_THREADS OFF)
 set(OGRE_THREAD_PROVIDER 0)
 
 set(OGRE_USE_BOOST OFF)
-
-if (ATHENA_DOUBLE_PRECISION)
-    add_definitions(-DATHENA_DOUBLE_PRECISION=1)
-else()
-    add_definitions(-DATHENA_DOUBLE_PRECISION=0)
-endif()
 
 if (OGRE_TEST_BIG_ENDIAN)
     set(OGRE_CONFIG_BIG_ENDIAN ON)
@@ -145,39 +147,15 @@ endif()
 
 # Paths to the dependencies
 if (NOT OGRE_CG_PATH)
-    set(OGRE_CG_PATH "${OGRE_DEPENDENCIES_PATH}/Cg")
+    set(OGRE_CG_PATH "${OGRE_SOURCE_DIR}/Dependencies/Cg")
 endif()
 
 if (WIN32)
     set(OGRE_CG_INCLUDE_PATH "${OGRE_CG_PATH}/include")
 endif()
 
-if (NOT OGRE_FREEIMAGE_PATH)
-    set(OGRE_FREEIMAGE_PATH "${OGRE_DEPENDENCIES_PATH}/FreeImage")
-endif()
-
-set(OGRE_FREEIMAGE_INCLUDE_PATH "${OGRE_FREEIMAGE_PATH}")
-
-if (NOT OGRE_FREETYPE_PATH)
-    set(OGRE_FREETYPE_PATH "${OGRE_DEPENDENCIES_PATH}/freetype")
-endif()
-
-set(OGRE_FREETYPE_INCLUDE_PATH "${OGRE_FREETYPE_PATH}/include")
-
-if (NOT OGRE_ZLIB_PATH)
-    set(OGRE_ZLIB_PATH "${OGRE_DEPENDENCIES_PATH}/zlib")
-endif()
-
-set(OGRE_ZLIB_INCLUDE_PATH "${OGRE_ZLIB_PATH}")
-
-if (NOT OGRE_ZZIPLIB_PATH)
-    set(OGRE_ZZIPLIB_PATH "${OGRE_DEPENDENCIES_PATH}/zziplib")
-endif()
-
-set(OGRE_ZZIPLIB_INCLUDE_PATH "${OGRE_ZZIPLIB_PATH}")
-
 if (NOT OGRE_BOOST_PATH)
-    set(OGRE_BOOST_PATH "${OGRE_DEPENDENCIES_PATH}/boost")
+    set(OGRE_BOOST_PATH "${OGRE_SOURCE_DIR}/Dependencies/boost")
 endif()
 
 set(OGRE_BOOST_INCLUDE_PATH "${OGRE_BOOST_PATH}")
@@ -187,7 +165,3 @@ set(OGRE_BOOST_INCLUDE_PATH "${OGRE_BOOST_PATH}")
 add_subdirectory(OgreMain)
 add_subdirectory(PlugIns)
 add_subdirectory(RenderSystems)
-
-if (OGRE_DEPENDENCIES_PATH STREQUAL "${OGRE_SOURCE_DIR}/Dependencies")
-    add_subdirectory(Dependencies)
-endif()
