@@ -35,7 +35,11 @@ if (APPLE)
 endif()
 
 
-add_library(Plugin_CgProgramManager SHARED ${HEADER_FILES} ${SOURCE_FILES} Cg.framework)
+if (APPLE)
+    add_library(Plugin_CgProgramManager SHARED ${HEADER_FILES} ${SOURCE_FILES} Cg.framework)
+else()
+    add_library(Plugin_CgProgramManager SHARED ${HEADER_FILES} ${SOURCE_FILES})
+endif()
 
 if (APPLE)
     set_target_properties(Plugin_CgProgramManager PROPERTIES LINK_FLAGS "-F${OGRE_CG_PATH} -Wl,-rpath,@loader_path/.")

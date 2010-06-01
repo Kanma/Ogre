@@ -76,7 +76,7 @@ endif()
 
 
 # Find the render system dependencies
-set(CMAKE_MODULE_PATH CMake)
+set(CMAKE_MODULE_PATH "${OGRE_SOURCE_DIR}/CMake")
 
 find_package(OpenGL)
 if (WIN32)
