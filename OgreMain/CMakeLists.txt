@@ -584,9 +584,8 @@ if (APPLE)
     set_target_properties(OgreMain PROPERTIES FRAMEWORK TRUE)
 
     # Set the INSTALL_PATH so that Frameworks can be local
-    set_target_properties(OgreMain
-       PROPERTIES BUILD_WITH_INSTALL_RPATH 1
-       INSTALL_NAME_DIR "@rpath"
+    set_target_properties(OgreMain PROPERTIES BUILD_WITH_INSTALL_RPATH ON
+                                              INSTALL_NAME_DIR "@rpath"
     )
 
     set_target_properties(OgreMain PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")

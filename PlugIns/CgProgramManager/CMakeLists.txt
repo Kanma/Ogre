@@ -42,10 +42,11 @@ else()
 endif()
 
 if (APPLE)
-    set_target_properties(Plugin_CgProgramManager PROPERTIES LINK_FLAGS "-F${OGRE_CG_PATH} -Wl,-rpath,@loader_path/.")
+    set_target_properties(Plugin_CgProgramManager PROPERTIES LINK_FLAGS "-F${OGRE_CG_PATH} -Wl,-rpath,@loader_path/.,-rpath,@loader_path/../Frameworks")
     target_link_libraries(Plugin_CgProgramManager OgreMain "-framework Cg")
 else()
-    set_target_properties(Plugin_CgProgramManager PROPERTIES LINK_FLAGS "-L${OGRE_CG_PATH}/lib")
+    set_target_properties(Plugin_CgProgramManager PROPERTIES LINK_FLAGS "-L${OGRE_CG_PATH}/lib"
+                                                             INSTALL_RPATH "@loader_rpath/.")
     target_link_libraries(Plugin_CgProgramManager OgreMain cg)
     configure_file(${OGRE_CG_PATH}/bin/cg.dll ${ATHENA_BINARY_DIR}/bin/cg.dll COPYONLY)
 endif()

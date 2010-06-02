@@ -119,7 +119,8 @@ else()
 endif()
 
 xmake_add_include_paths(OGRE ${OGRE_SOURCE_DIR}/include
-                             ${ATHENA_BINARY_DIR}/include)
+                             ${ATHENA_BINARY_DIR}/include
+                             ${ATHENA_BINARY_DIR}/include/Ogre)
 
 
 # Determine system endianess

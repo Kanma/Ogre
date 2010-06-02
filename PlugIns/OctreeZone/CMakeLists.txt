@@ -45,8 +45,10 @@ set_property(TARGET Plugin_OctreeZone PROPERTY COMPILE_DEFINITIONS OGRE_OCTREEZO
 
 # Need to include the plugins directory in the RPATH for OctreeZone to be able
 # to find the PCZSceneManager library
-if (UNIX)
-  set_property(TARGET Plugin_OctreeZone APPEND PROPERTY INSTALL_RPATH "@loader_path/.")
+if (APPLE)
+    set_target_properties(Plugin_OctreeZone PROPERTIES LINK_FLAGS "-Wl,-rpath,@loader_path/.,-rpath,@loader_path/../Plugins")
+elseif (UNIX)
+    set_property(TARGET Plugin_OctreeZone APPEND PROPERTY INSTALL_RPATH "@loader_path/.")
 endif ()
 
 # Disable "lib" prefix on Unix
