@@ -80,11 +80,25 @@ cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_GL "Build OpenGL RenderSystem" TR
 
 
 # Settings for the plugins
-option(OGRE_BUILD_PLUGIN_BSP "Build BSP SceneManager plugin" TRUE)
-option(OGRE_BUILD_PLUGIN_OCTREE "Build Octree SceneManager plugin" TRUE)
-option(OGRE_BUILD_PLUGIN_PCZ "Build PCZ SceneManager plugin" TRUE)
-option(OGRE_BUILD_PLUGIN_PFX "Build ParticleFX plugin" TRUE)
-option(OGRE_BUILD_PLUGIN_CG "Build ParticleFX plugin" TRUE)
+if (NOT DEFINED OGRE_BUILD_PLUGIN_BSP)
+    option(OGRE_BUILD_PLUGIN_BSP "Build BSP SceneManager plugin" TRUE)
+endif()
+
+if (NOT DEFINED OGRE_BUILD_PLUGIN_OCTREE)
+    option(OGRE_BUILD_PLUGIN_OCTREE "Build Octree SceneManager plugin" TRUE)
+endif()
+
+if (NOT DEFINED OGRE_BUILD_PLUGIN_PCZ)
+    option(OGRE_BUILD_PLUGIN_PCZ "Build PCZ SceneManager plugin" TRUE)
+endif()
+
+if (NOT DEFINED OGRE_BUILD_PLUGIN_PFX)
+    option(OGRE_BUILD_PLUGIN_PFX "Build ParticleFX plugin" TRUE)
+endif()
+
+if (NOT DEFINED OGRE_BUILD_PLUGIN_CG)
+    option(OGRE_BUILD_PLUGIN_CG "Build CG plugin" TRUE)
+endif()
 
 
 # Set the output path
