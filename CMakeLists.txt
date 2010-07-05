@@ -65,6 +65,12 @@ if (WIN32)
 	find_package(DirectX)
 endif()
 
+if (UNIX AND NOT APPLE)
+    find_package(X11)
+    find_package(Cg)
+    find_library(XAW_LIBRARY NAMES Xaw Xaw7 PATHS ${X11_LIB_SEARCH_PATH})
+endif()
+
 
 # Settings for the render systems
 cmake_dependent_option(OGRE_BUILD_RENDERSYSTEM_D3D9 "Build Direct3D9 RenderSystem" TRUE "WIN32;DirectX_FOUND" FALSE)

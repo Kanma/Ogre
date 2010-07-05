@@ -494,12 +494,12 @@ elseif (APPLE)
 
 elseif (UNIX)
 
-  include_directories(include/GLX ${X11_INCLUDE_DIR})
+  include_directories(${OGRE_SOURCE_DIR}/include/Ogre/GLX ${X11_INCLUDE_DIR})
 
   set(PLATFORM_HEADER_FILES
-    ${OGRE_SOURCE_DIR}/include/GLX/OgreConfigDialogImp.h
-    ${OGRE_SOURCE_DIR}/include/GLX/OgreErrorDialogImp.h
-    ${OGRE_SOURCE_DIR}/include/GLX/OgreTimerImp.h
+      ${OGRE_SOURCE_DIR}/include/Ogre/GLX/OgreConfigDialogImp.h
+      ${OGRE_SOURCE_DIR}/include/Ogre/GLX/OgreErrorDialogImp.h
+      ${OGRE_SOURCE_DIR}/include/Ogre/GLX/OgreTimerImp.h
   )
   
   set(PLATFORM_SOURCE_FILES
@@ -579,6 +579,11 @@ endif ()
 add_library(OgreMain SHARED ${HEADER_FILES} ${SOURCE_FILES} ${PLATFORM_HEADER_FILES} ${PLATFORM_SOURCE_FILES} ${THREAD_HEADER_FILES} ${THREAD_SOURCE_FILES})
 set_target_properties(OgreMain PROPERTIES VERSION ${OGRE_VERSION}
                                           SOVERSION ${OGRE_VERSION_MAJOR})
+
+if (UNIX AND NOT APPLE)
+    set_target_properties(OgreMain PROPERTIES COMPILE_FLAGS "-msse")
+endif()
+
 
 if (APPLE)
     set_target_properties(OgreMain PROPERTIES FRAMEWORK TRUE)
