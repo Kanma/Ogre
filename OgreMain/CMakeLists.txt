@@ -585,6 +585,10 @@ if (UNIX AND NOT APPLE)
 endif()
 
 
+# The library is called 'Ogre'
+set_target_properties(OgreMain PROPERTIES OUTPUT_NAME Ogre)
+
+
 if (APPLE)
     set_target_properties(OgreMain PROPERTIES FRAMEWORK TRUE)
 
@@ -604,9 +608,6 @@ if (APPLE)
 
 	set_target_properties(OgreMain PROPERTIES RESOURCE "${RESOURCE_FILES}")
 	set_source_files_properties("${RESOURCE_FILES}" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-
-  # Framework is called 'Ogre'
-  set_target_properties(OgreMain PROPERTIES	OUTPUT_NAME Ogre)
 endif ()
 
 target_link_libraries(OgreMain ${LIBRARIES})
