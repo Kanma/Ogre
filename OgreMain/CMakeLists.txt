@@ -581,7 +581,7 @@ set_target_properties(OgreMain PROPERTIES VERSION ${OGRE_VERSION}
                                           SOVERSION ${OGRE_VERSION_MAJOR})
 
 if (UNIX AND NOT APPLE)
-    set_target_properties(OgreMain PROPERTIES COMPILE_FLAGS "-msse")
+    set_target_properties(OgreMain PROPERTIES COMPILE_FLAGS "-msse -fPIC")
 endif()
 
 
