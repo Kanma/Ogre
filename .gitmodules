@@ -1,15 +1,15 @@
 [submodule "Dependencies/FreeImage"]
 	path = Dependencies/FreeImage
-	url = git://github.com/Kanma/Athena-Dependencies-FreeImage.git
+	url = git://github.com/Kanma/FreeImage.git
 [submodule "Dependencies/freetype"]
 	path = Dependencies/freetype
-	url = git://github.com/Kanma/Athena-Dependencies-FreeType.git
+	url = git://github.com/Kanma/FreeType.git
 [submodule "Dependencies/zlib"]
 	path = Dependencies/zlib
-	url = git://github.com/Kanma/Athena-Dependencies-zlib.git
+	url = git://github.com/Kanma/zlib.git
 [submodule "Dependencies/zziplib"]
 	path = Dependencies/zziplib
-	url = git://github.com/Kanma/Athena-Dependencies-zziplib.git
-[submodule "Dependencies/xmake"]
-	path = Dependencies/xmake
+	url = git://github.com/Kanma/zziplib.git
+[submodule "Dependencies/XMake"]
+	path = Dependencies/XMake
 	url = git://github.com/Kanma/XMake.git

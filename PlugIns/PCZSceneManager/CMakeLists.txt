@@ -41,7 +41,7 @@ set (SOURCE_FILES
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${OGRE_SOURCE_DIR}/include/Ogre
-    ${ATHENA_BINARY_DIR}/include/Ogre
+    ${XMAKE_BINARY_DIR}/include/Ogre
 )
 
 if (APPLE)
@@ -50,10 +50,13 @@ endif()
 
 add_definitions(-D_USRDLL)
 
-add_library(Plugin_PCZSceneManager SHARED ${HEADER_FILES} ${SOURCE_FILES})
-target_link_libraries(Plugin_PCZSceneManager OgreMain)
 
-set_target_properties(Plugin_PCZSceneManager PROPERTIES COMPILE_DEFINITIONS OGRE_PCZPLUGIN_EXPORTS)
+xmake_create_dynamic_library(PLUGIN_PCZSCENEMANAGER Plugin_PCZSceneManager ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES})
+
+xmake_project_link(PLUGIN_PCZSCENEMANAGER OGRE)
+
+xmake_add_to_list_property(PLUGIN_PCZSCENEMANAGER COMPILE_DEFINITIONS "OGRE_PCZPLUGIN_EXPORTS")
+
 
 # Disable "lib" prefix on Unix
 if (CMAKE_COMPILER_IS_GNUCXX)

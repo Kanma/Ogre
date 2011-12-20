@@ -58,7 +58,7 @@ set (SOURCE_FILES
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${OGRE_SOURCE_DIR}/include/Ogre
-    ${ATHENA_BINARY_DIR}/include/Ogre
+    ${XMAKE_BINARY_DIR}/include/Ogre
 )
 
 if (APPLE)
@@ -67,10 +67,13 @@ endif()
 
 add_definitions(-D_USRDLL)
 
-add_library(Plugin_ParticleFX SHARED ${HEADER_FILES} ${SOURCE_FILES})
-target_link_libraries(Plugin_ParticleFX OgreMain)
 
-set_target_properties(Plugin_ParticleFX PROPERTIES COMPILE_DEFINITIONS OGRE_PARTICLEFXPLUGIN_EXPORTS)
+xmake_create_dynamic_library(PLUGIN_PARTICLEFX Plugin_ParticleFX ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES})
+
+xmake_project_link(PLUGIN_PARTICLEFX OGRE)
+
+xmake_add_to_list_property(PLUGIN_PARTICLEFX COMPILE_DEFINITIONS "OGRE_PARTICLEFXPLUGIN_EXPORTS")
+
 
 # Disable "lib" prefix on Unix
 if (CMAKE_COMPILER_IS_GNUCXX)

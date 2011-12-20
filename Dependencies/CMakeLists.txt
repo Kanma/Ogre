@@ -1,5 +1,5 @@
 # Subdirectories to process
-add_subdirectory(zlib)
-add_subdirectory(zziplib)
-add_subdirectory(FreeImage)
-add_subdirectory(freetype)
+xmake_add_subdirectory(zlib)
+xmake_add_subdirectory(zziplib)
+xmake_add_subdirectory(FreeImage)
+xmake_add_subdirectory(freetype)

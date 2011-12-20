@@ -28,7 +28,7 @@ set (SOURCE_FILES
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${OGRE_SOURCE_DIR}/include/Ogre
-    ${ATHENA_BINARY_DIR}/include/Ogre
+    ${XMAKE_BINARY_DIR}/include/Ogre
 )
 
 if (APPLE)
@@ -37,10 +37,11 @@ endif()
 
 add_definitions(-D_USRDLL)
 
-add_library(Plugin_BSPSceneManager SHARED ${HEADER_FILES} ${SOURCE_FILES})
-target_link_libraries(Plugin_BSPSceneManager OgreMain)
+xmake_create_dynamic_library(PLUGIN_BSPSCENEMANAGER Plugin_BSPSceneManager ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES})
 
-set_target_properties(Plugin_BSPSceneManager PROPERTIES COMPILE_DEFINITIONS OGRE_BSPPLUGIN_EXPORTS)
+xmake_project_link(PLUGIN_BSPSCENEMANAGER OGRE)
+
+xmake_add_to_list_property(PLUGIN_BSPSCENEMANAGER COMPILE_DEFINITIONS "OGRE_BSPPLUGIN_EXPORTS")
 
 # Disable "lib" prefix on Unix
 if (CMAKE_COMPILER_IS_GNUCXX)

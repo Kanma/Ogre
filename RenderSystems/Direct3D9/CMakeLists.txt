@@ -58,13 +58,16 @@ set (SOURCE_FILES
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
                     ${OGRE_SOURCE_DIR}/include/Ogre
-                    ${ATHENA_BINARY_DIR}/include/Ogre
+                    ${XMAKE_BINARY_DIR}/include/Ogre
                     ${DirectX_INCLUDE_DIR})
 
 link_directories(${DirectX_LIBRARY_DIR})
 add_definitions(-D_USRDLL)
 
-add_library(RenderSystem_Direct3D9 SHARED ${HEADER_FILES} ${SOURCE_FILES})
-target_link_libraries(RenderSystem_Direct3D9 OgreMain ${DirectX_LIBRARIES})
 
-set_target_properties(RenderSystem_Direct3D9 PROPERTIES COMPILE_DEFINITIONS OGRED3DENGINEDLL_EXPORTS)
+xmake_create_dynamic_library(RENDERSYSTEM_DIRECT3D9 RenderSystem_Direct3D9 ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES})
+
+xmake_project_link(RENDERSYSTEM_DIRECT3D9 OGRE)
+target_link_libraries(RenderSystem_Direct3D9 ${DirectX_LIBRARIES})
+
+xmake_add_to_list_property(RENDERSYSTEM_DIRECT3D9 COMPILE_DEFINITIONS "OGRED3DENGINEDLL_EXPORTS")

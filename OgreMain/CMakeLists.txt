@@ -22,7 +22,7 @@ set (HEADER_FILES
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreBlendMode.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreBone.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreBorderPanelOverlayElement.h
-  ${ATHENA_BINARY_DIR}/include/Ogre/OgreBuildSettings.h
+  ${XMAKE_BINARY_DIR}/include/Ogre/OgreBuildSettings.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreCamera.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreCodec.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreColourValue.h
@@ -550,64 +550,59 @@ endif ()
 
 # Generate the header containing the configuration
 configure_file(${OGRE_SOURCE_DIR}/include/Ogre/OgreBuildSettings.h.in
-               ${ATHENA_BINARY_DIR}/include/Ogre/OgreBuildSettings.h)
+               ${XMAKE_BINARY_DIR}/include/Ogre/OgreBuildSettings.h)
 
 
 # Add needed definitions and nedmalloc include dir
-add_definitions(-DOGRE_NONCLIENT_BUILD -D_MT -D_USRDLL ${XMAKE_FREEIMAGE_COMPILE_DEFINITIONS})
+add_definitions(-DOGRE_NONCLIENT_BUILD -D_MT -D_USRDLL)
 include_directories(
     ${OGRE_SOURCE_DIR}/include/Ogre
-    ${ATHENA_BINARY_DIR}/include/Ogre
+    ${XMAKE_BINARY_DIR}/include/Ogre
     ${CMAKE_CURRENT_SOURCE_DIR}/nedmalloc)
 
-xmake_include_directories(FREEIMAGE)
-xmake_include_directories(FREETYPE)
-xmake_include_directories(ZLIB)
-xmake_include_directories(ZZIPLIB)
 
-set(LIBRARIES "${XMAKE_FREEIMAGE_LINK_TARGETS}"
-              "${XMAKE_FREETYPE_LINK_TARGETS}"
-              "${XMAKE_ZZIPLIB_LINK_TARGETS}"
-              ${PLATFORM_LIBS})
+xmake_import_search_paths(FREEIMAGE)
+xmake_import_search_paths(FREETYPE)
+xmake_import_search_paths(ZLIB)
+xmake_import_search_paths(ZZIPLIB)
+
+
+# Declaration of the library
+if (APPLE)
+    xmake_create_framework(OGRE Ogre ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES} ${PLATFORM_HEADER_FILES} ${PLATFORM_SOURCE_FILES} ${THREAD_HEADER_FILES} ${THREAD_SOURCE_FILES})
+else()
+    xmake_create_dynamic_library(OGRE Ogre ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES} ${PLATFORM_HEADER_FILES} ${PLATFORM_SOURCE_FILES} ${THREAD_HEADER_FILES} ${THREAD_SOURCE_FILES})
+endif()
+
+if (UNIX AND NOT APPLE)
+    xmake_add_to_property(OGRE COMPILE_FLAGS "-msse")
+endif()
+
+xmake_project_link(OGRE FREEIMAGE FREETYPE ZZIPLIB)
+target_link_libraries(Ogre ${PLATFORM_LIBS})
 
 if (OGRE_CONFIG_THREADS)
-  list(APPEND LIBRARIES ${OGRE_THREAD_LIBRARIES})
+    target_link_libraries(Ogre ${OGRE_THREAD_LIBRARIES})
 endif ()
 
 
-# setup OgreMain target
-add_library(OgreMain SHARED ${HEADER_FILES} ${SOURCE_FILES} ${PLATFORM_HEADER_FILES} ${PLATFORM_SOURCE_FILES} ${THREAD_HEADER_FILES} ${THREAD_SOURCE_FILES})
-set_target_properties(OgreMain PROPERTIES VERSION ${OGRE_VERSION}
-                                          SOVERSION ${OGRE_VERSION_MAJOR})
-
-if (UNIX AND NOT APPLE)
-    set_target_properties(OgreMain PROPERTIES COMPILE_FLAGS "-msse -fPIC")
-endif()
-
-
-# The library is called 'Ogre'
-set_target_properties(OgreMain PROPERTIES OUTPUT_NAME Ogre)
-
-
+# MacOS X Framework stuff
 if (APPLE)
-    set_target_properties(OgreMain PROPERTIES FRAMEWORK TRUE)
+    set_target_properties(Ogre PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 
-    # Set the INSTALL_PATH so that Frameworks can be local
-    set_target_properties(OgreMain PROPERTIES BUILD_WITH_INSTALL_RPATH ON
-                                              INSTALL_NAME_DIR "@rpath"
-    )
-
-    set_target_properties(OgreMain PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
-
-    add_custom_command(TARGET OgreMain POST_BUILD
-      COMMAND mkdir ARGS -p ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
-	  COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/Threading/* ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
-      COMMAND mkdir ARGS -p ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX
-      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/OSX/*.h ${ATHENA_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/	
+    add_custom_command(TARGET Ogre POST_BUILD
+      COMMAND mkdir ARGS -p ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
+	  COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/Threading/* ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
+      COMMAND mkdir ARGS -p ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX
+      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/OSX/*.h ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/	
 	)
 
-	set_target_properties(OgreMain PROPERTIES RESOURCE "${RESOURCE_FILES}")
+	set_target_properties(Ogre PROPERTIES RESOURCE "${RESOURCE_FILES}")
 	set_source_files_properties("${RESOURCE_FILES}" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 endif ()
 
-target_link_libraries(OgreMain ${LIBRARIES})
+
+# Exportations
+xmake_export_include_paths(OGRE ${OGRE_SOURCE_DIR}/include
+                                ${XMake_BINARY_DIR}/include
+                                ${XMake_BINARY_DIR}/include/Ogre)

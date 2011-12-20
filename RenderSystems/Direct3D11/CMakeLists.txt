@@ -71,8 +71,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 link_directories(${DirectX_LIBRARY_DIR})
 add_definitions(-D_USRDLL)
 
-add_library(RenderSystem_Direct3D11 SHARED ${HEADER_FILES} ${SOURCE_FILES})
 
-target_link_libraries(RenderSystem_Direct3D11 OgreMain ${DirectX_D3D11_LIBRARIES})
+xmake_create_dynamic_library(RENDERSYSTEM_DIRECT3D11 RenderSystem_Direct3D11 ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES})
 
-set_target_properties(RenderSystem_Direct3D11 PROPERTIES COMPILE_DEFINITIONS OGRED3DENGINEDLL_EXPORTS)
+xmake_project_link(RENDERSYSTEM_DIRECT3D11 OGRE)
+target_link_libraries(RenderSystem_Direct3D11 ${DirectX_D3D11_LIBRARIES})
+
+xmake_add_to_list_property(RENDERSYSTEM_DIRECT3D11 COMPILE_DEFINITIONS "OGRED3DENGINEDLL_EXPORTS")

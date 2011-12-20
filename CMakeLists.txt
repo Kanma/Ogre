@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 project(OGRE)
 
+##########################################################################################
+# Settings
+
 # Use relative paths
 # This is mostly to reduce path size for command-line limits on windows
 if(WIN32)
@@ -14,10 +17,6 @@ include(CMakeDependentOption)
 
 
 # Options
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
-endif()
-
 if (NOT OGRE_CG_PATH)
     set(OGRE_CG_PATH "" CACHE STRING "Path to Cg (by default: ${OGRE_SOURCE_DIR}/Dependencies/Cg)")
 endif()
@@ -101,46 +100,11 @@ if (NOT DEFINED OGRE_BUILD_PLUGIN_CG)
 endif()
 
 
-# Set the output path
-if (NOT ATHENA_BINARY_DIR)
-    set(ATHENA_BINARY_DIR "${OGRE_BINARY_DIR}")
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OGRE_BINARY_DIR}/bin")
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${OGRE_BINARY_DIR}/lib")
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${OGRE_BINARY_DIR}/bin")
-endif()
-
-
 # We only support Intel 32bits builds
-if (APPLE)
-    set(CMAKE_OSX_ARCHITECTURES "i386" CACHE INTERNAL "" FORCE)
-    set(CMAKE_OSX_ARCHITECTURES_DEFAULT "ppc" CACHE INTERNAL "" FORCE)
+if (APPLE AND NOT DEFINED XMAKE_OSX_ARCHITECTURES)
+    set(XMAKE_OSX_ARCHITECTURES "i386" CACHE STRING "" FORCE)
 endif()
-
-
-# Import XMake
-if (EXISTS "${OGRE_SOURCE_DIR}/Dependencies/xmake/XMake.cmake")
-    include("${OGRE_SOURCE_DIR}/Dependencies/xmake/XMake.cmake")
-endif()
-
-
-# Process the dependencies
-add_subdirectory(Dependencies)
-
-
-# XMake settings
-if (APPLE)
-    xmake_init_framework(OGRE)
-    xmake_add_link_paths(OGRE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-    xmake_add_link_flags(OGRE "-F${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" "-framework Ogre" "-framework Carbon" "-framework Cocoa")
-else()
-    xmake_init_dynamic(OGRE)
-    xmake_add_link_paths(OGRE "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
-    xmake_add_link_targets(OGRE Ogre)
-endif()
-
-xmake_add_include_paths(OGRE ${OGRE_SOURCE_DIR}/include
-                             ${ATHENA_BINARY_DIR}/include
-                             ${ATHENA_BINARY_DIR}/include/Ogre)
+set(CMAKE_OSX_ARCHITECTURES_DEFAULT "ppc" CACHE INTERNAL "" FORCE)  # XMake 2.1 does it the wrong way
 
 
 # Determine system endianess
@@ -148,7 +112,7 @@ include(TestBigEndian)
 test_big_endian(OGRE_TEST_BIG_ENDIAN)
 
 
-# Settings
+# Ogre settings
 set(OGRE_VERSION_MAJOR 1)
 set(OGRE_VERSION_MINOR 7)
 set(OGRE_VERSION_PATCH 0)
@@ -182,7 +146,48 @@ endif()
 set(OGRE_BOOST_INCLUDE_PATH "${OGRE_BOOST_PATH}")
 
 
-# Subdirectories to process
+##########################################################################################
+# XMake-related settings
+
+# Set the output paths
+if (NOT DEFINED XMAKE_BINARY_DIR)
+    set(XMAKE_BINARY_DIR "${OGRE_BINARY_DIR}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${XMAKE_BINARY_DIR}/bin")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${XMAKE_BINARY_DIR}/lib")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${XMAKE_BINARY_DIR}/bin")
+endif()
+
+# Set the dependencies path
+if (NOT DEFINED XMAKE_DEPENDENCIES_DIR)
+    set(XMAKE_DEPENDENCIES_DIR "${OGRE_SOURCE_DIR}/dependencies")
+endif()
+
+
+##########################################################################################
+# XMake importation
+
+if (NOT EXISTS "${XMAKE_DEPENDENCIES_DIR}/XMake/XMake.cmake")
+    message(FATAL_ERROR
+"Missing dependency: XMake
+This distribution of Ogre requires the following dependencies:
+   - XMake
+   - zlib
+   - zziplib
+   - FreeType
+   - FreeImage
+They are provided as GIT submodules of this repository.
+Did you forgot to execute the following commands?
+   git submodule init
+   git submodule update")
+endif()
+
+include("${XMAKE_DEPENDENCIES_DIR}/XMake/XMake.cmake")
+
+
+##########################################################################################
+# Process subdirectories
+
+add_subdirectory(Dependencies)
 add_subdirectory(OgreMain)
 add_subdirectory(PlugIns)
 add_subdirectory(RenderSystems)

@@ -29,7 +29,7 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/../PCZSceneManager/include
     ${OGRE_SOURCE_DIR}/include/Ogre
-    ${ATHENA_BINARY_DIR}/include/Ogre
+    ${XMAKE_BINARY_DIR}/include/Ogre
 )
 
 if (APPLE)
@@ -38,18 +38,22 @@ endif()
 
 add_definitions(-D_USRDLL)
 
-add_library(Plugin_OctreeZone SHARED ${HEADER_FILES} ${SOURCE_FILES})
-target_link_libraries(Plugin_OctreeZone OgreMain Plugin_PCZSceneManager)
 
-set_property(TARGET Plugin_OctreeZone PROPERTY COMPILE_DEFINITIONS OGRE_OCTREEZONEPLUGIN_EXPORTS)
+xmake_create_dynamic_library(PLUGIN_OCTREEZONE Plugin_OctreeZone ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES})
+
+xmake_project_link(PLUGIN_OCTREEZONE OGRE PLUGIN_PCZSCENEMANAGER)
+
+xmake_add_to_list_property(PLUGIN_OCTREEZONE COMPILE_DEFINITIONS "OGRE_OCTREEZONEPLUGIN_EXPORTS")
+
 
 # Need to include the plugins directory in the RPATH for OctreeZone to be able
 # to find the PCZSceneManager library
 if (APPLE)
-    set_target_properties(Plugin_OctreeZone PROPERTIES LINK_FLAGS "-Wl,-rpath,@loader_path/.,-rpath,@loader_path/../Plugins")
+    xmake_add_to_property(PLUGIN_OCTREEZONE LINK_FLAGS "-Wl,-rpath,@loader_path/.,-rpath,@loader_path/../Plugins")
 elseif (UNIX)
-    set_property(TARGET Plugin_OctreeZone APPEND PROPERTY INSTALL_RPATH "@loader_path/.")
+    xmake_add_to_property(PLUGIN_OCTREEZONE INSTALL_RPATH "@loader_path/.")
 endif ()
+
 
 # Disable "lib" prefix on Unix
 if (CMAKE_COMPILER_IS_GNUCXX)

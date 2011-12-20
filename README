@@ -1,8 +1,7 @@
 This is a custom distribution of OGRE, (Object-Oriented Graphics Rendering
 Engine), version 1.7.0, a scene-oriented and flexible 3D engine.
 
-This distribution includes a custom CMake-based build system tailored to fit in
-the Athena Game Framework.
+This distribution includes a custom XMake-based build system.
 
 
 License
@@ -16,8 +15,8 @@ The license of OGRE is contained in the file 'COPYING'.
 Submodules
 ----------
 
-This distribution use zlib, zziplib, FreeImage and FreeType as a GIT submodules.
-To download them, do:
+This distribution use zlib, zziplib, FreeImage, FreeType and XMake as GIT
+submodules. To download them, do:
 
 	$ git submodule init
 	$ git submodule update

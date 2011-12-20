@@ -178,7 +178,7 @@ elseif (APPLE)
   )
 
   include_directories(src/OSX include/OSX "${OGRE_SOURCE_DIR}/OgreMain/include/OSX")
-  set(PLATFORM_LIBS "-framework Cocoa" "-framework Carbon")
+  set(PLATFORM_LIBS "-framework Cocoa -framework Carbon")
   set(PLATFORM_HEADER_INSTALL "OSX")
 
 elseif (UNIX)
@@ -213,7 +213,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/atifs/include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/nvparse
   ${OGRE_SOURCE_DIR}/include/Ogre
-  ${ATHENA_BINARY_DIR}/include/Ogre
+  ${XMAKE_BINARY_DIR}/include/Ogre
   ${OPENGL_INCLUDE_DIR}
 )
 
@@ -223,11 +223,12 @@ endif()
 
 
 # Create the library
-add_library(RenderSystem_GL SHARED ${HEADER_FILES} ${SOURCE_FILES} ${GLSL_FILES} ${ATIFS_FILES} ${NVPARSE_FILES} ${PLATFORM_HEADERS} ${PLATFORM_SOURCES})
-target_link_libraries(RenderSystem_GL OgreMain ${OPENGL_LIBRARIES} ${PLATFORM_LIBS})
+xmake_create_dynamic_library(RENDERSYSTEM_GL RenderSystem_GL ${OGRE_VERSION} ${OGRE_VERSION_MAJOR} ${HEADER_FILES} ${SOURCE_FILES} ${GLSL_FILES} ${ATIFS_FILES} ${NVPARSE_FILES} ${PLATFORM_HEADERS} ${PLATFORM_SOURCES})
 
-set_target_properties(RenderSystem_GL PROPERTIES COMPILE_DEFINITIONS OGRE_GLPLUGIN_EXPORTS)
+xmake_project_link(RENDERSYSTEM_GL OGRE)
+target_link_libraries(RenderSystem_GL ${OPENGL_LIBRARIES} ${PLATFORM_LIBS})
 
+xmake_add_to_list_property(RENDERSYSTEM_GL COMPILE_DEFINITIONS "OGRE_GLPLUGIN_EXPORTS")
 
 # Disable "lib" prefix on Unix
 if (CMAKE_COMPILER_IS_GNUCXX)
