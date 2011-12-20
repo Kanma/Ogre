@@ -603,5 +603,5 @@ endif ()
 
 # Exportations
 xmake_export_include_paths(OGRE ${OGRE_SOURCE_DIR}/include
-                                ${XMake_BINARY_DIR}/include
-                                ${XMake_BINARY_DIR}/include/Ogre)
+                                ${XMAKE_BINARY_DIR}/include
+                                ${XMAKE_BINARY_DIR}/include/Ogre)
