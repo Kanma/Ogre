@@ -845,10 +845,10 @@ namespace Ogre {
     {
         NeighborList::iterator i, iend;
         iend = neighbor.end();
-        for (i = neighbor.begin(); i != iend; ++i)
+        for (i = neighbor.begin(); i != iend; )
         {
             // Remove me from neighbor
-            (*i)->neighbor.erase(this);
+            (*(i++))->neighbor.erase(this);
         }
         removed = true;
 		this->collapseTo = NULL;

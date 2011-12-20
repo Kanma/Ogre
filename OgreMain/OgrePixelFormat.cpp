@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 namespace {
 #include "OgrePixelConversions.h"
-};
+}
 
 namespace Ogre {
 
@@ -1374,6 +1374,24 @@ namespace Ogre {
             srcptr += srcSliceSkipBytes;
             dstptr += dstSliceSkipBytes;
         }
+    }
+
+    ColourValue PixelBox::getColourAt(size_t x, size_t y, size_t z)
+    {
+        ColourValue cv;
+
+        unsigned char pixelSize = PixelUtil::getNumElemBytes(format);
+        size_t pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);
+        PixelUtil::unpackColour(&cv, format, (unsigned char *)data + pixelOffset);
+
+        return cv;
+    }
+
+    void PixelBox::setColourAt(ColourValue const &cv, size_t x, size_t y, size_t z)
+    {
+        unsigned char pixelSize = PixelUtil::getNumElemBytes(format);
+        size_t pixelOffset = pixelSize * (z * slicePitch + y * rowPitch + x);
+        PixelUtil::packColour(cv, format, (unsigned char *)data + pixelOffset);
     }
 
 }

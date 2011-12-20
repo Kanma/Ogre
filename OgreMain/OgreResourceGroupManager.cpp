@@ -736,14 +736,14 @@ namespace Ogre {
 		// Not found
 		if (searchGroupsIfNotFound)
 		{
-			ResourceGroup* grp = findGroupContainingResourceImpl(resourceName); 
-			if (grp)
+			ResourceGroup* foundGrp = findGroupContainingResourceImpl(resourceName); 
+			if (foundGrp)
 			{
 				if (resourceBeingLoaded)
 				{
-					resourceBeingLoaded->changeGroupOwnership(grp->name);
+					resourceBeingLoaded->changeGroupOwnership(foundGrp->name);
 				}
-				return openResource(resourceName, grp->name, false);
+				return openResource(resourceName, foundGrp->name, false);
 			}
 			else
 			{
@@ -1177,31 +1177,39 @@ namespace Ogre {
 	void ResourceGroupManager::_notifyResourceGroupChanged(const String& oldGroup, 
 		Resource* res)
 	{
-		OGRE_LOCK_AUTO_MUTEX
+		ResourcePtr resPtr;
 	
-		// New group
-		ResourceGroup* newGrp = getResourceGroup(res->getGroup());
 		// find old entry
-		ResourceGroupMap::iterator grpi = mResourceGroupMap.find(oldGroup);
+		ResourceGroup* grp = getResourceGroup(oldGroup);
 
-		assert(grpi != mResourceGroupMap.end());
-		ResourceGroup* grp = grpi->second;
-		Real order = res->getCreator()->getLoadingOrder();
-		ResourceGroup::LoadResourceOrderMap::iterator i = 
-			grp->loadResourceOrderMap.find(order);
-		assert(i != grp->loadResourceOrderMap.end());
-		LoadUnloadResourceList* loadList = i->second;
-		for (LoadUnloadResourceList::iterator l = loadList->begin(); 
-			l != loadList->end(); ++l)
+		if (grp)
 		{
-			if ((*l).getPointer() == res)
+			OGRE_LOCK_MUTEX(grp->OGRE_AUTO_MUTEX_NAME) // lock group mutex
+
+			Real order = res->getCreator()->getLoadingOrder();
+			ResourceGroup::LoadResourceOrderMap::iterator i = 
+				grp->loadResourceOrderMap.find(order);
+			assert(i != grp->loadResourceOrderMap.end());
+			LoadUnloadResourceList* loadList = i->second;
+			for (LoadUnloadResourceList::iterator l = loadList->begin(); 
+				l != loadList->end(); ++l)
 			{
-				addCreatedResource(*l, *newGrp);
-				loadList->erase(l);
-				break;
+				if ((*l).getPointer() == res)
+				{
+					resPtr = *l;
+					loadList->erase(l);
+					break;
+				}
 			}
 		}
 
+		if (!resPtr.isNull())
+		{
+			// New group
+			ResourceGroup* newGrp = getResourceGroup(res->getGroup());
+
+			addCreatedResource(resPtr, *newGrp);
+		}
 	}
 	//-----------------------------------------------------------------------
 	void ResourceGroupManager::_notifyAllResourcesRemoved(ResourceManager* manager)

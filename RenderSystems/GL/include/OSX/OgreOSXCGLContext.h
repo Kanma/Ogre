@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-    class OSXCGLContext: public OSXContext
+    class OSXCGLContext: public OSXContext, public GeneralAllocatedObject
     {
     public:
 		OSXCGLContext(CGLContextObj cglContext, CGLPixelFormatObj pixelFormat);
@@ -58,7 +58,7 @@ namespace Ogre {
 		virtual String getContextType();
 
 		/** Grab the CGLContext if it exists */
-		CGLContextObj getContext();
+		CGLContextObj getContext() { return mCGLContext; }
 
 	private:
 		CGLContextObj mCGLContext;

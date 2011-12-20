@@ -338,6 +338,7 @@ set (SOURCE_FILES
   OgreOverlayContainer.cpp
   OgreOverlayElement.cpp
   OgreOverlayElementCommands.cpp
+  OgreOverlayElementFactory.cpp
   OgreOverlayManager.cpp
   OgrePanelOverlayElement.cpp
   OgreParticle.cpp
@@ -471,7 +472,6 @@ elseif (APPLE)
       ${OGRE_SOURCE_DIR}/include/Ogre/OSX/OgreConfigDialogImp.h
       ${OGRE_SOURCE_DIR}/include/Ogre/OSX/OgreErrorDialogImp.h
       ${OGRE_SOURCE_DIR}/include/Ogre/OSX/OgreTimerImp.h
-      ${OGRE_SOURCE_DIR}/include/Ogre/OSX/OgreOSXCocoaView.h
     )
 
     set(PLATFORM_SOURCE_FILES
@@ -479,7 +479,6 @@ elseif (APPLE)
       OSX/OgreErrorDialog.mm
       OSX/OgreTimer.cpp
       OSX/macUtils.cpp
-      OSX/OgreOSXCocoaView.mm
       OgreSearchOps.cpp
 	  ${OGRE_SOURCE_DIR}/include/Ogre/OSX/ogrelogo.png
     )

@@ -38,13 +38,14 @@ THE SOFTWARE.
 
 namespace Ogre {
 //----------------------------------------------------------------------------- 
-GLHardwarePixelBuffer::GLHardwarePixelBuffer(size_t mWidth, size_t mHeight, size_t mDepth,
-                PixelFormat mFormat,
+GLHardwarePixelBuffer::GLHardwarePixelBuffer(size_t inWidth, size_t inHeight, size_t inDepth,
+                PixelFormat inFormat,
                 HardwareBuffer::Usage usage):
-      HardwarePixelBuffer(mWidth, mHeight, mDepth, mFormat, usage, false, false),
-      mBuffer(mWidth, mHeight, mDepth, mFormat),
+      HardwarePixelBuffer(inWidth, inHeight, inDepth, inFormat, usage, false, false),
+      mBuffer(inWidth, inHeight, inDepth, inFormat),
       mGLInternalFormat(GL_NONE)
 {
+    mCurrentLockOptions = (LockOptions)0;
 }
 
 //-----------------------------------------------------------------------------  
@@ -197,10 +198,11 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
 								 GLint face, GLint level, Usage usage, bool crappyCard, 
 								 bool writeGamma, uint fsaa):
 	GLHardwarePixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
-	mTarget(target), mTextureID(id), mFace(face), mLevel(level), mSoftwareMipmap(crappyCard)
+	mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level),
+    mSoftwareMipmap(crappyCard), mSliceTRT(0)
 {
 	// devise mWidth, mHeight and mDepth and mFormat
-	GLint value;
+	GLint value = 0;
 	
 	glBindTexture( mTarget, mTextureID );
 	
@@ -266,10 +268,10 @@ GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint i
         {
             String name;
 			name = "rtt/" + StringConverter::toString((size_t)this) + "/" + baseName;
-            GLSurfaceDesc target;
-            target.buffer = this;
-            target.zoffset = zoffset;
-            RenderTexture *trt = GLRTTManager::getSingleton().createRenderTexture(name, target, writeGamma, fsaa);
+            GLSurfaceDesc surface;
+            surface.buffer = this;
+            surface.zoffset = zoffset;
+            RenderTexture *trt = GLRTTManager::getSingleton().createRenderTexture(name, surface, writeGamma, fsaa);
             mSliceTRT.push_back(trt);
             Root::getSingleton().getRenderSystem()->attachRenderTarget(*mSliceTRT[zoffset]);
         }
@@ -701,7 +703,7 @@ void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Image::Box &sr
         /// Calculate source slice for this destination slice
         float w = (float)(slice - dstBox.front) / (float)dstBox.getDepth();
         /// Get slice # in source
-        w = w * (float)srcBox.getDepth() + srcBox.front;
+        w = w * (float)(srcBox.getDepth() + srcBox.front);
         /// Normalise to texture coordinate in 0.0 .. 1.0
         w = (w+0.5f) / (float)src->mDepth;
         
@@ -864,7 +866,8 @@ RenderTexture *GLTextureBuffer::getRenderTarget(size_t zoffset)
 //********* GLRenderBuffer
 //----------------------------------------------------------------------------- 
 GLRenderBuffer::GLRenderBuffer(GLenum format, size_t width, size_t height, GLsizei numSamples):
-    GLHardwarePixelBuffer(width, height, 1, GLPixelUtil::getClosestOGREFormat(format),HBU_WRITE_ONLY)
+    GLHardwarePixelBuffer(width, height, 1, GLPixelUtil::getClosestOGREFormat(format),HBU_WRITE_ONLY),
+    mRenderbufferID(0)
 {
     mGLInternalFormat = format;
     /// Generate renderbuffer

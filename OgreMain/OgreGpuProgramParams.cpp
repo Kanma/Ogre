@@ -140,6 +140,7 @@ namespace Ogre
 		AutoConstantDefinition(ACT_TEXTURE_WORLDVIEWPROJ_MATRIX,  "texture_worldviewproj_matrix",16, ET_REAL, ACDT_INT),
 		AutoConstantDefinition(ACT_TEXTURE_WORLDVIEWPROJ_MATRIX_ARRAY, "texture_worldviewproj_matrix_array",16, ET_REAL, ACDT_INT),
 		AutoConstantDefinition(ACT_SPOTLIGHT_VIEWPROJ_MATRIX,       "spotlight_viewproj_matrix",     16, ET_REAL, ACDT_INT),
+		AutoConstantDefinition(ACT_SPOTLIGHT_VIEWPROJ_MATRIX_ARRAY, "spotlight_viewproj_matrix_array", 16, ET_REAL, ACDT_INT),
 		AutoConstantDefinition(ACT_SPOTLIGHT_WORLDVIEWPROJ_MATRIX,  "spotlight_worldviewproj_matrix",16, ET_REAL, ACDT_INT),
 		AutoConstantDefinition(ACT_CUSTOM,                        "custom",                       4, ET_REAL, ACDT_INT),  // *** needs to be tested
 		AutoConstantDefinition(ACT_TIME,                               "time",                               1, ET_REAL, ACDT_REAL),
@@ -1101,6 +1102,7 @@ namespace Ogre
 		case ACT_TEXTURE_VIEWPROJ_MATRIX:
 		case ACT_TEXTURE_VIEWPROJ_MATRIX_ARRAY:
 		case ACT_SPOTLIGHT_VIEWPROJ_MATRIX:
+		case ACT_SPOTLIGHT_VIEWPROJ_MATRIX_ARRAY:
 		case ACT_LIGHT_CUSTOM:
 
 			return (uint16)GPV_LIGHTS;
@@ -1668,7 +1670,7 @@ namespace Ogre
 				case ACT_VERTEX_WINDING:
 					{
 						RenderSystem* rsys = Root::getSingleton().getRenderSystem();
-						_writeRawConstant(i->physicalIndex, rsys->getVertexWindingInverted() ? -1.f : +1.f);
+						_writeRawConstant(i->physicalIndex, rsys->getInvertVertexWinding() ? -1.f : +1.f);
 					}
 					break;
 
@@ -1861,9 +1863,22 @@ namespace Ogre
 					_writeRawConstant(i->physicalIndex, source->getSpotlightWorldViewProjMatrix(i->data),i->elementCount);
 					break;
 				case ACT_LIGHT_POSITION_OBJECT_SPACE:
+					vec4 = source->getLightAs4DVector(i->data);
+					vec3 = Vector3(vec4.x, vec4.y, vec4.z);
+					if( vec4.w > 0.0f )
+					{
+						// point light
+						vec3 = source->getInverseWorldMatrix().transformAffine(vec3);
+					}
+					else
+					{
+						// directional light
+						// We need the inverse of the inverse transpose 
+						source->getInverseTransposeWorldMatrix().inverse().extract3x3Matrix(m3);
+						vec3 = (m3 * vec3).normalisedCopy();
+					}
 					_writeRawConstant(i->physicalIndex, 
-						source->getInverseWorldMatrix().transformAffine(
-						source->getLightAs4DVector(i->data)), 
+						Vector4(vec3.x, vec3.y, vec3.z, vec4.w),
 						i->elementCount);
 					break;
 				case ACT_LIGHT_DIRECTION_OBJECT_SPACE:
@@ -1879,11 +1894,26 @@ namespace Ogre
 					_writeRawConstant(i->physicalIndex, vec3.length());
 					break;
 				case ACT_LIGHT_POSITION_OBJECT_SPACE_ARRAY:
+					// We need the inverse of the inverse transpose 
+					source->getInverseTransposeWorldMatrix().inverse().extract3x3Matrix(m3);
 					for (size_t l = 0; l < i->data; ++l)
+					{
+						vec4 = source->getLightAs4DVector(l);
+						vec3 = Vector3(vec4.x, vec4.y, vec4.z);
+						if( vec4.w > 0.0f )
+						{
+							// point light
+							vec3 = source->getInverseWorldMatrix().transformAffine(vec3);
+						}
+						else
+						{
+							// directional light
+							vec3 = (m3 * vec3).normalisedCopy();
+						}
 						_writeRawConstant(i->physicalIndex + l*i->elementCount, 
-						source->getInverseWorldMatrix().transformAffine(
-						source->getLightAs4DVector(l)), 
-						i->elementCount);
+							Vector4(vec3.x, vec3.y, vec3.z, vec4.w),
+							i->elementCount);
+					}
 					break;
 
 				case ACT_LIGHT_DIRECTION_OBJECT_SPACE_ARRAY:
@@ -2162,6 +2192,15 @@ namespace Ogre
 				case ACT_SPOTLIGHT_VIEWPROJ_MATRIX:
 					_writeRawConstant(i->physicalIndex, source->getSpotlightViewProjMatrix(i->data),i->elementCount);
 					break;
+				case ACT_SPOTLIGHT_VIEWPROJ_MATRIX_ARRAY:
+					for (size_t l = 0; l < i->data; ++l)
+					{
+						// can also be updated in lights
+						_writeRawConstant(i->physicalIndex + l*i->elementCount, 
+										  source->getSpotlightViewProjMatrix(l),i->elementCount);
+					}
+					break;
+						
 				default:
 					break;
 				};

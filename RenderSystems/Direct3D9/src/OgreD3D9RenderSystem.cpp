@@ -111,7 +111,7 @@ namespace Ogre
 
 		mLastVertexSourceCount = 0;
 
-		mCurrentLights = 0;
+		mCurrentLights.clear();
 
 		// Enumerate events
 		mEventNames.push_back("DeviceLost");
@@ -778,6 +778,7 @@ namespace Ogre
 		rsc->setCapability(RSC_PERSTAGECONSTANT);
 		rsc->setCapability(RSC_HWSTENCIL);
 		rsc->setStencilBufferBitDepth(8);
+		rsc->setCapability(RSC_ADVANCED_BLEND_OPERATIONS);
 
 		for (uint i=0; i < mDeviceManager->getDeviceCount(); ++i)
 		{
@@ -908,6 +909,10 @@ namespace Ogre
 			// TODO: move this to RSC
 			if((rkCurCaps.PrimitiveMiscCaps & D3DPMISCCAPS_PERSTAGECONSTANT) == 0)
 				rsc->unsetCapability(RSC_PERSTAGECONSTANT);
+
+			// Advanced blend operations? min max subtract rev 
+			if((rkCurCaps.PrimitiveMiscCaps & D3DPMISCCAPS_BLENDOP) == 0)
+				rsc->unsetCapability(RSC_ADVANCED_BLEND_OPERATIONS);
 		}				
 									
 		// Blending between stages supported
@@ -1315,7 +1320,7 @@ namespace Ogre
 		if (caps->getRenderSystemName() != getName())
 		{
 			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support Direct3D9",
+				"Trying to initialize D3D9RenderSystem from RenderSystemCapabilities that do not support Direct3D9",
 				"D3D9RenderSystem::initialiseFromRenderSystemCapabilities");
 		}
 		if (caps->isShaderProfileSupported("hlsl"))
@@ -1532,6 +1537,7 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::_useLights(const LightList& lights, unsigned short limit)
 	{
+		IDirect3DDevice9* activeDevice = getActiveD3D9Device();
 		LightList::const_iterator i, iend;
 		iend = lights.end();
 		unsigned short num = 0;
@@ -1540,11 +1546,11 @@ namespace Ogre
 			setD3D9Light(num, *i);
 		}
 		// Disable extra lights
-		for (; num < mCurrentLights; ++num)
+		for (; num < mCurrentLights[activeDevice]; ++num)
 		{
 			setD3D9Light(num, NULL);
 		}
-		mCurrentLights = std::min(limit, static_cast<unsigned short>(lights.size()));
+		mCurrentLights[activeDevice] = std::min(limit, static_cast<unsigned short>(lights.size()));
 
 	}
 	//---------------------------------------------------------------------

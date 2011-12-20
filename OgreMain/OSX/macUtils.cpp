@@ -124,6 +124,6 @@ namespace Ogre {
     
     std::string macPluginPath()
 	{
-		return macBundlePath() + "/";// + "/Contents/Plugins/";
+		return macBundlePath() + "/Contents/Plugins/";
 	}
 }

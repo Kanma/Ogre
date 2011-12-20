@@ -373,17 +373,28 @@ namespace Ogre
 			<td>macAPICocoaUseNSView</td>
 			<td>bool "true" or "false"</td>
 			<td>"false"</td>
-			<td>On the Mac platform the most diffused method to embed ogre in a custom application is to use the IntefaceBuilder
+			<td>On the Mac platform the most diffused method to embed OGRE in a custom application is to use Interface Builder
 				and add to the interface an instance of OgreView.
 				The pointer to this instance is then used as "externalWindowHandle".
-				However, there are cases where you are NOT using the Interface Builder and you get the Cocoa NSView* of an existing interface.
+				However, there are cases where you are NOT using Interface Builder and you get the Cocoa NSView* of an existing interface.
 				For example, this is happens when you want to render into a Java/AWT interface.
 				In short, by setting this flag to "true" the Ogre::Root::createRenderWindow interprets the "externalWindowHandle" as a NSView*
 				instead of an OgreView*. See OgreOSXCocoaView.h/mm.
 			</td>
 			<td>&nbsp;</td>
 		 </tr>
-		<tr>
+         <tr>
+             <td>contentScalingFactor</td>
+             <td>Positive Float greater than 1.0</td>
+             <td>The default content scaling factor of the screen</td>
+             <td>Specifies the CAEAGLLayer content scaling factor.  Only supported on iOS 4 or greater.
+                 This can be useful to limit the resolution of the OpenGL ES backing store.  For example, the iPhone 4's
+                 native resolution is 960 x 640.  Windows are always 320 x 480, if you would like to limit the display
+                 to 720 x 480, specify 1.5 as the scaling factor.
+             </td>
+             <td>&nbsp;</td>
+		 </tr>
+         <tr>
 			<td>FSAA</td>
 			<td>Positive integer (usually 0, 2, 4, 8, 16)</td>
 			<td>0</td>
@@ -1142,10 +1153,6 @@ namespace Ogre
 		if _updateAllRenderTargets was called with a 'false' parameter. */
 		virtual void _swapAllRenderTargetBuffers(bool waitForVsync = true);
 
-		/** Gets whether or not vertex windings set should be inverted; this can be important
-		for rendering reflections. */
-		virtual bool getInvertVertexWinding(void);
-
 		/** Sets whether or not vertex windings set should be inverted; this can be important
 		for rendering reflections. */
 		virtual void setInvertVertexWinding(bool invert);
@@ -1153,7 +1160,7 @@ namespace Ogre
 		/** Indicates whether or not the vertex windings set will be inverted for the current render (e.g. reflections)
 		@see RenderSystem::setInvertVertexWinding
 		*/
-		virtual bool getVertexWindingInverted(void) const;
+		virtual bool getInvertVertexWinding(void) const;
 
 		/** Sets the 'scissor region' ie the region of the target in which rendering can take place.
 		@remarks

@@ -224,7 +224,6 @@ namespace Ogre {
         }
 
 	// Update the render system config
-#if OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
         RenderSystem* rs = Root::getSingleton().getRenderSystem();
         if(mOrientationMode == OR_LANDSCAPELEFT)
             rs->setConfigOption("Orientation", "Landscape Left");
@@ -232,7 +231,6 @@ namespace Ogre {
             rs->setConfigOption("Orientation", "Landscape Right");
         else if(mOrientationMode == OR_PORTRAIT)
             rs->setConfigOption("Orientation", "Portrait");
-#endif
     }
     //---------------------------------------------------------------------
     OrientationMode Viewport::getOrientationMode() const
@@ -275,10 +273,10 @@ namespace Ogre {
         return mBackColour;
     }
     //---------------------------------------------------------------------
-    void Viewport::setClearEveryFrame(bool clear, unsigned int buffers)
+    void Viewport::setClearEveryFrame(bool inClear, unsigned int inBuffers)
     {
-        mClearEveryFrame = clear;
-		mClearBuffers = buffers;
+        mClearEveryFrame = inClear;
+		mClearBuffers = inBuffers;
     }
     //---------------------------------------------------------------------
     bool Viewport::getClearEveryFrame(void) const
@@ -298,10 +296,14 @@ namespace Ogre {
 		if (rs)
 		{
 			Viewport* currentvp = rs->_getViewport();
-			rs->_setViewport(this);
-			rs->clearFrameBuffer(buffers, col, depth, stencil);
-			if (currentvp && currentvp != this)
+			if (currentvp && currentvp == this)
+				rs->clearFrameBuffer(buffers, col, depth, stencil);
+			else if (currentvp)
+			{
+				rs->_setViewport(this);
+				rs->clearFrameBuffer(buffers, col, depth, stencil);
 				rs->_setViewport(currentvp);
+			}
 		}
 	}
     //---------------------------------------------------------------------
@@ -338,9 +340,9 @@ namespace Ogre {
 		if(cam) mCamera->_notifyViewport(this);
     }
     //---------------------------------------------------------------------
-	void Viewport::setAutoUpdated(bool isAutoUpdated)
+	void Viewport::setAutoUpdated(bool inAutoUpdated)
 	{
-		mIsAutoUpdated = isAutoUpdated;
+		mIsAutoUpdated = inAutoUpdated;
 	}
 	//---------------------------------------------------------------------
 	bool Viewport::isAutoUpdated() const

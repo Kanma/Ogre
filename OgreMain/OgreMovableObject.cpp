@@ -246,8 +246,12 @@ namespace Ogre {
 			{
 				Real rad = getBoundingRadius();
 				Real squaredDepth = mParentNode->getSquaredViewDepth(cam->getLodCamera());
+
+				const Vector3& scl = mParentNode->_getDerivedScale();
+				Real factor = std::max(std::max(scl.x, scl.y), scl.z);
+
 				// Max distance to still render
-				Real maxDist = mUpperDistance + rad;
+				Real maxDist = mUpperDistance + rad * factor;
 				if (squaredDepth > Math::Sqr(maxDist))
 				{
 					mBeyondFarDistance = true;
@@ -286,7 +290,7 @@ namespace Ogre {
 	void MovableObject::setRenderQueueGroupAndPriority(uint8 queueID, ushort priority)
 	{
 		setRenderQueueGroup(queueID);
-		mRenderQueuePriority = queueID;
+		mRenderQueuePriority = priority;
 		mRenderQueuePrioritySet = true;
 
 	}
@@ -363,7 +367,10 @@ namespace Ogre {
             {
                 mLightListUpdated = frame;
 
-                sn->findLights(mLightList, this->getBoundingRadius(), this->getLightMask());
+				const Vector3& scl = mParentNode->_getDerivedScale();
+				Real factor = std::max(std::max(scl.x, scl.y), scl.z);
+
+                sn->findLights(mLightList, this->getBoundingRadius() * factor, this->getLightMask());
             }
         }
         else
@@ -377,7 +384,7 @@ namespace Ogre {
     ShadowCaster::ShadowRenderableListIterator MovableObject::getShadowVolumeRenderableIterator(
         ShadowTechnique shadowTechnique, const Light* light, 
         HardwareIndexBufferSharedPtr* indexBuffer, 
-        bool extrudeVertices, Real extrusionDist, unsigned long flags )
+        bool inExtrudeVertices, Real extrusionDist, unsigned long flags )
     {
         static ShadowRenderableList dummyList;
         return ShadowRenderableListIterator(dummyList.begin(), dummyList.end());

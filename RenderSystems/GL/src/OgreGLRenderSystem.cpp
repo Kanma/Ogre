@@ -156,7 +156,8 @@ namespace Ogre {
 		}
 		mRenderTargets.clear();
 
-		delete mGLSupport;
+        if(mGLSupport)
+            delete mGLSupport;
 	}
 
 	const String& GLRenderSystem::getName(void) const
@@ -568,15 +569,13 @@ namespace Ogre {
 			}
 			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
 		}
-		else
+
+		// Check GLSupport for PBuffer support
+		if(mGLSupport->supportsPBuffers())
 		{
-			// Check GLSupport for PBuffer support
-			if(mGLSupport->supportsPBuffers())
-			{
-				// Use PBuffers
-				rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
-				rsc->setCapability(RSC_PBUFFER);
-			}
+			// Use PBuffers
+			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
+			rsc->setCapability(RSC_PBUFFER);
 		}
 
 		// Point size
@@ -3172,7 +3171,7 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 		//  GL measures from the bottom, not the top
 		size_t targetHeight = mActiveRenderTarget->getHeight();
 		// Calculate the "lower-left" corner of the viewport
-		GLsizei w, h, x, y;
+        GLsizei x = 0, y = 0, w = 0, h = 0;
 
 		if (enabled)
 		{
@@ -3205,7 +3204,6 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 	void GLRenderSystem::clearFrameBuffer(unsigned int buffers, 
 		const ColourValue& colour, Real depth, unsigned short stencil)
 	{
-
 		bool colourMask = !mColourWrite[0] || !mColourWrite[1] 
 		|| !mColourWrite[2] || !mColourWrite[3]; 
 
@@ -3248,7 +3246,8 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 		}
 
 		// Sets the scissor box as same as viewport
-		GLint viewport[4], scissor[4];
+        GLint viewport[4] = { 0, 0, 0, 0 };
+        GLint scissor[4] = { 0, 0, 0, 0 };
 		glGetIntegerv(GL_VIEWPORT, viewport);
 		glGetIntegerv(GL_SCISSOR_BOX, scissor);
 		bool scissorBoxDifference =
@@ -3286,7 +3285,6 @@ GL_RGB_SCALE : GL_ALPHA_SCALE, 1);
 		{
 			glStencilMask(mStencilMask);
 		}
-
 	}
 	// ------------------------------------------------------------------
 	void GLRenderSystem::_makeProjectionMatrix(Real left, Real right, 

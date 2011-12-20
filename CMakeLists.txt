@@ -100,13 +100,6 @@ if (NOT DEFINED OGRE_BUILD_PLUGIN_CG)
 endif()
 
 
-# We only support Intel 32bits builds
-if (APPLE AND NOT DEFINED XMAKE_OSX_ARCHITECTURES)
-    set(XMAKE_OSX_ARCHITECTURES "i386" CACHE STRING "" FORCE)
-endif()
-set(CMAKE_OSX_ARCHITECTURES_DEFAULT "ppc" CACHE INTERNAL "" FORCE)  # XMake 2.1 does it the wrong way
-
-
 # Determine system endianess
 include(TestBigEndian)
 test_big_endian(OGRE_TEST_BIG_ENDIAN)
@@ -115,7 +108,7 @@ test_big_endian(OGRE_TEST_BIG_ENDIAN)
 # Ogre settings
 set(OGRE_VERSION_MAJOR 1)
 set(OGRE_VERSION_MINOR 7)
-set(OGRE_VERSION_PATCH 0)
+set(OGRE_VERSION_PATCH 3)
 set(OGRE_VERSION "${OGRE_VERSION_MAJOR}.${OGRE_VERSION_MINOR}.${OGRE_VERSION_PATCH}")
 
 set(OGRE_CONFIG_THREADS OFF)

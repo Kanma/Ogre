@@ -1344,23 +1344,6 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
 		// Lock scene graph mutex, no more changes until we're ready to render
 		OGRE_LOCK_MUTEX(sceneGraphMutex)
 
-		// Update scene graph for this camera (can happen multiple times per frame)
-		{
-			OgreProfileGroup("_updateSceneGraph", OGREPROF_GENERAL);
-			_updateSceneGraph(camera);
-
-			// Auto-track nodes
-			AutoTrackingSceneNodes::iterator atsni, atsniend;
-			atsniend = mAutoTrackingSceneNodes.end();
-			for (atsni = mAutoTrackingSceneNodes.begin(); atsni != atsniend; ++atsni)
-			{
-				(*atsni)->_autoTrack();
-			}
-			// Auto-track camera if required
-			camera->_autoTrack();
-		}
-
-
 		if (mIlluminationStage != IRS_RENDER_TO_TEXTURE && mFindVisibleObjects)
 		{
 			// Locate any lights which could be affecting the frustum
@@ -1389,6 +1372,22 @@ void SceneManager::_renderScene(Camera* camera, Viewport* vp, bool includeOverla
 					mCurrentViewport = vp;
 				}
 			}
+		}
+
+		// Update scene graph for this camera (can happen multiple times per frame)
+		{
+			OgreProfileGroup("_updateSceneGraph", OGREPROF_GENERAL);
+			_updateSceneGraph(camera);
+
+			// Auto-track nodes
+			AutoTrackingSceneNodes::iterator atsni, atsniend;
+			atsniend = mAutoTrackingSceneNodes.end();
+			for (atsni = mAutoTrackingSceneNodes.begin(); atsni != atsniend; ++atsni)
+			{
+				(*atsni)->_autoTrack();
+			}
+			// Auto-track camera if required
+			camera->_autoTrack();
 		}
 
 		// Invert vertex winding?
@@ -2201,7 +2200,7 @@ void SceneManager::_renderVisibleObjects(void)
 //-----------------------------------------------------------------------
 void SceneManager::renderVisibleObjectsCustomSequence(RenderQueueInvocationSequence* seq)
 {
-	firePostRenderQueues();
+	firePreRenderQueues();
 
 	RenderQueueInvocationIterator invocationIt = seq->iterator();
 	while (invocationIt.hasMoreElements())
@@ -3723,9 +3722,9 @@ void SceneManager::_applySceneAnimations(void)
         Animation::NumericTrackIterator numTrackIt = anim->getNumericTrackIterator();
         while(numTrackIt.hasMoreElements())
         {
-            const AnimableValuePtr& anim = numTrackIt.getNext()->getAssociatedAnimable();
-			if (!anim.isNull())
-				anim->resetToBaseValue();
+            const AnimableValuePtr& animPtr = numTrackIt.getNext()->getAssociatedAnimable();
+			if (!animPtr.isNull())
+				animPtr->resetToBaseValue();
         }
     }
 
@@ -3877,43 +3876,49 @@ void SceneManager::resetViewProjMode(bool fixedFunction)
 //---------------------------------------------------------------------
 void SceneManager::_queueSkiesForRendering(Camera* cam)
 {
-    // Update nodes
-    // Translate the box by the camera position (constant distance)
-    if (mSkyPlaneNode)
-    {
-        // The plane position relative to the camera has already been set up
-        mSkyPlaneNode->setPosition(cam->getDerivedPosition());
-    }
+	// Update nodes
+	// Translate the box by the camera position (constant distance)
+	if (mSkyPlaneNode)
+	{
+		// The plane position relative to the camera has already been set up
+		mSkyPlaneNode->setPosition(cam->getDerivedPosition());
+	}
 
-    if (mSkyBoxNode)
-    {
-        mSkyBoxNode->setPosition(cam->getDerivedPosition());
-    }
+	if (mSkyBoxNode)
+	{
+		mSkyBoxNode->setPosition(cam->getDerivedPosition());
+	}
 
-    if (mSkyDomeNode)
-    {
-        mSkyDomeNode->setPosition(cam->getDerivedPosition());
-    }
+	if (mSkyDomeNode)
+	{
+		mSkyDomeNode->setPosition(cam->getDerivedPosition());
+	}
 
-    if (mSkyPlaneEnabled)
-    {
-        getRenderQueue()->addRenderable(mSkyPlaneEntity->getSubEntity(0), mSkyPlaneRenderQueue, OGRE_RENDERABLE_DEFAULT_PRIORITY);
-    }
+	if (mSkyPlaneEnabled
+		&& mSkyPlaneEntity && mSkyPlaneEntity->isVisible()
+		&& mSkyPlaneEntity->getSubEntity(0) && mSkyPlaneEntity->getSubEntity(0)->isVisible())
+	{
+		getRenderQueue()->addRenderable(mSkyPlaneEntity->getSubEntity(0), mSkyPlaneRenderQueue, OGRE_RENDERABLE_DEFAULT_PRIORITY);
+	}
 
-    if (mSkyBoxEnabled)
-    {
+	if (mSkyBoxEnabled
+		&& mSkyBoxObj && mSkyBoxObj->isVisible())
+	{
 		mSkyBoxObj->_updateRenderQueue(getRenderQueue());
-    }
+	}
 
-	uint plane;
-    if (mSkyDomeEnabled)
-    {
-        for (plane = 0; plane < 5; ++plane)
-        {
-            getRenderQueue()->addRenderable(
-                mSkyDomeEntity[plane]->getSubEntity(0), mSkyDomeRenderQueue, OGRE_RENDERABLE_DEFAULT_PRIORITY);
-        }
-    }
+	if (mSkyDomeEnabled)
+	{
+		for (uint plane = 0; plane < 5; ++plane)
+		{
+			if (mSkyDomeEntity[plane] && mSkyDomeEntity[plane]->isVisible()
+				&& mSkyDomeEntity[plane]->getSubEntity(0) && mSkyDomeEntity[plane]->getSubEntity(0)->isVisible())
+			{
+				getRenderQueue()->addRenderable(
+					mSkyDomeEntity[plane]->getSubEntity(0), mSkyDomeRenderQueue, OGRE_RENDERABLE_DEFAULT_PRIORITY);
+			}
+		}
+	}
 }
 //---------------------------------------------------------------------
 void SceneManager::addRenderQueueListener(RenderQueueListener* newListener)
@@ -4983,10 +4988,10 @@ const Pass* SceneManager::deriveShadowReceiverPass(const Pass* pass)
 			{
 				// We didn't bind a receiver-specific program, so bind the original
 				retPass->setVertexProgram(pass->getVertexProgramName(), false);
-				const GpuProgramPtr& prg = retPass->getVertexProgram();
+				const GpuProgramPtr& prog = retPass->getVertexProgram();
 				// Load this program if required
-				if (!prg->isLoaded())
-					prg->load();
+				if (!prog->isLoaded())
+					prog->load();
 				// Copy params
 				retPass->setVertexProgramParameters(
 					pass->getVertexProgramParameters());
@@ -6880,10 +6885,17 @@ void SceneManager::useLightsGpuProgram(const Pass* pass, const LightList* lights
 //---------------------------------------------------------------------
 void SceneManager::bindGpuProgram(GpuProgram* prog)
 {
-	// need to reset the light hash, and paarams that need resetting, since program params will have been invalidated
-	mLastLightHashGpuProgram = 0;
+	// need to dirty the light hash, and paarams that need resetting, since program params will have been invalidated
+	// Use 1 to guarantee changing it (using 0 could result in no change if list is empty)
+	// Hash == 1 is almost impossible to achieve otherwise
+	mLastLightHashGpuProgram = 1;
 	mGpuParamsDirty = (uint16)GPV_ALL;
 	mDestRenderSystem->bindGpuProgram(prog);
+}
+//---------------------------------------------------------------------
+void SceneManager::_markGpuParamsDirty(uint16 mask)
+{
+	mGpuParamsDirty |= mask;
 }
 //---------------------------------------------------------------------
 void SceneManager::updateGpuProgramParameters(const Pass* pass)

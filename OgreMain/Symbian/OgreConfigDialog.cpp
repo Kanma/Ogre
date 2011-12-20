@@ -25,52 +25,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
+#include "OgreConfigDialog.h"
+#include "OgreException.h"
+#include "OgreLogManager.h"
 
-#include "OgreOSXCocoaView.h"
 
-@implementation OgreView
+namespace Ogre {
 
-- (id)initWithFrame:(NSRect)f
+ConfigDialog::ConfigDialog ()
 {
-	if((self = [super initWithFrame:f]))
-    {
-        NSApplicationLoad();
-        
-        window = 0;
-    }
-	return self;
 }
 
-- (id)initWithGLOSXWindow:(Ogre::RenderWindow*)w
+bool ConfigDialog::display(void)
 {
-	if((self = [super initWithFrame:NSMakeRect(0, 0, w->getWidth(), w->getHeight())]))
-    {
-        window = w;
-    }
-	return self;
+	if(Root::getSingleton().getRenderSystem() != NULL)
+	{
+		return true;
+	}
+
+	// just select the first available render system for now.
+	const RenderSystemList* lstRend;
+	RenderSystemList::const_iterator pRend;
+
+	lstRend = &Root::getSingleton().getAvailableRenderers();
+	pRend = lstRend->begin();            
+
+	while (pRend != lstRend->end())
+	{
+		Root::getSingleton().setRenderSystem((*pRend));
+
+		return true;
+	}
+
+
+
+	return false;
+
 }
 
-- (void)setOgreWindow:(Ogre::RenderWindow*)w
-{
-	window = w;
-}
 
-- (Ogre::RenderWindow*)ogreWindow
-{
-	return window;
 }
-
-- (void)setFrameSize:(NSSize)s
-{
-	[super setFrameSize:s];
-    if (window)
-        window->windowMovedOrResized();
-}
-
-- (void)drawRect:(NSRect)r
-{
-	if(window)
-		window->update();
-}
-
-@end

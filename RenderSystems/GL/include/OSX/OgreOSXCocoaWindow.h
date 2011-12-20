@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------
 This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+For the latest info, see http://www.ogre3d.org
 
 Copyright (c) 2000-2009 Torus Knot Software Ltd
 
@@ -34,28 +34,36 @@ THE SOFTWARE.
 
 #include <Cocoa/Cocoa.h>
 #include "OgreOSXCocoaView.h"
+#include "OgreOSXCGLContext.h"
+#include "OgreOSXCocoaWindowDelegate.h"
+
+@class OSXCocoaWindowDelegate;
 
 namespace Ogre {
     class OSXCocoaWindow : public OSXWindow
     {
     private:
-		NSWindow *mWindow;
-		NSView *mView;
-		NSOpenGLContext *glContext;
-		
+        NSWindow *mWindow;
+        NSView *mView;
+        NSOpenGLContext *mGLContext;
+        NSOpenGLPixelFormat *mGLPixelFormat;
+        OSXCGLContext* mCGLContext;
+        OSXCocoaWindowDelegate *mWindowDelegate;
+
         bool mActive;
         bool mClosed;
 		bool mHasResized;
-            
-        // Process pending events
-        void processEvents(void);
+        bool mIsExternal;
+        String mWindowTitle;
+        bool mUseNSView;
+
     public:
         OSXCocoaWindow();
         ~OSXCocoaWindow();
 		
 		NSView* ogreView() const { return mView; };
 		NSWindow* ogreWindow() const { return mWindow; };
-		NSOpenGLContext* nsopenGLContext() const { return glContext; };
+		NSOpenGLContext* nsopenGLContext() const { return mGLContext; };
 		void createWithView(OgreView *view);
 
 		void create(const String& name, unsigned int width, unsigned int height,
@@ -75,7 +83,11 @@ namespace Ogre {
         /** Overridden - see RenderWindow */
         virtual void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
         /** Overridden - see RenderWindow */
-		void windowMovedOrResized();
+		void windowMovedOrResized(void);
+		void windowResized(void);
+		void windowHasResized(void);
+		void createNewWindow(unsigned int width, unsigned int height, String title);
+        void createWindowFromExternal(NSView *viewRef);
 
 		bool requiresTextureFlipping() const { return false; }		
 		void getCustomAttribute( const String& name, void* pData );
