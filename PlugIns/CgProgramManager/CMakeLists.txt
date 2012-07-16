@@ -25,6 +25,10 @@ if (APPLE)
     include_directories(${OGRE_SOURCE_DIR}/include/Ogre/OSX)
 endif()
 
+if (WIN32)
+    link_directories(${OGRE_CG_PATH}/lib)
+endif()
+
 add_definitions(-D_USRDLL)
 
 if (APPLE)
@@ -50,7 +54,11 @@ else()
         set_target_properties(Plugin_CgProgramManager PROPERTIES INSTALL_RPATH "@loader_rpath/.")
         target_link_libraries(Plugin_CgProgramManager ${Cg_LIBRARIES})
     else()
-        configure_file(${OGRE_CG_PATH}/bin/cg.dll ${XMAKE_BINARY_DIR}/bin/cg.dll COPYONLY)
+        target_link_libraries(Plugin_CgProgramManager cg)
+
+        foreach (CONFIG ${CMAKE_CONFIGURATION_TYPES})
+            configure_file(${OGRE_CG_PATH}/bin/cg.dll ${XMAKE_BINARY_DIR}/bin/${CONFIG}/cg.dll COPYONLY)
+        endforeach()
     endif()
 endif()
 

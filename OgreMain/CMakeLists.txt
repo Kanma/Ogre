@@ -577,6 +577,12 @@ if (UNIX AND NOT APPLE)
     xmake_add_to_property(OGRE COMPILE_FLAGS "-msse")
 endif()
 
+if (WIN32)
+    xmake_add_to_property(OGRE LINK_FLAGS "/INCREMENTAL:NO")
+endif()
+
+xmake_disable_vs_warning(OGRE 4305 NO)
+
 xmake_project_link(OGRE FREEIMAGE FREETYPE ZZIPLIB)
 target_link_libraries(Ogre ${PLATFORM_LIBS})
 
