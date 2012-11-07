@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,16 +34,16 @@ THE SOFTWARE.
 #include "OgreTexture.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Effects
-	*  @{
-	*/
-	/** Class representing a Compositor object. Compositors provide the means 
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Effects
+    *  @{
+    */
+    /** Class representing a Compositor object. Compositors provide the means
         to flexibly "composite" the final rendering result from multiple scene renders
-        and intermediate operations like rendering fullscreen quads. This makes 
-        it possible to apply postfilter effects, HDRI postprocessing, and shadow 
+        and intermediate operations like rendering fullscreen quads. This makes
+        it possible to apply postfilter effects, HDRI postprocessing, and shadow
         effects to a Viewport.
      */
     class _OgreExport Compositor: public Resource
@@ -52,34 +52,34 @@ namespace Ogre {
         Compositor(ResourceManager* creator, const String& name, ResourceHandle handle,
             const String& group, bool isManual = false, ManualResourceLoader* loader = 0);
         ~Compositor();
-        
+
         /// Data types for internal lists
         typedef vector<CompositionTechnique *>::type Techniques;
         typedef VectorIterator<Techniques> TechniqueIterator;
-        
+
         /** Create a new technique, and return a pointer to it.
         */
         CompositionTechnique *createTechnique();
-        
+
         /** Remove a technique. It will also be destroyed.
         */
         void removeTechnique(size_t idx);
-        
+
         /** Get a technique.
         */
         CompositionTechnique *getTechnique(size_t idx);
-        
+
         /** Get the number of techniques.
         */
         size_t getNumTechniques();
-        
+
         /** Remove all techniques
         */
         void removeAllTechniques();
-        
+
         /** Get an iterator over the Techniques in this compositor. */
         TechniqueIterator getTechniqueIterator(void);
-        
+
         /** Get a supported technique.
         @remarks
             The supported technique list is only available after this compositor has been compiled,
@@ -87,7 +87,7 @@ namespace Ogre {
             an empty list, try calling Compositor::load.
         */
         CompositionTechnique *getSupportedTechnique(size_t idx);
-        
+
         /** Get the number of supported techniques.
         @remarks
             The supported technique list is only available after this compositor has been compiled,
@@ -95,8 +95,8 @@ namespace Ogre {
             an empty list, try calling Compositor::load.
         */
         size_t getNumSupportedTechniques();
-        
-        /** Gets an iterator over all the Techniques which are supported by the current card. 
+
+        /** Gets an iterator over all the Techniques which are supported by the current card.
         @remarks
             The supported technique list is only available after this compositor has been compiled,
             which typically happens on loading it. Therefore, if this method returns
@@ -104,36 +104,36 @@ namespace Ogre {
         */
         TechniqueIterator getSupportedTechniqueIterator(void);
 
-		/** Get a pointer to a supported technique for a given scheme. 
-		@remarks
-			If there is no specific supported technique with this scheme name, 
-			then the first supported technique with no specific scheme will be returned.
-		@param schemeName The scheme name you are looking for. Blank means to 
-			look for techniques with no scheme associated
-		*/
-		CompositionTechnique *getSupportedTechnique(const String& schemeName = StringUtil::BLANK);
+        /** Get a pointer to a supported technique for a given scheme.
+        @remarks
+            If there is no specific supported technique with this scheme name,
+            then the first supported technique with no specific scheme will be returned.
+        @param schemeName The scheme name you are looking for. Blank means to
+            look for techniques with no scheme associated
+        */
+        CompositionTechnique *getSupportedTechnique(const String& schemeName = StringUtil::BLANK);
 
-		/** Get the instance name for a global texture.
-		@param name The name of the texture in the original compositor definition
-		@param mrtIndex If name identifies a MRT, which texture attachment to retrieve
-		@returns The instance name for the texture, corresponds to a real texture
-		*/
-		const String& getTextureInstanceName(const String& name, size_t mrtIndex);
+        /** Get the instance name for a global texture.
+        @param name The name of the texture in the original compositor definition
+        @param mrtIndex If name identifies a MRT, which texture attachment to retrieve
+        @return The instance name for the texture, corresponds to a real texture
+        */
+        const String& getTextureInstanceName(const String& name, size_t mrtIndex);
 
-		/** Get the instance of a global texture.
-		@param name The name of the texture in the original compositor definition
-		@param mrtIndex If name identifies a MRT, which texture attachment to retrieve
-		@returns The texture pointer, corresponds to a real texture
-		*/
-		TexturePtr getTextureInstance(const String& name, size_t mrtIndex);
+        /** Get the instance of a global texture.
+        @param name The name of the texture in the original compositor definition
+        @param mrtIndex If name identifies a MRT, which texture attachment to retrieve
+        @return The texture pointer, corresponds to a real texture
+        */
+        TexturePtr getTextureInstance(const String& name, size_t mrtIndex);
 
-		/** Get the render target for a given render texture name. 
-		@remarks
-			You can use this to add listeners etc, but do not use it to update the
-			targets manually or any other modifications, the compositor instance 
-			is in charge of this.
-		*/
-		RenderTarget* getRenderTarget(const String& name);
+        /** Get the render target for a given render texture name.
+        @remarks
+            You can use this to add listeners etc, but do not use it to update the
+            targets manually or any other modifications, the compositor instance
+            is in charge of this.
+        */
+        RenderTarget* getRenderTarget(const String& name);
 
     protected:
         /// @copydoc Resource::loadImpl
@@ -143,48 +143,48 @@ namespace Ogre {
         void unloadImpl(void);
         /// @copydoc Resource::calculateSize
         size_t calculateSize(void) const;
-        
+
         /** Check supportedness of techniques.
          */
         void compile();
     private:
         Techniques mTechniques;
         Techniques mSupportedTechniques;
-        
+
         /// Compilation required
         /// This is set if the techniques change and the supportedness of techniques has to be
         /// re-evaluated.
         bool mCompilationRequired;
 
-		/** Create global rendertextures.
+        /** Create global rendertextures.
         */
         void createGlobalTextures();
-        
+
         /** Destroy global rendertextures.
         */
         void freeGlobalTextures();
 
-		//TODO GSOC : These typedefs are duplicated from CompositorInstance. Solve?
-		/// Map from name->local texture
+        //TODO GSOC : These typedefs are duplicated from CompositorInstance. Solve?
+        /// Map from name->local texture
         typedef map<String,TexturePtr>::type GlobalTextureMap;
         GlobalTextureMap mGlobalTextures;
-		/// Store a list of MRTs we've created
-		typedef map<String,MultiRenderTarget*>::type GlobalMRTMap;
-		GlobalMRTMap mGlobalMRTs;
+        /// Store a list of MRTs we've created
+        typedef map<String,MultiRenderTarget*>::type GlobalMRTMap;
+        GlobalMRTMap mGlobalMRTs;
     };
 
-    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to CompositorPtr 
+    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to CompositorPtr
     @note Has to be a subclass since we need operator=.
-    We could templatise this instead of repeating per Resource subclass, 
+    We could templatise this instead of repeating per Resource subclass,
     except to do so requires a form VC6 does not support i.e.
     ResourceSubclassPtr<T> : public SharedPtr<T>
     */
-    class _OgreExport CompositorPtr : public SharedPtr<Compositor> 
+    class _OgreExport CompositorPtr : public SharedPtr<Compositor>
     {
     public:
         CompositorPtr() : SharedPtr<Compositor>() {}
         explicit CompositorPtr(Compositor* rep) : SharedPtr<Compositor>(rep) {}
-        CompositorPtr(const CompositorPtr& r) : SharedPtr<Compositor>(r) {} 
+        CompositorPtr(const CompositorPtr& r) : SharedPtr<Compositor>(r) {}
         CompositorPtr(const ResourcePtr& r) : SharedPtr<Compositor>()
         {
             // lock & copy other mutex pointer
@@ -219,17 +219,17 @@ namespace Ogre {
                     ++(*pUseCount);
                 }
             }
-			else
-			{
-				// RHS must be a null pointer
-				assert(r.isNull() && "RHS must be null if it has no mutex!");
-				setNull();
-			}
+            else
+            {
+                // RHS must be a null pointer
+                assert(r.isNull() && "RHS must be null if it has no mutex!");
+                setNull();
+            }
             return *this;
         }
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 }
 
 #endif

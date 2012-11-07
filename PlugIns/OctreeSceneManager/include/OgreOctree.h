@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -86,7 +86,7 @@ public:
     */
     AxisAlignedBox mBox;
     WireBoundingBox* mWireBoundingBox;
-    
+
     /** Creates the wire frame bounding box for this octant
     */
     WireBoundingBox* getWireBoundingBox();
@@ -124,7 +124,7 @@ public:
     void _getCullBounds( AxisAlignedBox * ) const;
 
 
-	typedef list< OctreeNode * >::type NodeList;
+    typedef list< OctreeNode * >::type NodeList;
     /** Public list of SceneNodes attached to this particular octree
     */
     NodeList mNodes;

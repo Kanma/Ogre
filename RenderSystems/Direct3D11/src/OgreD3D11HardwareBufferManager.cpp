@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,7 +54,22 @@ namespace Ogre {
 	{
 		assert (numVerts > 0);
 		D3D11HardwareVertexBuffer* vbuf = new D3D11HardwareVertexBuffer(
-			this, vertexSize, numVerts, usage, mlpD3DDevice, false, useShadowBuffer);
+			this, vertexSize, numVerts, usage, mlpD3DDevice, false, useShadowBuffer, false);
+		{
+			OGRE_LOCK_MUTEX(mVertexBuffersMutex)
+				mVertexBuffers.insert(vbuf);
+		}
+		return HardwareVertexBufferSharedPtr(vbuf);
+	}
+	//-----------------------------------------------------------------------
+	HardwareVertexBufferSharedPtr 
+		D3D11HardwareBufferManagerBase::
+		createStreamOutputVertexBuffer(size_t vertexSize, size_t numVerts, HardwareBuffer::Usage usage,
+		bool useShadowBuffer)
+	{
+		assert (numVerts > 0);
+		D3D11HardwareVertexBuffer* vbuf = new D3D11HardwareVertexBuffer(
+			this, vertexSize, numVerts, usage, mlpD3DDevice, false, useShadowBuffer, true);
 		{
 			OGRE_LOCK_MUTEX(mVertexBuffersMutex)
 				mVertexBuffers.insert(vbuf);
@@ -98,7 +113,7 @@ namespace Ogre {
 	RenderToVertexBufferSharedPtr 
 		D3D11HardwareBufferManagerBase::createRenderToVertexBuffer()
 	{
-		return RenderToVertexBufferSharedPtr(new D3D11RenderToVertexBuffer());
+		return RenderToVertexBufferSharedPtr(new D3D11RenderToVertexBuffer(mlpD3DDevice, this));
 	}
 	//-----------------------------------------------------------------------
 	VertexDeclaration* D3D11HardwareBufferManagerBase::createVertexDeclarationImpl(void)

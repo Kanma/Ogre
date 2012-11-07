@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -63,12 +63,12 @@ namespace Ogre {
 
         if (paramIt->second == "vertex_program")
         {
-            return new D3D9GpuVertexProgram(this, name, handle, group, 
+            return OGRE_NEW D3D9GpuVertexProgram(this, name, handle, group, 
                 isManual, loader);
         }
         else
         {
-            return new D3D9GpuFragmentProgram(this, name, handle, group, 
+            return OGRE_NEW D3D9GpuFragmentProgram(this, name, handle, group, 
                 isManual, loader);
         }
     }
@@ -79,12 +79,12 @@ namespace Ogre {
     {
         if (gptype == GPT_VERTEX_PROGRAM)
         {
-            return new D3D9GpuVertexProgram(this, name, handle, group, 
+            return OGRE_NEW D3D9GpuVertexProgram(this, name, handle, group, 
                 isManual, loader);
         }
         else
         {
-            return new D3D9GpuFragmentProgram(this, name, handle, group, 
+            return OGRE_NEW D3D9GpuFragmentProgram(this, name, handle, group, 
                 isManual, loader);
         }
     }

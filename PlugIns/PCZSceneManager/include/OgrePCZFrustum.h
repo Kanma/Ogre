@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,23 +29,23 @@ OgrePCZFrustum.h  -  PCZ Supplemental Culling Frustum
 This isn't really a traditional "frustum", but more a collection of
 extra culling planes used by the PCZ Scene Manager for supplementing
 the camera culling and light zone culling by creating extra culling
-planes from visible portals.  Since portals are 4 sided, the extra 
-culling planes tend to form frustums (pyramids) but nothing in the 
+planes from visible portals.  Since portals are 4 sided, the extra
+culling planes tend to form frustums (pyramids) but nothing in the
 code really assumes that the culling planes are frustums.  They are
-just treated as planes.  
+just treated as planes.
 
 The "originPlane" is a culling plane which passes through the origin
 point specified.  It is used to cull portals which are close to, but
 behind the camera view.  (the nature of the culling routine doesn't
 give correct results if you just use the "near" plane of the standard
 camera frustum (unless that near plane distance is 0.0, but that is
-highly not recommended for other reasons having to do with having a 
+highly not recommended for other reasons having to do with having a
 legal view frustum).
 ---------------------------------------------------------------------------
 begin                : Mon May 29 2007
 author               : Eric Cha
 email                : ericc@xenopi.com
-Code Style Update	 :
+Code Style Update    :
 
 ---------------------------------------------------------------------------
 */
@@ -63,70 +63,70 @@ namespace Ogre
 
     typedef list< PCPlane * >::type PCPlaneList;
 
-    /** Specialized frustum shaped culling volume that has culling planes created from portals 
+    /** Specialized frustum shaped culling volume that has culling planes created from portals
     */
-    
-    class _OgrePCZPluginExport PCZFrustum 
+
+    class _OgrePCZPluginExport PCZFrustum
     {
     public:
         // visibility types
-		enum Visibility
-		{
-			NONE,
-			PARTIAL,
-			FULL
-		};
+        enum Visibility
+        {
+            NONE,
+            PARTIAL,
+            FULL
+        };
 
-		/** Standard constructor */
-		PCZFrustum();
-		/** Standard destructor */
-		~PCZFrustum();
+        /** Standard constructor */
+        PCZFrustum();
+        /** Standard destructor */
+        ~PCZFrustum();
 
-		/* isVisible function for aabb */
-		bool isVisible( const AxisAlignedBox &bound) const;
-		/* isVisible function for sphere */
-		bool isVisible( const Sphere &bound) const;
-		/* isVisible() function for portals */
-		bool isVisible(const PortalBase* portal) const;
-		/* special function that returns true only when aabb fully fits inside the frustum. */
-		bool isFullyVisible(const AxisAlignedBox& bound) const;
-		/* special function that returns true only when sphere fully fits inside the frustum. */
-		bool isFullyVisible(const Sphere& bound) const;
-		/* special function that returns true only when portal fully fits inside the frustum. */
-		bool isFullyVisible(const PortalBase* portal) const;
+        /* isVisible function for aabb */
+        bool isVisible( const AxisAlignedBox &bound) const;
+        /* isVisible function for sphere */
+        bool isVisible( const Sphere &bound) const;
+        /* isVisible() function for portals */
+        bool isVisible(const PortalBase* portal) const;
+        /* special function that returns true only when aabb fully fits inside the frustum. */
+        bool isFullyVisible(const AxisAlignedBox& bound) const;
+        /* special function that returns true only when sphere fully fits inside the frustum. */
+        bool isFullyVisible(const Sphere& bound) const;
+        /* special function that returns true only when portal fully fits inside the frustum. */
+        bool isFullyVisible(const PortalBase* portal) const;
         /* more detailed check for visibility of an AABB */
         PCZFrustum::Visibility getVisibility(const AxisAlignedBox & bound);
 
-		// calculate  culling planes from portal and Frustum 
-		// origin and add to list of  culling planes
-		int addPortalCullingPlanes(PortalBase* portal);
-		// remove  culling planes created from the given portal
-		void removePortalCullingPlanes(PortalBase* portal);
-		// remove all  culling planes
-		void removeAllCullingPlanes(void);
+        // calculate  culling planes from portal and Frustum
+        // origin and add to list of  culling planes
+        int addPortalCullingPlanes(PortalBase* portal);
+        // remove  culling planes created from the given portal
+        void removePortalCullingPlanes(PortalBase* portal);
+        // remove all  culling planes
+        void removeAllCullingPlanes(void);
         // set the origin value
         void setOrigin(const Vector3 & newOrigin) {mOrigin = newOrigin;}
         // set the origin plane
         void setOriginPlane(const Vector3 &rkNormal, const Vector3 &rkPoint);
         // tell the frustum whether or not to use the originplane
         void setUseOriginPlane(bool yesno) {mUseOriginPlane = yesno;}
-		// get an unused PCPlane from the CullingPlane Reservoir
-		PCPlane * getUnusedCullingPlane(void);
+        // get an unused PCPlane from the CullingPlane Reservoir
+        PCPlane * getUnusedCullingPlane(void);
 
-		/// Set the projection type of this PCZFrustum.
-		inline void setProjectionType(ProjectionType projType)
-		{ mProjType = projType; }
-		/// Get the projection type of this PCZFrustum.
-		inline ProjectionType getProjectionType() const
-		{ return mProjType; }
+        /// Set the projection type of this PCZFrustum.
+        inline void setProjectionType(ProjectionType projType)
+        { mProjType = projType; }
+        /// Get the projection type of this PCZFrustum.
+        inline ProjectionType getProjectionType() const
+        { return mProjType; }
 
     protected:
         Vector3     mOrigin;
         Plane       mOriginPlane;
         bool        mUseOriginPlane;
         PCPlaneList mActiveCullingPlanes;
-		PCPlaneList mCullingPlaneReservoir;
-		ProjectionType mProjType;
+        PCPlaneList mCullingPlaneReservoir;
+        ProjectionType mProjType;
 
     };
 

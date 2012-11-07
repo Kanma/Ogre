@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,13 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup LOD
-	*  @{
-	*/
-	/// Struct containing information about a lod change event for movable objects.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup LOD
+    *  @{
+    */
+    /// Struct containing information about a lod change event for movable objects.
     struct MovableObjectLodChangedEvent
     {
         /// The movable object whose level of detail has changed.
@@ -123,8 +123,8 @@ namespace Ogre {
         /**
         Called before a movable object's lod has changed.
         @remarks
-            Do not change the Ogre state from this method, 
-            instead return true and perform changes in 
+            Do not change the Ogre state from this method,
+            instead return true and perform changes in
             postqueueMovableObjectLodChanged.
         @return
             True to indicate the event should be queued and
@@ -146,13 +146,13 @@ namespace Ogre {
         /**
         Called before an entity's mesh lod has changed.
         @remarks
-            Do not change the Ogre state from this method, 
-            instead return true and perform changes in 
+            Do not change the Ogre state from this method,
+            instead return true and perform changes in
             postqueueEntityMeshLodChanged.
 
-            It is possible to change the event notification 
-            and even alter the newLodIndex field (possibly to 
-            prevent the lod from changing, or to skip an 
+            It is possible to change the event notification
+            and even alter the newLodIndex field (possibly to
+            prevent the lod from changing, or to skip an
             index).
         @return
             True to indicate the event should be queued and
@@ -174,13 +174,13 @@ namespace Ogre {
         /**
         Called before an entity's material lod has changed.
         @remarks
-            Do not change the Ogre state from this method, 
-            instead return true and perform changes in 
+            Do not change the Ogre state from this method,
+            instead return true and perform changes in
             postqueueMaterialLodChanged.
 
-            It is possible to change the event notification 
-            and even alter the newLodIndex field (possibly to 
-            prevent the lod from changing, or to skip an 
+            It is possible to change the event notification
+            and even alter the newLodIndex field (possibly to
+            prevent the lod from changing, or to skip an
             index).
         @return
             True to indicate the event should be queued and
@@ -200,8 +200,8 @@ namespace Ogre {
         { (void)evt; }
 
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 }
 
 #endif

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -68,7 +68,7 @@ namespace Ogre {
 
     GLTexture::~GLTexture()
     {
-        // have to call this here reather than in Resource destructor
+        // have to call this here rather than in Resource destructor
         // since calling virtual methods in base destructors causes crash
 		if (isLoaded())
 		{
@@ -92,6 +92,8 @@ namespace Ogre {
                 return GL_TEXTURE_3D;
             case TEX_TYPE_CUBE_MAP:
                 return GL_TEXTURE_CUBE_MAP;
+            case TEX_TYPE_2D_ARRAY:
+                return GL_TEXTURE_2D_ARRAY_EXT;
             default:
                 return 0;
         };
@@ -103,6 +105,11 @@ namespace Ogre {
 		if (!GLEW_VERSION_1_2 && mTextureType == TEX_TYPE_3D)
 			OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED, 
 				"3D Textures not supported before OpenGL 1.2", 
+				"GLTexture::createInternalResourcesImpl");
+
+		if (!GLEW_VERSION_2_0 && mTextureType == TEX_TYPE_2D_ARRAY)
+			OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED, 
+				"2D texture arrays not supported before OpenGL 2.0", 
 				"GLTexture::createInternalResourcesImpl");
 
 		// Convert to nearest power-of-two size if required
@@ -194,8 +201,9 @@ namespace Ogre {
 							width, height, 0, 
 							size, tmpdata);
 						break;
+					case TEX_TYPE_2D_ARRAY:
 					case TEX_TYPE_3D:
-						glCompressedTexImage3DARB(GL_TEXTURE_3D, mip, format,
+						glCompressedTexImage3DARB(getGLTextureTarget(), mip, format,
 							width, height, depth, 0, 
 							size, tmpdata);
 						break;
@@ -207,15 +215,18 @@ namespace Ogre {
 						}
 						break;
 				};
-				if(width>1)		width = width/2;
-				if(height>1)	height = height/2;
-				if(depth>1)		depth = depth/2;
+				if(width>1)
+                    width = width/2;
+				if(height>1)
+                    height = height/2;
+				if(depth>1 && mTextureType != TEX_TYPE_2D_ARRAY)
+                    depth = depth/2;
 			}
 			delete [] tmpdata;
 		}
 		else
 		{
-			// Run through this process to pregenerate mipmap piramid
+			// Run through this process to pregenerate mipmap pyramid
 			for(size_t mip=0; mip<=mNumMipmaps; mip++)
 			{
 				// Normal formats
@@ -232,8 +243,9 @@ namespace Ogre {
 							width, height, 0, 
 							GL_RGBA, GL_UNSIGNED_BYTE, 0);
 						break;
+					case TEX_TYPE_2D_ARRAY:
 					case TEX_TYPE_3D:
-						glTexImage3D(GL_TEXTURE_3D, mip, format,
+						glTexImage3D(getGLTextureTarget(), mip, format,
 							width, height, depth, 0, 
 							GL_RGBA, GL_UNSIGNED_BYTE, 0);
 						break;
@@ -245,9 +257,12 @@ namespace Ogre {
 						}
 						break;
 				};
-				if(width>1)		width = width/2;
-				if(height>1)	height = height/2;
-				if(depth>1)		depth = depth/2;
+				if(width>1)
+                    width = width/2;
+				if(height>1)
+                    height = height/2;
+				if(depth>1 && mTextureType != TEX_TYPE_2D_ARRAY)
+                    depth = depth/2;
 			}
 		}
 		_createSurfaceList();
@@ -258,7 +273,7 @@ namespace Ogre {
     void GLTexture::createRenderTexture(void)
     {
         // Create the GL texture
-		// This already does everything neccessary
+		// This already does everything necessary
         createInternalResources();
     }
 
@@ -291,17 +306,16 @@ namespace Ogre {
         LoadedImages loadedImages = LoadedImages(new vector<Image>::type());
 
         if(mTextureType == TEX_TYPE_1D || mTextureType == TEX_TYPE_2D || 
-            mTextureType == TEX_TYPE_3D)
+             mTextureType == TEX_TYPE_2D_ARRAY || mTextureType == TEX_TYPE_3D)
         {
 
             do_image_io(mName, mGroup, ext, *loadedImages, this);
-
 
             // If this is a cube map, set the texture type flag accordingly.
             if ((*loadedImages)[0].hasFlag(IF_CUBEMAP))
                 mTextureType = TEX_TYPE_CUBE_MAP;
             // If this is a volumetric texture set the texture type flag accordingly.
-            if((*loadedImages)[0].getDepth() > 1)
+            if((*loadedImages)[0].getDepth() > 1 && mTextureType != TEX_TYPE_2D_ARRAY)
                 mTextureType = TEX_TYPE_3D;
 
         }

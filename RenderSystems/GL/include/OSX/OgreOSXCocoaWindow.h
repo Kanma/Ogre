@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,34 +29,40 @@ THE SOFTWARE.
 #ifndef __OSXCocoaWindow_H__
 #define __OSXCocoaWindow_H__
 
-#include "OgreOSXWindow.h"
 #include "OgreOSXCocoaContext.h"
 
 #include <Cocoa/Cocoa.h>
 #include "OgreOSXCocoaView.h"
-#include "OgreOSXCGLContext.h"
 #include "OgreOSXCocoaWindowDelegate.h"
 
 @class OSXCocoaWindowDelegate;
 
+@interface OgreWindow : NSWindow
+
+@end
+
 namespace Ogre {
-    class OSXCocoaWindow : public OSXWindow
+    class _OgreGLExport OSXCocoaWindow : public RenderWindow
     {
     private:
         NSWindow *mWindow;
         NSView *mView;
         NSOpenGLContext *mGLContext;
         NSOpenGLPixelFormat *mGLPixelFormat;
-        OSXCGLContext* mCGLContext;
+        NSPoint mWindowOrigin;
         OSXCocoaWindowDelegate *mWindowDelegate;
+        OSXCocoaContext* mContext;
 
         bool mActive;
         bool mClosed;
+        bool mHidden;
+        bool mVSync;
 		bool mHasResized;
         bool mIsExternal;
         String mWindowTitle;
         bool mUseNSView;
 
+        void _setWindowParameters(void);
     public:
         OSXCocoaWindow();
         ~OSXCocoaWindow();
@@ -64,6 +70,7 @@ namespace Ogre {
 		NSView* ogreView() const { return mView; };
 		NSWindow* ogreWindow() const { return mWindow; };
 		NSOpenGLContext* nsopenGLContext() const { return mGLContext; };
+		NSOpenGLPixelFormat* nsopenGLPixelFormat() const { return mGLPixelFormat; };
 		void createWithView(OgreView *view);
 
 		void create(const String& name, unsigned int width, unsigned int height,
@@ -74,12 +81,22 @@ namespace Ogre {
         bool isActive(void) const;
         /** Overridden - see RenderWindow */
         bool isClosed(void) const;
+        /** @copydoc see RenderWindow::isHidden */
+        bool isHidden(void) const { return mHidden; }
+        /** @copydoc see RenderWindow::setHidden */
+        void setHidden(bool hidden);
+        /** @copydoc see RenderWindow::setVSyncEnabled */
+        void setVSyncEnabled(bool vsync);
+        /** @copydoc see RenderWindow::isVSyncEnabled */
+        bool isVSyncEnabled() const;
         /** Overridden - see RenderWindow */
         void reposition(int left, int top);
         /** Overridden - see RenderWindow */
         void resize(unsigned int width, unsigned int height);
         /** Overridden - see RenderWindow */
         void swapBuffers(bool waitForVSync);
+        /** Overridden - see RenderTarget */
+        virtual void copyContentsToMemory(const PixelBox &dst, FrameBuffer buffer);
         /** Overridden - see RenderWindow */
         virtual void setFullscreen(bool fullScreen, unsigned int width, unsigned int height);
         /** Overridden - see RenderWindow */

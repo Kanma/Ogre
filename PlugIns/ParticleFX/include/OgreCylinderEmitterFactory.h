@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ namespace Ogre {
 
     /** Factory class for particle emitter of type "Cylinder".
     @remarks
-        Creates instances of CylinderEmitter to be used in particle systems. 
+        Creates instances of CylinderEmitter to be used in particle systems.
     */
     class _OgreParticleFXExport CylinderEmitterFactory : public ParticleEmitterFactory
     {
@@ -47,12 +47,12 @@ namespace Ogre {
     public:
         /** See ParticleEmitterFactory */
         String getName() const
-        { 
-            return "Cylinder"; 
+        {
+            return "Cylinder";
         }
 
         /** See ParticleEmitterFactory */
-        ParticleEmitter* createEmitter(ParticleSystem* psys) 
+        ParticleEmitter* createEmitter(ParticleSystem* psys)
         {
             ParticleEmitter* emit = OGRE_NEW CylinderEmitter(psys);
             mEmitters.push_back(emit);

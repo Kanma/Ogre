@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,7 @@ namespace Ogre {
                 "The percentage of particles which is affected.",
                 PT_REAL), &msScopeCmd);
             dict->addParameter(ParameterDef("keep_velocity",
-                "Detemines whether the velocity of the particles is changed.",
+                "Determines whether the velocity of the particles is changed.",
                 PT_BOOL), &msKeepVelocityCmd);
         }
     }

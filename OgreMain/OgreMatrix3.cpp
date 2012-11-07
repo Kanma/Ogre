@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,20 +37,20 @@ namespace Ogre
     const Real Matrix3::EPSILON = 1e-06;
     const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);
     const Matrix3 Matrix3::IDENTITY(1,0,0,0,1,0,0,0,1);
-    const Real Matrix3::ms_fSvdEpsilon = 1e-04;
-    const unsigned int Matrix3::ms_iSvdMaxIterations = 32;
+    const Real Matrix3::msSvdEpsilon = 1e-04;
+    const unsigned int Matrix3::msSvdMaxIterations = 32;
 
     //-----------------------------------------------------------------------
     Vector3 Matrix3::GetColumn (size_t iCol) const
     {
-        assert( 0 <= iCol && iCol < 3 );
+        assert( iCol < 3 );
         return Vector3(m[0][iCol],m[1][iCol],
             m[2][iCol]);
     }
     //-----------------------------------------------------------------------
     void Matrix3::SetColumn(size_t iCol, const Vector3& vec)
     {
-        assert( 0 <= iCol && iCol < 3 );
+        assert( iCol < 3 );
         m[0][iCol] = vec.x;
         m[1][iCol] = vec.y;
         m[2][iCol] = vec.z;
@@ -391,7 +391,7 @@ namespace Ogre
         Real fY = kA[0][0] - (Math::Abs(fRoot1-fT22) <=
             Math::Abs(fRoot2-fT22) ? fRoot1 : fRoot2);
         Real fZ = kA[0][1];
-		Real fInvLength = Math::InvSqrt(fY*fY+fZ*fZ);
+        Real fInvLength = Math::InvSqrt(fY*fY+fZ*fZ);
         Real fSin = fZ*fInvLength;
         Real fCos = -fY*fInvLength;
 
@@ -485,21 +485,21 @@ namespace Ogre
     {
         // temas: currently unused
         //const int iMax = 16;
-		size_t iRow, iCol;
+        size_t iRow, iCol;
 
         Matrix3 kA = *this;
         Bidiagonalize(kA,kL,kR);
 
-        for (unsigned int i = 0; i < ms_iSvdMaxIterations; i++)
+        for (unsigned int i = 0; i < msSvdMaxIterations; i++)
         {
             Real fTmp, fTmp0, fTmp1;
             Real fSin0, fCos0, fTan0;
             Real fSin1, fCos1, fTan1;
 
             bool bTest1 = (Math::Abs(kA[0][1]) <=
-                ms_fSvdEpsilon*(Math::Abs(kA[0][0])+Math::Abs(kA[1][1])));
+                msSvdEpsilon*(Math::Abs(kA[0][0])+Math::Abs(kA[1][1])));
             bool bTest2 = (Math::Abs(kA[1][2]) <=
-                ms_fSvdEpsilon*(Math::Abs(kA[1][1])+Math::Abs(kA[2][2])));
+                msSvdEpsilon*(Math::Abs(kA[1][1])+Math::Abs(kA[2][2])));
             if ( bTest1 )
             {
                 if ( bTest2 )
@@ -722,9 +722,9 @@ namespace Ogre
         // U stores the entries U[0] = u01, U[1] = u02, U[2] = u12
 
         // build orthogonal matrix Q
-        Real fInvLength = Math::InvSqrt(m[0][0]*m[0][0]
-            + m[1][0]*m[1][0] +
-            m[2][0]*m[2][0]);
+        Real fInvLength = m[0][0]*m[0][0] + m[1][0]*m[1][0] + m[2][0]*m[2][0];
+        if (!Ogre::Math::RealEqual(fInvLength,0)) fInvLength = Math::InvSqrt(fInvLength);
+
         kQ[0][0] = m[0][0]*fInvLength;
         kQ[1][0] = m[1][0]*fInvLength;
         kQ[2][0] = m[2][0]*fInvLength;
@@ -734,8 +734,9 @@ namespace Ogre
         kQ[0][1] = m[0][1]-fDot*kQ[0][0];
         kQ[1][1] = m[1][1]-fDot*kQ[1][0];
         kQ[2][1] = m[2][1]-fDot*kQ[2][0];
-        fInvLength = Math::InvSqrt(kQ[0][1]*kQ[0][1] + kQ[1][1]*kQ[1][1] +
-            kQ[2][1]*kQ[2][1]);
+        fInvLength = kQ[0][1]*kQ[0][1] + kQ[1][1]*kQ[1][1] + kQ[2][1]*kQ[2][1];
+        if (!Ogre::Math::RealEqual(fInvLength,0)) fInvLength = Math::InvSqrt(fInvLength);
+
         kQ[0][1] *= fInvLength;
         kQ[1][1] *= fInvLength;
         kQ[2][1] *= fInvLength;
@@ -750,8 +751,9 @@ namespace Ogre
         kQ[0][2] -= fDot*kQ[0][1];
         kQ[1][2] -= fDot*kQ[1][1];
         kQ[2][2] -= fDot*kQ[2][1];
-        fInvLength = Math::InvSqrt(kQ[0][2]*kQ[0][2] + kQ[1][2]*kQ[1][2] +
-            kQ[2][2]*kQ[2][2]);
+        fInvLength = kQ[0][2]*kQ[0][2] + kQ[1][2]*kQ[1][2] + kQ[2][2]*kQ[2][2];
+        if (!Ogre::Math::RealEqual(fInvLength,0)) fInvLength = Math::InvSqrt(fInvLength);
+
         kQ[0][2] *= fInvLength;
         kQ[1][2] *= fInvLength;
         kQ[2][2] *= fInvLength;
@@ -880,7 +882,7 @@ namespace Ogre
         return fNorm;
     }
     //-----------------------------------------------------------------------
-    void Matrix3::ToAxisAngle (Vector3& rkAxis, Radian& rfRadians) const
+    void Matrix3::ToAngleAxis (Vector3& rkAxis, Radian& rfRadians) const
     {
         // Let (x,y,z) be the unit-length axis and let A be an angle of rotation.
         // The rotation matrix is R = I + sin(A)*P + (1-cos(A))*P^2 where
@@ -977,7 +979,7 @@ namespace Ogre
         }
     }
     //-----------------------------------------------------------------------
-    void Matrix3::FromAxisAngle (const Vector3& rkAxis, const Radian& fRadians)
+    void Matrix3::FromAngleAxis (const Vector3& rkAxis, const Radian& fRadians)
     {
         Real fCos = Math::Cos(fRadians);
         Real fSin = Math::Sin(fRadians);

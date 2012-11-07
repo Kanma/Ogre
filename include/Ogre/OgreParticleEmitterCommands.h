@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,22 +33,22 @@ THE SOFTWARE.
 
 namespace Ogre  {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Effects
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Effects
+    *  @{
+    */
 
     namespace EmitterCommands {
-        /// Command object for ParticleEmitter  - see ParamCommand 
+        /// Command object for ParticleEmitter  - see ParamCommand
         class _OgreExport CmdAngle : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdColour : public ParamCommand
         {
         public:
@@ -56,14 +56,14 @@ namespace Ogre  {
             void doSet(void* target, const String& val);
         };
 
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdColourRangeStart : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdColourRangeEnd : public ParamCommand
         {
         public:
@@ -71,7 +71,7 @@ namespace Ogre  {
             void doSet(void* target, const String& val);
         };
 
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdDirection : public ParamCommand
         {
         public:
@@ -79,105 +79,113 @@ namespace Ogre  {
             void doSet(void* target, const String& val);
         };
 
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
+        class _OgreExport CmdUp : public ParamCommand
+        {
+        public:
+            String doGet(const void* target) const;
+            void doSet(void* target, const String& val);
+        };
+
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdEmissionRate : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdVelocity : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdMinVelocity : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdMaxVelocity : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdTTL : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdMinTTL : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdMaxTTL : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdPosition : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdDuration : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdMinDuration : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdMaxDuration : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdRepeatDelay : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdMinRepeatDelay : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdMaxRepeatDelay : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-		/// Command object for particle emitter  - see ParamCommand
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdName : public ParamCommand
         {
         public:
@@ -185,7 +193,7 @@ namespace Ogre  {
             void doSet(void* target, const String& val);
         };
 
-		/// Command object for particle emitter  - see ParamCommand 
+        /// Command object for particle emitter  - see ParamCommand
         class _OgreExport CmdEmittedEmitter : public ParamCommand
         {
         public:
@@ -194,8 +202,8 @@ namespace Ogre  {
         };
 
     }
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

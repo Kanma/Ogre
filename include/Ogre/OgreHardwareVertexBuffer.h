@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,38 +35,49 @@ THE SOFTWARE.
 #include "OgreColourValue.h"
 
 namespace Ogre {
-	class HardwareBufferManagerBase;
+    class HardwareBufferManagerBase;
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-	/** Specialisation of HardwareBuffer for a vertex buffer. */
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup RenderSystem
+    *  @{
+    */
+    /** Specialisation of HardwareBuffer for a vertex buffer. */
     class _OgreExport HardwareVertexBuffer : public HardwareBuffer
     {
-	    protected:
+        protected:
 
-			HardwareBufferManagerBase* mMgr;
-		    size_t mNumVertices;
+            HardwareBufferManagerBase* mMgr;
+            size_t mNumVertices;
             size_t mVertexSize;
+            bool mIsInstanceData;
+            size_t mInstanceDataStepRate;
+            /// Checks if vertex instance data is supported by the render system
+            virtual bool checkIfVertexInstanceDataIsSupported();
 
-	    public:
-		    /// Should be called by HardwareBufferManager
-		    HardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices,
+        public:
+            /// Should be called by HardwareBufferManager
+            HardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices,
                 HardwareBuffer::Usage usage, bool useSystemMemory, bool useShadowBuffer);
             ~HardwareVertexBuffer();
-			/// Return the manager of this buffer, if any
-			HardwareBufferManagerBase* getManager() const { return mMgr; }
+            /// Return the manager of this buffer, if any
+            HardwareBufferManagerBase* getManager() const { return mMgr; }
             /// Gets the size in bytes of a single vertex in this buffer
             size_t getVertexSize(void) const { return mVertexSize; }
             /// Get the number of vertices in this buffer
             size_t getNumVertices(void) const { return mNumVertices; }
+            /// Get if this vertex buffer is an "instance data" buffer (per instance)
+            bool getIsInstanceData() const { return mIsInstanceData; }
+            /// Set if this vertex buffer is an "instance data" buffer (per instance)
+            void setIsInstanceData(const bool val);
+            /// Get the number of instances to draw using the same per-instance data before advancing in the buffer by one element.
+            size_t getInstanceDataStepRate() const;
+            /// Set the number of instances to draw using the same per-instance data before advancing in the buffer by one element.
+            void setInstanceDataStepRate(const size_t val);
 
 
-
-		    // NB subclasses should override lock, unlock, readData, writeData
+            // NB subclasses should override lock, unlock, readData, writeData
 
     };
 
@@ -81,27 +92,28 @@ namespace Ogre {
     };
 
     /// Vertex element semantics, used to identify the meaning of vertex buffer contents
-	enum VertexElementSemantic {
-		/// Position, 3 reals per vertex
-		VES_POSITION = 1,
-		/// Blending weights
-		VES_BLEND_WEIGHTS = 2,
+    enum VertexElementSemantic {
+        /// Position, 3 reals per vertex
+        VES_POSITION = 1,
+        /// Blending weights
+        VES_BLEND_WEIGHTS = 2,
         /// Blending indices
         VES_BLEND_INDICES = 3,
-		/// Normal, 3 reals per vertex
-		VES_NORMAL = 4,
-		/// Diffuse colours
-		VES_DIFFUSE = 5,
-		/// Specular colours
-		VES_SPECULAR = 6,
-		/// Texture coordinates
-		VES_TEXTURE_COORDINATES = 7,
+        /// Normal, 3 reals per vertex
+        VES_NORMAL = 4,
+        /// Diffuse colours
+        VES_DIFFUSE = 5,
+        /// Specular colours
+        VES_SPECULAR = 6,
+        /// Texture coordinates
+        VES_TEXTURE_COORDINATES = 7,
         /// Binormal (Y axis if normal is Z)
         VES_BINORMAL = 8,
         /// Tangent (X axis if normal is Z)
-        VES_TANGENT = 9
-
-	};
+        VES_TANGENT = 9,
+        /// The  number of VertexElementSemantic elements (note - the first value VES_POSITION is 1)
+        VES_COUNT = 9
+    };
 
     /// Vertex element type, used to identify the base types of the vertex contents
     enum VertexElementType
@@ -111,11 +123,11 @@ namespace Ogre {
         VET_FLOAT3 = 2,
         VET_FLOAT4 = 3,
         /// alias to more specific colour type - use the current rendersystem's colour packing
-		VET_COLOUR = 4,
-		VET_SHORT1 = 5,
-		VET_SHORT2 = 6,
-		VET_SHORT3 = 7,
-		VET_SHORT4 = 8,
+        VET_COLOUR = 4,
+        VET_SHORT1 = 5,
+        VET_SHORT2 = 6,
+        VET_SHORT3 = 7,
+        VET_SHORT4 = 8,
         VET_UBYTE4 = 9,
         /// D3D style compact colour
         VET_COLOUR_ARGB = 10,
@@ -132,7 +144,7 @@ namespace Ogre {
         define the semantics (position, normal etc), the VertexElement
         class does.
     */
-	class _OgreExport VertexElement : public VertexDataAlloc
+    class _OgreExport VertexElement : public VertexDataAlloc
     {
     protected:
         /// The source vertex buffer, as bound to an index using VertexBufferBinding
@@ -146,8 +158,8 @@ namespace Ogre {
         /// Index of the item, only applicable for some elements like texture coords
         unsigned short mIndex;
     public:
-		/// Constructor, should not be called directly, only needed because of list
-		VertexElement() {}
+        /// Constructor, should not be called directly, only needed because of list
+        VertexElement() {}
         /// Constructor, should not be called directly, call VertexDeclaration::addElement
         VertexElement(unsigned short source, size_t offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
@@ -161,40 +173,40 @@ namespace Ogre {
         VertexElementSemantic getSemantic(void) const { return mSemantic; }
         /// Gets the index of this element, only applicable for repeating elements
         unsigned short getIndex(void) const { return mIndex; }
-		/// Gets the size of this element in bytes
-		size_t getSize(void) const;
-		/// Utility method for helping to calculate offsets
-		static size_t getTypeSize(VertexElementType etype);
-		/// Utility method which returns the count of values in a given type
-		static unsigned short getTypeCount(VertexElementType etype);
-		/** Simple converter function which will turn a single-value type into a
-			multi-value type based on a parameter.
-		*/
-		static VertexElementType multiplyTypeCount(VertexElementType baseType, unsigned short count);
-		/** Simple converter function which will a type into it's single-value
-			equivalent - makes switches on type easier.
-		*/
-		static VertexElementType getBaseType(VertexElementType multiType);
+        /// Gets the size of this element in bytes
+        size_t getSize(void) const;
+        /// Utility method for helping to calculate offsets
+        static size_t getTypeSize(VertexElementType etype);
+        /// Utility method which returns the count of values in a given type
+        static unsigned short getTypeCount(VertexElementType etype);
+        /** Simple converter function which will turn a single-value type into a
+            multi-value type based on a parameter.
+        */
+        static VertexElementType multiplyTypeCount(VertexElementType baseType, unsigned short count);
+        /** Simple converter function which will a type into it's single-value
+            equivalent - makes switches on type easier.
+        */
+        static VertexElementType getBaseType(VertexElementType multiType);
 
-		/** Utility method for converting colour from
-			one packed 32-bit colour type to another.
-		@param srcType The source type
-		@param dstType The destination type
-		@param ptr Read / write value to change
-		*/
-		static void convertColourValue(VertexElementType srcType,
-			VertexElementType dstType, uint32* ptr);
+        /** Utility method for converting colour from
+            one packed 32-bit colour type to another.
+        @param srcType The source type
+        @param dstType The destination type
+        @param ptr Read / write value to change
+        */
+        static void convertColourValue(VertexElementType srcType,
+            VertexElementType dstType, uint32* ptr);
 
-		/** Utility method for converting colour to
-			a packed 32-bit colour type.
-		@param src source colour
-		@param dst The destination type
-		*/
-		static uint32 convertColourValue(const ColourValue& src,
-			VertexElementType dst);
+        /** Utility method for converting colour to
+            a packed 32-bit colour type.
+        @param src source colour
+        @param dst The destination type
+        */
+        static uint32 convertColourValue(const ColourValue& src,
+            VertexElementType dst);
 
-		/** Utility method to get the most appropriate packed colour vertex element format. */
-		static VertexElementType getBestColourVertexElementType(void);
+        /** Utility method to get the most appropriate packed colour vertex element format. */
+        static VertexElementType getBestColourVertexElementType(void);
 
         inline bool operator== (const VertexElement& rhs) const
         {
@@ -220,7 +232,7 @@ namespace Ogre {
             // The only way we can do this is to cast to char* in order to use byte offset
             // then cast back to void*.
             *pElem = static_cast<void*>(
-            	static_cast<unsigned char*>(pBase) + mOffset);
+                static_cast<unsigned char*>(pBase) + mOffset);
         }
         /** Adjusts a pointer to the base of a vertex to point at this element.
         @remarks
@@ -273,39 +285,39 @@ namespace Ogre {
         */
         inline void baseVertexPointerToElement(void* pBase, unsigned short** pElem) const
         {
-			*pElem = static_cast<unsigned short*>(
-				static_cast<void*>(
-					static_cast<unsigned char*>(pBase) + mOffset));
+            *pElem = static_cast<unsigned short*>(
+                static_cast<void*>(
+                    static_cast<unsigned char*>(pBase) + mOffset));
         }
 
 
     };
     /** This class declares the format of a set of vertex inputs, which
         can be issued to the rendering API through a RenderOperation.
-	@remarks
-	You should be aware that the ordering and structure of the
-	VertexDeclaration can be very important on DirectX with older
-	cards,so if you want to maintain maximum compatibility with
-	all render systems and all cards you should be careful to follow these
-	rules:<ol>
-	<li>VertexElements should be added in the following order, and the order of the
-	elements within a shared buffer should be as follows:
-	position, blending weights, normals, diffuse colours, specular colours,
+    @remarks
+    You should be aware that the ordering and structure of the
+    VertexDeclaration can be very important on DirectX with older
+    cards,so if you want to maintain maximum compatibility with
+    all render systems and all cards you should be careful to follow these
+    rules:<ol>
+    <li>VertexElements should be added in the following order, and the order of the
+    elements within a shared buffer should be as follows:
+    position, blending weights, normals, diffuse colours, specular colours,
             texture coordinates (in order, with no gaps)</li>
-	<li>You must not have unused gaps in your buffers which are not referenced
-	by any VertexElement</li>
-	<li>You must not cause the buffer & offset settings of 2 VertexElements to overlap</li>
-	</ol>
-	Whilst GL and more modern graphics cards in D3D will allow you to defy these rules,
-	sticking to them will ensure that your buffers have the maximum compatibility.
-	@par
-	Like the other classes in this functional area, these declarations should be created and
-	destroyed using the HardwareBufferManager.
+    <li>You must not have unused gaps in your buffers which are not referenced
+    by any VertexElement</li>
+    <li>You must not cause the buffer & offset settings of 2 VertexElements to overlap</li>
+    </ol>
+    Whilst GL and more modern graphics cards in D3D will allow you to defy these rules,
+    sticking to them will ensure that your buffers have the maximum compatibility.
+    @par
+    Like the other classes in this functional area, these declarations should be created and
+    destroyed using the HardwareBufferManager.
     */
-	class _OgreExport VertexDeclaration : public VertexDataAlloc
+    class _OgreExport VertexDeclaration : public VertexDataAlloc
     {
     public:
-		/// Defines the list of vertex elements that makes up this declaration
+        /// Defines the list of vertex elements that makes up this declaration
         typedef list<VertexElement>::type VertexElementList;
         /// Sort routine for vertex elements
         static bool vertexElementLess(const VertexElement& e1, const VertexElement& e2);
@@ -317,11 +329,11 @@ namespace Ogre {
         virtual ~VertexDeclaration();
 
         /** Get the number of elements in the declaration. */
-        size_t getElementCount(void) { return mElementList.size(); }
+        size_t getElementCount(void) const { return mElementList.size(); }
         /** Gets read-only access to the list of vertex elements. */
         const VertexElementList& getElements(void) const;
         /** Get a single element. */
-        const VertexElement* getElement(unsigned short index);
+        const VertexElement* getElement(unsigned short index) const;
 
         /** Sorts the elements in this list to be compatible with the maximum
             number of rendering APIs / graphics cards.
@@ -348,15 +360,16 @@ namespace Ogre {
         /** Generates a new VertexDeclaration for optimal usage based on the current
             vertex declaration, which can be used with VertexData::reorganiseBuffers later
             if you wish, or simply used as a template.
-		@remarks
-			Different buffer organisations and buffer usages will be returned
+        @remarks
+            Different buffer organisations and buffer usages will be returned
             depending on the parameters passed to this method.
         @param skeletalAnimation Whether this vertex data is going to be
-			skeletally animated
-		@param vertexAnimation Whether this vertex data is going to be vertex animated
+            skeletally animated
+        @param vertexAnimation Whether this vertex data is going to be vertex animated
+        @param vertexAnimationNormals Whether vertex data animation is going to include normals animation
         */
         VertexDeclaration* getAutoOrganisedDeclaration(bool skeletalAnimation,
-			bool vertexAnimation);
+            bool vertexAnimation, bool vertexAnimationNormals) const;
 
         /** Gets the index of the highest source value referenced by this declaration. */
         unsigned short getMaxSource(void) const;
@@ -367,14 +380,14 @@ namespace Ogre {
         @remarks
             This method adds a single element (positions, normals etc) to the end of the
             vertex declaration. <b>Please read the information in VertexDeclaration about
-	    the importance of ordering and structure for compatibility with older D3D drivers</b>.
-	    @param source The binding index of HardwareVertexBuffer which will provide the source for this element.
-			See VertexBufferBindingState for full information.
+        the importance of ordering and structure for compatibility with older D3D drivers</b>.
+        @param source The binding index of HardwareVertexBuffer which will provide the source for this element.
+            See VertexBufferBinding for full information.
         @param offset The offset in bytes where this element is located in the buffer
         @param theType The data format of the element (3 floats, a colour etc)
         @param semantic The meaning of the data (position, normal, diffuse colour etc)
         @param index Optional index for multi-input elements like texture coordinates
-		@returns A reference to the VertexElement added.
+        @return A reference to the VertexElement added.
         */
         virtual const VertexElement& addElement(unsigned short source, size_t offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
@@ -384,12 +397,12 @@ namespace Ogre {
         vertex declaration. <b>Please read the information in VertexDeclaration about
         the importance of ordering and structure for compatibility with older D3D drivers</b>.
         @param source The binding index of HardwareVertexBuffer which will provide the source for this element.
-        See VertexBufferBindingState for full information.
+        See VertexBufferBinding for full information.
         @param offset The offset in bytes where this element is located in the buffer
         @param theType The data format of the element (3 floats, a colour etc)
         @param semantic The meaning of the data (position, normal, diffuse colour etc)
         @param index Optional index for multi-input elements like texture coordinates
-        @returns A reference to the VertexElement added.
+        @return A reference to the VertexElement added.
         */
         virtual const VertexElement& insertElement(unsigned short atPosition,
             unsigned short source, size_t offset, VertexElementType theType,
@@ -406,42 +419,47 @@ namespace Ogre {
         */
         virtual void removeElement(VertexElementSemantic semantic, unsigned short index = 0);
 
-		/** Remove all elements. */
-		virtual void removeAllElements(void);
+        /** Remove all elements. */
+        virtual void removeAllElements(void);
 
         /** Modify an element in-place, params as addElement.
-	   @remarks
-	   <b>Please read the information in VertexDeclaration about
-	    the importance of ordering and structure for compatibility with older D3D drivers</b>.
-	 */
+       @remarks
+       <b>Please read the information in VertexDeclaration about
+        the importance of ordering and structure for compatibility with older D3D drivers</b>.
+     */
         virtual void modifyElement(unsigned short elem_index, unsigned short source, size_t offset, VertexElementType theType,
             VertexElementSemantic semantic, unsigned short index = 0);
 
-		/** Finds a VertexElement with the given semantic, and index if there is more than
-			one element with the same semantic.
+        /** Finds a VertexElement with the given semantic, and index if there is more than
+            one element with the same semantic.
         @remarks
             If the element is not found, this method returns null.
-		*/
-		virtual const VertexElement* findElementBySemantic(VertexElementSemantic sem, unsigned short index = 0);
-		/** Based on the current elements, gets the size of the vertex for a given buffer source.
-		@param source The buffer binding index for which to get the vertex size.
-		*/
+        */
+        virtual const VertexElement* findElementBySemantic(VertexElementSemantic sem, unsigned short index = 0) const;
+        /** Based on the current elements, gets the size of the vertex for a given buffer source.
+        @param source The buffer binding index for which to get the vertex size.
+        */
 
-		/** Gets a list of elements which use a given source.
-		@remarks
-			Note that the list of elements is returned by value therefore is separate from
-			the declaration as soon as this method returns.
-		*/
-		virtual VertexElementList findElementsBySource(unsigned short source);
+        /** Gets a list of elements which use a given source.
+        @remarks
+            Note that the list of elements is returned by value therefore is separate from
+            the declaration as soon as this method returns.
+        */
+        virtual VertexElementList findElementsBySource(unsigned short source) const;
 
-		/** Gets the vertex size defined by this declaration for a given source. */
-        virtual size_t getVertexSize(unsigned short source);
+        /** Gets the vertex size defined by this declaration for a given source. */
+        virtual size_t getVertexSize(unsigned short source) const;
 
-        /** Clones this declaration. 
-		@param mgr Optional HardwareBufferManager to use for creating the clone
-			(if null, use the current default).
-		*/
-        virtual VertexDeclaration* clone(HardwareBufferManagerBase* mgr = 0);
+        /** Return the index of the next free texture coordinate set which may be added
+            to this declaration.
+        */
+        virtual unsigned short getNextFreeTextureCoordinate() const;
+
+        /** Clones this declaration.
+        @param mgr Optional HardwareBufferManager to use for creating the clone
+            (if null, use the current default).
+        */
+        virtual VertexDeclaration* clone(HardwareBufferManagerBase* mgr = 0) const;
 
         inline bool operator== (const VertexDeclaration& rhs) const
         {
@@ -467,62 +485,62 @@ namespace Ogre {
 
     };
 
-	/** Records the state of all the vertex buffer bindings required to provide a vertex declaration
-		with the input data it needs for the vertex elements.
-	@remarks
-		Why do we have this binding list rather than just have VertexElement referring to the
-		vertex buffers direct? Well, in the underlying APIs, binding the vertex buffers to an
-		index (or 'stream') is the way that vertex data is linked, so this structure better
-		reflects the realities of that. In addition, by separating the vertex declaration from
-		the list of vertex buffer bindings, it becomes possible to reuse bindings between declarations
-		and vice versa, giving opportunities to reduce the state changes required to perform rendering.
-	@par
-		Like the other classes in this functional area, these binding maps should be created and
-		destroyed using the HardwareBufferManager.
-	*/
-	class _OgreExport VertexBufferBinding : public VertexDataAlloc
-	{
-	public:
-		/// Defines the vertex buffer bindings used as source for vertex declarations
-		typedef map<unsigned short, HardwareVertexBufferSharedPtr>::type VertexBufferBindingMap;
-	protected:
-		VertexBufferBindingMap mBindingMap;
-		mutable unsigned short mHighIndex;
-	public:
-		/// Constructor, should not be called direct, use HardwareBufferManager::createVertexBufferBinding
-		VertexBufferBinding();
-		virtual ~VertexBufferBinding();
-		/** Set a binding, associating a vertex buffer with a given index.
-		@remarks
-			If the index is already associated with a vertex buffer,
+    /** Records the state of all the vertex buffer bindings required to provide a vertex declaration
+        with the input data it needs for the vertex elements.
+    @remarks
+        Why do we have this binding list rather than just have VertexElement referring to the
+        vertex buffers direct? Well, in the underlying APIs, binding the vertex buffers to an
+        index (or 'stream') is the way that vertex data is linked, so this structure better
+        reflects the realities of that. In addition, by separating the vertex declaration from
+        the list of vertex buffer bindings, it becomes possible to reuse bindings between declarations
+        and vice versa, giving opportunities to reduce the state changes required to perform rendering.
+    @par
+        Like the other classes in this functional area, these binding maps should be created and
+        destroyed using the HardwareBufferManager.
+    */
+    class _OgreExport VertexBufferBinding : public VertexDataAlloc
+    {
+    public:
+        /// Defines the vertex buffer bindings used as source for vertex declarations
+        typedef map<unsigned short, HardwareVertexBufferSharedPtr>::type VertexBufferBindingMap;
+    protected:
+        VertexBufferBindingMap mBindingMap;
+        mutable unsigned short mHighIndex;
+    public:
+        /// Constructor, should not be called direct, use HardwareBufferManager::createVertexBufferBinding
+        VertexBufferBinding();
+        virtual ~VertexBufferBinding();
+        /** Set a binding, associating a vertex buffer with a given index.
+        @remarks
+            If the index is already associated with a vertex buffer,
             the association will be replaced. This may cause the old buffer
             to be destroyed if nothing else is referring to it.
-			You should assign bindings from 0 and not leave gaps, although you can
-			bind them in any order.
-		*/
-		virtual void setBinding(unsigned short index, const HardwareVertexBufferSharedPtr& buffer);
-		/** Removes an existing binding. */
-		virtual void unsetBinding(unsigned short index);
+            You should assign bindings from 0 and not leave gaps, although you can
+            bind them in any order.
+        */
+        virtual void setBinding(unsigned short index, const HardwareVertexBufferSharedPtr& buffer);
+        /** Removes an existing binding. */
+        virtual void unsetBinding(unsigned short index);
 
         /** Removes all the bindings. */
         virtual void unsetAllBindings(void);
 
-		/// Gets a read-only version of the buffer bindings
-		virtual const VertexBufferBindingMap& getBindings(void) const;
+        /// Gets a read-only version of the buffer bindings
+        virtual const VertexBufferBindingMap& getBindings(void) const;
 
-		/// Gets the buffer bound to the given source index
-		virtual const HardwareVertexBufferSharedPtr& getBuffer(unsigned short index) const;
-		/// Gets whether a buffer is bound to the given source index
-		virtual bool isBufferBound(unsigned short index) const;
+        /// Gets the buffer bound to the given source index
+        virtual const HardwareVertexBufferSharedPtr& getBuffer(unsigned short index) const;
+        /// Gets whether a buffer is bound to the given source index
+        virtual bool isBufferBound(unsigned short index) const;
 
         virtual size_t getBufferCount(void) const { return mBindingMap.size(); }
 
-		/** Gets the highest index which has already been set, plus 1.
-		@remarks
-			This is to assist in binding the vertex buffers such that there are
-			not gaps in the list.
-		*/
-		virtual unsigned short getNextIndex(void) const { return mHighIndex++; }
+        /** Gets the highest index which has already been set, plus 1.
+        @remarks
+            This is to assist in binding the vertex buffers such that there are
+            not gaps in the list.
+        */
+        virtual unsigned short getNextIndex(void) const { return mHighIndex++; }
 
         /** Gets the last bound index.
         */
@@ -548,10 +566,13 @@ namespace Ogre {
         */
         virtual void closeGaps(BindingIndexMap& bindingIndexMap);
 
+        /// returns true if has an element that is instance data
+        virtual bool getHasInstanceData() const;
 
-	};
-	/** @} */
-	/** @} */
+
+    };
+    /** @} */
+    /** @} */
 
 
 

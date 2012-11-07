@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,78 +33,78 @@ THE SOFTWARE.
 
 namespace Ogre  {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Overlays
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Overlays
+    *  @{
+    */
 
     namespace OverlayElementCommands {
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdLeft : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdTop : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdWidth : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdHeight : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdMaterial : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdCaption : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdMetricsMode : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdHorizontalAlign : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdVerticalAlign : public ParamCommand
         {
         public:
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-        /// Command object for OverlayElement  - see ParamCommand 
+        /// Command object for OverlayElement  - see ParamCommand
         class _OgreExport CmdVisible : public ParamCommand
         {
         public:
@@ -113,8 +113,8 @@ namespace Ogre  {
         };
 
     }
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 }
 
 #endif

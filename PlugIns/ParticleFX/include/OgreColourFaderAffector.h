@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -83,14 +83,14 @@ namespace Ogre {
         /** See ParticleAffector. */
         void _affectParticles(ParticleSystem* pSystem, Real timeElapsed);
 
-        /** Sets the colour adjustment to be made per second to particles. 
+        /** Sets the colour adjustment to be made per second to particles.
         @param red, green, blue, alpha
             Sets the adjustment to be made to each of the colour components per second. These
             values will be added to the colour of all particles every second, scaled over each frame
             for a smooth adjustment.
         */
         void setAdjust(float red, float green, float blue, float alpha = 0.0);
-        /** Sets the red adjustment to be made per second to particles. 
+        /** Sets the red adjustment to be made per second to particles.
         @param red
             The adjustment to be made to the colour component per second. This
             value will be added to the colour of all particles every second, scaled over each frame
@@ -101,7 +101,7 @@ namespace Ogre {
         /** Gets the red adjustment to be made per second to particles. */
         float getRedAdjust(void) const;
 
-        /** Sets the green adjustment to be made per second to particles. 
+        /** Sets the green adjustment to be made per second to particles.
         @param green
             The adjustment to be made to the colour component per second. This
             value will be added to the colour of all particles every second, scaled over each frame
@@ -110,7 +110,7 @@ namespace Ogre {
         void setGreenAdjust(float green);
         /** Gets the green adjustment to be made per second to particles. */
         float getGreenAdjust(void) const;
-        /** Sets the blue adjustment to be made per second to particles. 
+        /** Sets the blue adjustment to be made per second to particles.
         @param blue
             The adjustment to be made to the colour component per second. This
             value will be added to the colour of all particles every second, scaled over each frame
@@ -120,7 +120,7 @@ namespace Ogre {
         /** Gets the blue adjustment to be made per second to particles. */
         float getBlueAdjust(void) const;
 
-        /** Sets the alpha adjustment to be made per second to particles. 
+        /** Sets the alpha adjustment to be made per second to particles.
         @param alpha
             The adjustment to be made to the colour component per second. This
             value will be added to the colour of all particles every second, scaled over each frame

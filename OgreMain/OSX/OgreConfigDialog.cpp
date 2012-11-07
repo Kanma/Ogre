@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,42 +32,42 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	ConfigDialog* dlg = NULL;
-	ConfigDialog::ConfigDialog() 
-	{
-		dlg = this;
-	}
-	
-	ConfigDialog::~ConfigDialog()
-	{
-	}
-	
-	void ConfigDialog::initialise()
-	{
-	}
-	
-	bool ConfigDialog::display()
-	{
-		// TODO: Fix OS X Config dialog
-		const RenderSystemList& renderers = Root::getSingleton().getAvailableRenderers();
-		RenderSystem* renderer = renderers.front();
+    ConfigDialog* dlg = NULL;
+    ConfigDialog::ConfigDialog()
+    {
+        dlg = this;
+    }
 
-		// WARNING: restoreConfig() should not be invoked here as Root calls
-		// it before this method anyway, and invoking restoreConfig() here
-		// forces the client application to use Ogre.cfg, while it may have
-		// different plans.
-		if(!Root::getSingleton().restoreConfig())
-		{
-			// Set some defaults
-			renderer->setConfigOption("Video Mode", "800 x 600");
-			renderer->setConfigOption("Colour Depth", "32");
-			renderer->setConfigOption("FSAA", "0");
-			renderer->setConfigOption("Full Screen", "No");
-			renderer->setConfigOption("RTT Preferred Mode", "FBO");
-			// Set the rendersystem and save the config.
-			Root::getSingleton().setRenderSystem(renderer);
-		}
-		return true;
-	}
+    ConfigDialog::~ConfigDialog()
+    {
+    }
+
+    void ConfigDialog::initialise()
+    {
+    }
+
+    bool ConfigDialog::display()
+    {
+        // TODO: Fix OS X Config dialog
+        const RenderSystemList& renderers = Root::getSingleton().getAvailableRenderers();
+        RenderSystem* renderer = renderers.front();
+
+        // WARNING: restoreConfig() should not be invoked here as Root calls
+        // it before this method anyway, and invoking restoreConfig() here
+        // forces the client application to use Ogre.cfg, while it may have
+        // different plans.
+        if(!Root::getSingleton().restoreConfig())
+        {
+            // Set some defaults
+            renderer->setConfigOption("Video Mode", "800 x 600");
+            renderer->setConfigOption("Colour Depth", "32");
+            renderer->setConfigOption("FSAA", "0");
+            renderer->setConfigOption("Full Screen", "No");
+            renderer->setConfigOption("RTT Preferred Mode", "FBO");
+            // Set the rendersystem and save the config.
+            Root::getSingleton().setRenderSystem(renderer);
+        }
+        return true;
+    }
 
 };

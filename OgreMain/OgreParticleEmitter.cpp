@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,12 +32,13 @@ THE SOFTWARE.
 
 namespace Ogre
 {
-	// Define static members
+    // Define static members
     EmitterCommands::CmdAngle ParticleEmitter::msAngleCmd;
     EmitterCommands::CmdColour ParticleEmitter::msColourCmd;
     EmitterCommands::CmdColourRangeStart ParticleEmitter::msColourRangeStartCmd;
     EmitterCommands::CmdColourRangeEnd ParticleEmitter::msColourRangeEndCmd;
     EmitterCommands::CmdDirection ParticleEmitter::msDirectionCmd;
+    EmitterCommands::CmdUp ParticleEmitter::msUpCmd;
     EmitterCommands::CmdEmissionRate ParticleEmitter::msEmissionRateCmd;
     EmitterCommands::CmdMaxTTL ParticleEmitter::msMaxTTLCmd;
     EmitterCommands::CmdMaxVelocity ParticleEmitter::msMaxVelocityCmd;
@@ -78,37 +79,48 @@ namespace Ogre
         mColourRangeStart = mColourRangeEnd = ColourValue::White;
         mEnabled = true;
         mRemainder = 0;
-		mName = StringUtil::BLANK;
-		mEmittedEmitter = StringUtil::BLANK;
-		mEmitted = false;
+        mName = StringUtil::BLANK;
+        mEmittedEmitter = StringUtil::BLANK;
+        mEmitted = false;
     }
     //-----------------------------------------------------------------------
-    ParticleEmitter::~ParticleEmitter() 
+    ParticleEmitter::~ParticleEmitter()
     {
     }
     //-----------------------------------------------------------------------
-    void ParticleEmitter::setPosition(const Vector3& pos) 
-    { 
-        mPosition = pos; 
+    void ParticleEmitter::setPosition(const Vector3& pos)
+    {
+        mPosition = pos;
     }
     //-----------------------------------------------------------------------
-    const Vector3& ParticleEmitter::getPosition(void) const 
-    { 
-        return mPosition; 
+    const Vector3& ParticleEmitter::getPosition(void) const
+    {
+        return mPosition;
     }
     //-----------------------------------------------------------------------
-    void ParticleEmitter::setDirection(const Vector3& inDirection) 
-    { 
-        mDirection = inDirection; 
+    void ParticleEmitter::setDirection(const Vector3& inDirection)
+    {
+        mDirection = inDirection;
         mDirection.normalise();
-        // Generate an up vector (any will do)
+        // Generate a default up vector.
         mUp = mDirection.perpendicular();
         mUp.normalise();
     }
     //-----------------------------------------------------------------------
     const Vector3& ParticleEmitter::getDirection(void) const
-    { 
-        return mDirection; 
+    {
+        return mDirection;
+    }
+    //-----------------------------------------------------------------------
+    void ParticleEmitter::setUp(const Vector3& inUp)
+    {
+        mUp = inUp;
+        mUp.normalise();
+    }
+    //-----------------------------------------------------------------------
+    const Vector3& ParticleEmitter::getUp(void) const
+    {
+        return mUp;
     }
     //-----------------------------------------------------------------------
     void ParticleEmitter::setAngle(const Radian& angle)
@@ -133,14 +145,14 @@ namespace Ogre
         mMaxSpeed = max;
     }
     //-----------------------------------------------------------------------
-    void ParticleEmitter::setEmissionRate(Real particlesPerSecond) 
-    { 
-        mEmissionRate = particlesPerSecond; 
+    void ParticleEmitter::setEmissionRate(Real particlesPerSecond)
+    {
+        mEmissionRate = particlesPerSecond;
     }
     //-----------------------------------------------------------------------
-    Real ParticleEmitter::getEmissionRate(void) const 
-    { 
-        return mEmissionRate; 
+    Real ParticleEmitter::getEmissionRate(void) const
+    {
+        return mEmissionRate;
     }
     //-----------------------------------------------------------------------
     void ParticleEmitter::setTimeToLive(Real ttl)
@@ -164,33 +176,33 @@ namespace Ogre
         mColourRangeStart = colourStart;
         mColourRangeEnd = colourEnd;
     }
-	//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     const String& ParticleEmitter::getName(void) const
     {
         return mName;
     }
-	//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     void ParticleEmitter::setName(const String& newName)
     {
-		mName = newName;
+        mName = newName;
     }
-	//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     const String& ParticleEmitter::getEmittedEmitter(void) const
     {
         return mEmittedEmitter;
     }
-	//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     void ParticleEmitter::setEmittedEmitter(const String& emittedEmitter)
     {
         mEmittedEmitter = emittedEmitter;
     }
-	//-----------------------------------------------------------------------
-	bool ParticleEmitter::isEmitted(void) const
+    //-----------------------------------------------------------------------
+    bool ParticleEmitter::isEmitted(void) const
     {
-		return mEmitted;
+        return mEmitted;
     }
-	//-----------------------------------------------------------------------
-	void ParticleEmitter::setEmitted(bool emitted)
+    //-----------------------------------------------------------------------
+    void ParticleEmitter::setEmitted(bool emitted)
     {
         mEmitted = emitted;
     }
@@ -245,20 +257,18 @@ namespace Ogre
     //-----------------------------------------------------------------------
     unsigned short ParticleEmitter::genConstantEmissionCount(Real timeElapsed)
     {
-        unsigned short intRequest;
-        
         if (mEnabled)
         {
             // Keep fractions, otherwise a high frame rate will result in zero emissions!
             mRemainder += mEmissionRate * timeElapsed;
-            intRequest = (unsigned short)mRemainder;
+            unsigned short intRequest = (unsigned short)mRemainder;
             mRemainder -= intRequest;
 
             // Check duration
             if (mDurationMax)
             {
                 mDurationRemain -= timeElapsed;
-                if (mDurationRemain <= 0) 
+                if (mDurationRemain <= 0)
                 {
                     // Disable, duration is out (takes effect next time)
                     setEnabled(false);
@@ -309,94 +319,98 @@ namespace Ogre
         }
     }
     //-----------------------------------------------------------------------
-    void ParticleEmitter::addBaseParameters(void)    
+    void ParticleEmitter::addBaseParameters(void)
     {
         ParamDictionary* dict = getParamDictionary();
 
-        dict->addParameter(ParameterDef("angle", 
+        dict->addParameter(ParameterDef("angle",
             "The angle up to which particles may vary in their initial direction "
             "from the emitters direction, in degrees." , PT_REAL),
             &msAngleCmd);
 
-        dict->addParameter(ParameterDef("colour", 
+        dict->addParameter(ParameterDef("colour",
             "The colour of emitted particles.", PT_COLOURVALUE),
             &msColourCmd);
 
-        dict->addParameter(ParameterDef("colour_range_start", 
+        dict->addParameter(ParameterDef("colour_range_start",
             "The start of a range of colours to be assigned to emitted particles.", PT_COLOURVALUE),
             &msColourRangeStartCmd);
 
-        dict->addParameter(ParameterDef("colour_range_end", 
+        dict->addParameter(ParameterDef("colour_range_end",
             "The end of a range of colours to be assigned to emitted particles.", PT_COLOURVALUE),
             &msColourRangeEndCmd);
 
-        dict->addParameter(ParameterDef("direction", 
+        dict->addParameter(ParameterDef("direction",
             "The base direction of the emitter." , PT_VECTOR3),
             &msDirectionCmd);
 
-        dict->addParameter(ParameterDef("emission_rate", 
+        dict->addParameter(ParameterDef("up",
+            "The up vector of the emitter." , PT_VECTOR3),
+            &msUpCmd);
+
+        dict->addParameter(ParameterDef("emission_rate",
             "The number of particles emitted per second." , PT_REAL),
             &msEmissionRateCmd);
 
-        dict->addParameter(ParameterDef("position", 
+        dict->addParameter(ParameterDef("position",
             "The position of the emitter relative to the particle system center." , PT_VECTOR3),
             &msPositionCmd);
 
-        dict->addParameter(ParameterDef("velocity", 
+        dict->addParameter(ParameterDef("velocity",
             "The initial velocity to be assigned to every particle, in world units per second." , PT_REAL),
             &msVelocityCmd);
 
-        dict->addParameter(ParameterDef("velocity_min", 
+        dict->addParameter(ParameterDef("velocity_min",
             "The minimum initial velocity to be assigned to each particle." , PT_REAL),
             &msMinVelocityCmd);
 
-        dict->addParameter(ParameterDef("velocity_max", 
+        dict->addParameter(ParameterDef("velocity_max",
             "The maximum initial velocity to be assigned to each particle." , PT_REAL),
             &msMaxVelocityCmd);
 
-        dict->addParameter(ParameterDef("time_to_live", 
+        dict->addParameter(ParameterDef("time_to_live",
             "The lifetime of each particle in seconds." , PT_REAL),
             &msTTLCmd);
 
-        dict->addParameter(ParameterDef("time_to_live_min", 
+        dict->addParameter(ParameterDef("time_to_live_min",
             "The minimum lifetime of each particle in seconds." , PT_REAL),
             &msMinTTLCmd);
 
-        dict->addParameter(ParameterDef("time_to_live_max", 
+        dict->addParameter(ParameterDef("time_to_live_max",
             "The maximum lifetime of each particle in seconds." , PT_REAL),
             &msMaxTTLCmd);
 
-        dict->addParameter(ParameterDef("duration", 
+        dict->addParameter(ParameterDef("duration",
             "The length of time in seconds which an emitter stays enabled for." , PT_REAL),
             &msDurationCmd);
 
-        dict->addParameter(ParameterDef("duration_min", 
+        dict->addParameter(ParameterDef("duration_min",
             "The minimum length of time in seconds which an emitter stays enabled for." , PT_REAL),
             &msMinDurationCmd);
 
-        dict->addParameter(ParameterDef("duration_max", 
+        dict->addParameter(ParameterDef("duration_max",
             "The maximum length of time in seconds which an emitter stays enabled for." , PT_REAL),
             &msMaxDurationCmd);
 
-        dict->addParameter(ParameterDef("repeat_delay", 
+        dict->addParameter(ParameterDef("repeat_delay",
             "If set, after disabling an emitter will repeat (reenable) after this many seconds." , PT_REAL),
             &msRepeatDelayCmd);
 
-        dict->addParameter(ParameterDef("repeat_delay_min", 
+        dict->addParameter(ParameterDef("repeat_delay_min",
             "If set, after disabling an emitter will repeat (reenable) after this minimum number of seconds." , PT_REAL),
             &msMinRepeatDelayCmd);
 
-        dict->addParameter(ParameterDef("repeat_delay_max", 
+        dict->addParameter(ParameterDef("repeat_delay_max",
             "If set, after disabling an emitter will repeat (reenable) after this maximum number of seconds." , PT_REAL),
             &msMaxRepeatDelayCmd);
 
-		dict->addParameter(ParameterDef("name", 
-			"This is the name of the emitter" , PT_STRING),
-			&msNameCmd);
-		
-		dict->addParameter(ParameterDef("emit_emitter", 
-			"If set, this emitter will emit other emitters instead of visual particles" , PT_STRING),
-			&msEmittedEmitterCmd);
+        dict->addParameter(ParameterDef("name",
+            "This is the name of the emitter" , PT_STRING),
+            &msNameCmd);
+
+        dict->addParameter(ParameterDef("emit_emitter",
+            "If set, this emitter will emit other emitters instead of visual particles" , PT_STRING),
+            &msEmittedEmitterCmd);
     }
     //-----------------------------------------------------------------------
     Real ParticleEmitter::getParticleVelocity(void) const
@@ -595,12 +609,12 @@ namespace Ogre
     //-----------------------------------------------------------------------
     Real ParticleEmitter::getMinRepeatDelay(void) const
     {
-        return mRepeatDelayMin;    
+        return mRepeatDelayMin;
     }
     //-----------------------------------------------------------------------
     Real ParticleEmitter::getMaxRepeatDelay(void) const
     {
-        return mRepeatDelayMax;    
+        return mRepeatDelayMax;
     }
 
     //-----------------------------------------------------------------------
@@ -612,12 +626,12 @@ namespace Ogre
         {
             OGRE_DELETE (*i);
         }
-            
+
         mEmitters.clear();
 
     }
     //-----------------------------------------------------------------------
-    void ParticleEmitterFactory::destroyEmitter(ParticleEmitter* e)        
+    void ParticleEmitterFactory::destroyEmitter(ParticleEmitter* e)
     {
         vector<ParticleEmitter*>::type::iterator i;
         for (i = mEmitters.begin(); i != mEmitters.end(); ++i)

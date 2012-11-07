@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ THE SOFTWARE.
 #include "OgreStableHeaders.h"
 #include "OgreSkeleton.h"
 #include "OgreBone.h"
-#include "OgreAnimation.h"
 #include "OgreAnimationState.h"
 #include "OgreException.h"
 #include "OgreLogManager.h"
@@ -43,17 +42,17 @@ THE SOFTWARE.
 namespace Ogre {
 
     //---------------------------------------------------------------------
-	Skeleton::Skeleton()
-		: Resource(),
+    Skeleton::Skeleton()
+        : Resource(),
         mBlendState(ANIMBLEND_AVERAGE),
-		mNextAutoHandle(0),
-		mManualBonesDirty(false)
-	{
-	}
-	//---------------------------------------------------------------------
+        mNextAutoHandle(0),
+        mManualBonesDirty(false)
+    {
+    }
+    //---------------------------------------------------------------------
     Skeleton::Skeleton(ResourceManager* creator, const String& name, ResourceHandle handle,
-        const String& group, bool isManual, ManualResourceLoader* loader) 
-        : Resource(creator, name, handle, group, isManual, loader), 
+        const String& group, bool isManual, ManualResourceLoader* loader)
+        : Resource(creator, name, handle, group, isManual, loader),
         mBlendState(ANIMBLEND_AVERAGE), mNextAutoHandle(0)
         // set animation blending to weighted, not cumulative
     {
@@ -67,29 +66,29 @@ namespace Ogre {
     {
         // have to call this here reather than in Resource destructor
         // since calling virtual methods in base destructors causes crash
-        unload(); 
+        unload();
     }
     //---------------------------------------------------------------------
     void Skeleton::loadImpl(void)
     {
         SkeletonSerializer serializer;
-		LogManager::getSingleton().stream()
-			<< "Skeleton: Loading " << mName;
+        LogManager::getSingleton().stream()
+            << "Skeleton: Loading " << mName;
 
-        DataStreamPtr stream = 
+        DataStreamPtr stream =
             ResourceGroupManager::getSingleton().openResource(
-				mName, mGroup, true, this);
+                mName, mGroup, true, this);
 
         serializer.importSkeleton(stream, this);
 
-		// Load any linked skeletons
-		LinkedSkeletonAnimSourceList::iterator i;
-		for (i = mLinkedSkeletonAnimSourceList.begin(); 
-			i != mLinkedSkeletonAnimSourceList.end(); ++i)
-		{
-			i->pSkeleton = SkeletonManager::getSingleton().load(
-				i->skeletonName, mGroup);
-		}
+        // Load any linked skeletons
+        LinkedSkeletonAnimSourceList::iterator i;
+        for (i = mLinkedSkeletonAnimSourceList.begin();
+            i != mLinkedSkeletonAnimSourceList.end(); ++i)
+        {
+            i->pSkeleton = SkeletonManager::getSingleton().load(
+                i->skeletonName, mGroup);
+        }
 
 
     }
@@ -104,7 +103,7 @@ namespace Ogre {
         }
         mBoneList.clear();
         mBoneListByName.clear();
-		mRootBones.clear();
+        mRootBones.clear();
         mManualBones.clear();
         mManualBonesDirty = false;
 
@@ -206,7 +205,7 @@ namespace Ogre {
     //---------------------------------------------------------------------
     void Skeleton::setAnimationState(const AnimationStateSet& animSet)
     {
-        /* 
+        /*
         Algorithm:
           1. Reset all bone positions
           2. Iterate per AnimationState, if enabled get Animation and call Animation::apply
@@ -215,33 +214,33 @@ namespace Ogre {
         // Reset bones
         reset();
 
-		Real weightFactor = 1.0f;
-		if (mBlendState == ANIMBLEND_AVERAGE)
-		{
-			// Derive total weights so we can rebalance if > 1.0f
-			Real totalWeights = 0.0f;
-			ConstEnabledAnimationStateIterator stateIt = 
-				animSet.getEnabledAnimationStateIterator();
-			while (stateIt.hasMoreElements())
-			{
-				const AnimationState* animState = stateIt.getNext();
-				// Make sure we have an anim to match implementation
-				const LinkedSkeletonAnimationSource* linked = 0;
-				if (_getAnimationImpl(animState->getAnimationName(), &linked))
-				{
-					totalWeights += animState->getWeight();
-				}
-			}
+        Real weightFactor = 1.0f;
+        if (mBlendState == ANIMBLEND_AVERAGE)
+        {
+            // Derive total weights so we can rebalance if > 1.0f
+            Real totalWeights = 0.0f;
+            ConstEnabledAnimationStateIterator stateIt =
+                animSet.getEnabledAnimationStateIterator();
+            while (stateIt.hasMoreElements())
+            {
+                const AnimationState* animState = stateIt.getNext();
+                // Make sure we have an anim to match implementation
+                const LinkedSkeletonAnimationSource* linked = 0;
+                if (_getAnimationImpl(animState->getAnimationName(), &linked))
+                {
+                    totalWeights += animState->getWeight();
+                }
+            }
 
-			// Allow < 1.0f, allows fade out of all anims if required 
-			if (totalWeights > 1.0f)
-			{
-				weightFactor = 1.0f / totalWeights;
-			}
-		}
+            // Allow < 1.0f, allows fade out of all anims if required
+            if (totalWeights > 1.0f)
+            {
+                weightFactor = 1.0f / totalWeights;
+            }
+        }
 
         // Per enabled animation state
-        ConstEnabledAnimationStateIterator stateIt = 
+        ConstEnabledAnimationStateIterator stateIt =
             animSet.getEnabledAnimationStateIterator();
         while (stateIt.hasMoreElements())
         {
@@ -258,7 +257,7 @@ namespace Ogre {
               }
               else
               {
-                anim->apply(this, animState->getTimePosition(), 
+                anim->apply(this, animState->getTimePosition(),
                   animState->getWeight() * weightFactor, linked ? linked->scale : 1.0f);
               }
             }
@@ -275,7 +274,7 @@ namespace Ogre {
 
         BoneList::iterator i;
         for (i = mBoneList.begin(); i != mBoneList.end(); ++i)
-        {            
+        {
             (*i)->setBindingPose();
         }
     }
@@ -302,6 +301,7 @@ namespace Ogre {
         }
 
         Animation* ret = OGRE_NEW Animation(name, length);
+        ret->_notifyContainer(this);
 
         // Add to list
         mAnimationsList[name] = ret;
@@ -309,57 +309,62 @@ namespace Ogre {
         return ret;
 
     }
-	//---------------------------------------------------------------------
-	Animation* Skeleton::getAnimation(const String& name, 
-		const LinkedSkeletonAnimationSource** linker) const
-	{
-		Animation* ret = _getAnimationImpl(name, linker);
-		if (!ret)
-		{
-			OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "No animation entry found named " + name, 
-				"Skeleton::getAnimation");
-		}
-
-		return ret;
-	}
-	//---------------------------------------------------------------------
-	bool Skeleton::hasAnimation(const String& name)
-	{
-		return _getAnimationImpl(name) != 0;
-	}
     //---------------------------------------------------------------------
-    Animation* Skeleton::_getAnimationImpl(const String& name, 
-		const LinkedSkeletonAnimationSource** linker) const
+    Animation* Skeleton::getAnimation(const String& name,
+        const LinkedSkeletonAnimationSource** linker) const
     {
-		Animation* ret = 0;
+        Animation* ret = _getAnimationImpl(name, linker);
+        if (!ret)
+        {
+            OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "No animation entry found named " + name,
+                "Skeleton::getAnimation");
+        }
+
+        return ret;
+    }
+    //---------------------------------------------------------------------
+    Animation* Skeleton::getAnimation(const String& name) const
+    {
+        return getAnimation(name, 0);
+    }
+    //---------------------------------------------------------------------
+    bool Skeleton::hasAnimation(const String& name) const
+    {
+        return _getAnimationImpl(name) != 0;
+    }
+    //---------------------------------------------------------------------
+    Animation* Skeleton::_getAnimationImpl(const String& name,
+        const LinkedSkeletonAnimationSource** linker) const
+    {
+        Animation* ret = 0;
         AnimationList::const_iterator i = mAnimationsList.find(name);
 
         if (i == mAnimationsList.end())
         {
-			LinkedSkeletonAnimSourceList::const_iterator it;
-			for (it = mLinkedSkeletonAnimSourceList.begin(); 
-				it != mLinkedSkeletonAnimSourceList.end() && !ret; ++it)
-			{
-				if (!it->pSkeleton.isNull())
-				{
-					ret = it->pSkeleton->_getAnimationImpl(name);
-					if (ret && linker)
-					{
-						*linker = &(*it);
-					}
+            LinkedSkeletonAnimSourceList::const_iterator it;
+            for (it = mLinkedSkeletonAnimSourceList.begin();
+                it != mLinkedSkeletonAnimSourceList.end() && !ret; ++it)
+            {
+                if (!it->pSkeleton.isNull())
+                {
+                    ret = it->pSkeleton->_getAnimationImpl(name);
+                    if (ret && linker)
+                    {
+                        *linker = &(*it);
+                    }
 
-				}
-			}
+                }
+            }
 
         }
-		else
-		{
-			if (linker)
-				*linker = 0;
-			ret = i->second;
-		}
+        else
+        {
+            if (linker)
+                *linker = 0;
+            ret = i->second;
+        }
 
-		return ret;
+        return ret;
 
     }
     //---------------------------------------------------------------------
@@ -369,7 +374,7 @@ namespace Ogre {
 
         if (i == mAnimationsList.end())
         {
-            OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "No animation entry found named " + name, 
+            OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "No animation entry found named " + name,
             "Skeleton::getAnimation");
         }
 
@@ -382,7 +387,7 @@ namespace Ogre {
     void Skeleton::_initAnimationState(AnimationStateSet* animSet)
     {
         animSet->removeAllAnimationStates();
-           
+
         AnimationList::iterator i;
         for (i = mAnimationsList.begin(); i != mAnimationsList.end(); ++i)
         {
@@ -392,64 +397,64 @@ namespace Ogre {
             animSet->createAnimationState(animName, 0.0, anim->getLength());
         }
 
-		// Also iterate over linked animation
-		LinkedSkeletonAnimSourceList::iterator li;
-		for (li = mLinkedSkeletonAnimSourceList.begin(); 
-			li != mLinkedSkeletonAnimSourceList.end(); ++li)
-		{
-			if (!li->pSkeleton.isNull())
-			{
-				li->pSkeleton->_refreshAnimationState(animSet);
-			}
-		}
+        // Also iterate over linked animation
+        LinkedSkeletonAnimSourceList::iterator li;
+        for (li = mLinkedSkeletonAnimSourceList.begin();
+            li != mLinkedSkeletonAnimSourceList.end(); ++li)
+        {
+            if (!li->pSkeleton.isNull())
+            {
+                li->pSkeleton->_refreshAnimationState(animSet);
+            }
+        }
 
     }
-	//-----------------------------------------------------------------------
-	void Skeleton::_refreshAnimationState(AnimationStateSet* animSet)
-	{
-		// Merge in any new animations
-		AnimationList::iterator i;
-		for (i = mAnimationsList.begin(); i != mAnimationsList.end(); ++i)
-		{
-			Animation* anim = i->second;
-			// Create animation at time index 0, default params mean this has weight 1 and is disabled
-			const String& animName = anim->getName();
-			if (!animSet->hasAnimationState(animName))
-			{
-				animSet->createAnimationState(animName, 0.0, anim->getLength());
-			}
-			else
-			{
-				// Update length incase changed
-				AnimationState* animState = animSet->getAnimationState(animName);
-				animState->setLength(anim->getLength());
-				animState->setTimePosition(std::min(anim->getLength(), animState->getTimePosition()));
-			}
-		}
-		// Also iterate over linked animation
-		LinkedSkeletonAnimSourceList::iterator li;
-		for (li = mLinkedSkeletonAnimSourceList.begin(); 
-			li != mLinkedSkeletonAnimSourceList.end(); ++li)
-		{
-			if (!li->pSkeleton.isNull())
-			{
-				li->pSkeleton->_refreshAnimationState(animSet);
-			}
-		}
-	}
-	//-----------------------------------------------------------------------
-	void Skeleton::_notifyManualBonesDirty(void)
-	{
-		mManualBonesDirty = true;
-	}
-	//-----------------------------------------------------------------------
-	void Skeleton::_notifyManualBoneStateChange(Bone* bone)
-	{
-		if (bone->isManuallyControlled())
-			mManualBones.insert(bone);
-		else
-			mManualBones.erase(bone);
-	}
+    //-----------------------------------------------------------------------
+    void Skeleton::_refreshAnimationState(AnimationStateSet* animSet)
+    {
+        // Merge in any new animations
+        AnimationList::iterator i;
+        for (i = mAnimationsList.begin(); i != mAnimationsList.end(); ++i)
+        {
+            Animation* anim = i->second;
+            // Create animation at time index 0, default params mean this has weight 1 and is disabled
+            const String& animName = anim->getName();
+            if (!animSet->hasAnimationState(animName))
+            {
+                animSet->createAnimationState(animName, 0.0, anim->getLength());
+            }
+            else
+            {
+                // Update length incase changed
+                AnimationState* animState = animSet->getAnimationState(animName);
+                animState->setLength(anim->getLength());
+                animState->setTimePosition(std::min(anim->getLength(), animState->getTimePosition()));
+            }
+        }
+        // Also iterate over linked animation
+        LinkedSkeletonAnimSourceList::iterator li;
+        for (li = mLinkedSkeletonAnimSourceList.begin();
+            li != mLinkedSkeletonAnimSourceList.end(); ++li)
+        {
+            if (!li->pSkeleton.isNull())
+            {
+                li->pSkeleton->_refreshAnimationState(animSet);
+            }
+        }
+    }
+    //-----------------------------------------------------------------------
+    void Skeleton::_notifyManualBonesDirty(void)
+    {
+        mManualBonesDirty = true;
+    }
+    //-----------------------------------------------------------------------
+    void Skeleton::_notifyManualBoneStateChange(Bone* bone)
+    {
+        if (bone->isManuallyControlled())
+            mManualBones.insert(bone);
+        else
+            mManualBones.erase(bone);
+    }
     //-----------------------------------------------------------------------
     unsigned short Skeleton::getNumBones(void) const
     {
@@ -490,12 +495,12 @@ namespace Ogre {
     //---------------------------------------------------------------------
     Animation* Skeleton::getAnimation(unsigned short index) const
     {
-		// If you hit this assert, then the index is out of bounds.
+        // If you hit this assert, then the index is out of bounds.
         assert( index < mAnimationsList.size() );
 
         AnimationList::const_iterator i = mAnimationsList.begin();
 
-		std::advance(i, index);
+        std::advance(i, index);
 
         return i->second;
     }
@@ -512,18 +517,18 @@ namespace Ogre {
 
         if (i == mBoneListByName.end())
         {
-            OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "Bone named '" + name + "' not found.", 
+            OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "Bone named '" + name + "' not found.",
                 "Skeleton::getBone");
         }
 
         return i->second;
 
     }
-	//---------------------------------------------------------------------
-	bool Skeleton::hasBone(const String& name) const 
-	{	
-		return mBoneListByName.find(name) != mBoneListByName.end();
-	}
+    //---------------------------------------------------------------------
+    bool Skeleton::hasBone(const String& name) const
+    {
+        return mBoneListByName.find(name) != mBoneListByName.end();
+    }
     //---------------------------------------------------------------------
     void Skeleton::deriveRootBone(void) const
     {
@@ -562,7 +567,7 @@ namespace Ogre {
         of << "-= Debug output of skeleton " << mName << " =-" << std::endl << std::endl;
         of << "== Bones ==" << std::endl;
         of << "Number of bones: " << (unsigned int)mBoneList.size() << std::endl;
-        
+
         BoneList::iterator bi;
         for (bi = mBoneList.begin(); bi != mBoneList.end(); ++bi)
         {
@@ -598,7 +603,7 @@ namespace Ogre {
                 {
                     TransformKeyFrame* key = track->getNodeKeyFrame(ki);
                     of << "    -- KeyFrame " << ki << " --" << std::endl;
-                    of << "    Time index: " << key->getTime(); 
+                    of << "    Time index: " << key->getTime();
                     of << "    Translation: " << key->getTranslate() << std::endl;
                     q = key->getRotation();
                     of << "    Rotation: " << q;
@@ -614,15 +619,15 @@ namespace Ogre {
 
     }
     //---------------------------------------------------------------------
-	SkeletonAnimationBlendMode Skeleton::getBlendMode() const
+    SkeletonAnimationBlendMode Skeleton::getBlendMode() const
     {
-		return mBlendState;
-	}
+        return mBlendState;
+    }
     //---------------------------------------------------------------------
-	void Skeleton::setBlendMode(SkeletonAnimationBlendMode state) 
+    void Skeleton::setBlendMode(SkeletonAnimationBlendMode state)
     {
-		mBlendState = state;
-	}
+        mBlendState = state;
+    }
     //---------------------------------------------------------------------
     Skeleton::BoneIterator Skeleton::getRootBoneIterator(void)
     {
@@ -646,11 +651,11 @@ namespace Ogre {
         {
             (*i)->_update(true, false);
         }
-		mManualBonesDirty = false;
+        mManualBonesDirty = false;
     }
     //---------------------------------------------------------------------
-	void Skeleton::optimiseAllAnimations(bool preservingIdentityNodeTracks)
-	{
+    void Skeleton::optimiseAllAnimations(bool preservingIdentityNodeTracks)
+    {
         AnimationList::iterator ai, aiend;
         aiend = mAnimationsList.end();
 
@@ -681,53 +686,53 @@ namespace Ogre {
         for (ai = mAnimationsList.begin(); ai != aiend; ++ai)
         {
             // Don't discard identity node tracks here
-			ai->second->optimise(false);
-		}
-	}
-	//---------------------------------------------------------------------
-	void Skeleton::addLinkedSkeletonAnimationSource(const String& skelName, 
-		Real scale)
-	{
-		// Check not already linked
-		LinkedSkeletonAnimSourceList::iterator i;
-		for (i = mLinkedSkeletonAnimSourceList.begin(); 
-			i != mLinkedSkeletonAnimSourceList.end(); ++i)
-		{
-			if (skelName == i->skeletonName)
-				return; // don't bother
-		}
+            ai->second->optimise(false);
+        }
+    }
+    //---------------------------------------------------------------------
+    void Skeleton::addLinkedSkeletonAnimationSource(const String& skelName,
+        Real scale)
+    {
+        // Check not already linked
+        LinkedSkeletonAnimSourceList::iterator i;
+        for (i = mLinkedSkeletonAnimSourceList.begin();
+            i != mLinkedSkeletonAnimSourceList.end(); ++i)
+        {
+            if (skelName == i->skeletonName)
+                return; // don't bother
+        }
 
-		if (isLoaded())
-		{
-			// Load immediately
-			SkeletonPtr skelPtr = 
-				SkeletonManager::getSingleton().load(skelName, mGroup);
-			mLinkedSkeletonAnimSourceList.push_back(
-				LinkedSkeletonAnimationSource(skelName, scale, skelPtr));
+        if (isLoaded())
+        {
+            // Load immediately
+            SkeletonPtr skelPtr =
+                SkeletonManager::getSingleton().load(skelName, mGroup);
+            mLinkedSkeletonAnimSourceList.push_back(
+                LinkedSkeletonAnimationSource(skelName, scale, skelPtr));
 
-		}
-		else
-		{
-			// Load later
-			mLinkedSkeletonAnimSourceList.push_back(
-				LinkedSkeletonAnimationSource(skelName, scale));
-		}
+        }
+        else
+        {
+            // Load later
+            mLinkedSkeletonAnimSourceList.push_back(
+                LinkedSkeletonAnimationSource(skelName, scale));
+        }
 
-	}
-	//---------------------------------------------------------------------
-	void Skeleton::removeAllLinkedSkeletonAnimationSources(void)
-	{
-		mLinkedSkeletonAnimSourceList.clear();
-	}
-	//---------------------------------------------------------------------
-	Skeleton::LinkedSkeletonAnimSourceIterator 
-	Skeleton::getLinkedSkeletonAnimationSourceIterator(void) const
-	{
-		return LinkedSkeletonAnimSourceIterator(
-			mLinkedSkeletonAnimSourceList.begin(), 
-			mLinkedSkeletonAnimSourceList.end());
-	}
-	//---------------------------------------------------------------------
+    }
+    //---------------------------------------------------------------------
+    void Skeleton::removeAllLinkedSkeletonAnimationSources(void)
+    {
+        mLinkedSkeletonAnimSourceList.clear();
+    }
+    //---------------------------------------------------------------------
+    Skeleton::LinkedSkeletonAnimSourceIterator
+    Skeleton::getLinkedSkeletonAnimationSourceIterator(void) const
+    {
+        return LinkedSkeletonAnimSourceIterator(
+            mLinkedSkeletonAnimSourceList.begin(),
+            mLinkedSkeletonAnimSourceList.end());
+    }
+    //---------------------------------------------------------------------
     struct DeltaTransform
     {
         Vector3 translate;

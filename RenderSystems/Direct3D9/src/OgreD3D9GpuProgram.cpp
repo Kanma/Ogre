@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "OgreD3D9Mappings.h"
 #include "OgreResourceGroupManager.h"
 #include "OgreD3D9RenderSystem.h"
+#include "OgreGpuProgramManager.h"
 
 namespace Ogre {
 
@@ -65,7 +66,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------------
     D3D9GpuProgram::D3D9GpuProgram(ResourceManager* creator, const String& name, ResourceHandle handle,
         const String& group, bool isManual, ManualResourceLoader* loader) 
-        : GpuProgram(creator, name, handle, group, isManual, loader), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
+        : GpuProgram(creator, name, handle, group, isManual, loader), mExternalMicrocode(NULL), mColumnMajorMatrices(false)
     {			
         if (createParamDictionary("D3D9GpuProgram"))
         {
@@ -102,17 +103,17 @@ namespace Ogre {
 	//-----------------------------------------------------------------------------
 	void D3D9GpuProgram::setExternalMicrocode(ID3DXBuffer* pMicrocode)
 	{ 
-		SAFE_RELEASE(mpExternalMicrocode);
-		mpExternalMicrocode = pMicrocode;
-		if(mpExternalMicrocode)
+		SAFE_RELEASE(mExternalMicrocode);
+		mExternalMicrocode = pMicrocode;
+		if(mExternalMicrocode)
 		{
-			mpExternalMicrocode->AddRef();	
+			mExternalMicrocode->AddRef();	
 		}
 	}
     //-----------------------------------------------------------------------------
 	LPD3DXBUFFER D3D9GpuProgram::getExternalMicrocode(void)
 	{
-		return mpExternalMicrocode;
+		return mExternalMicrocode;
 	}
 
 	//-----------------------------------------------------------------------------
@@ -133,9 +134,9 @@ namespace Ogre {
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		if (mpExternalMicrocode)
+		if (mExternalMicrocode)
 		{
-			loadFromMicrocode(d3d9Device, mpExternalMicrocode);
+			loadFromMicrocode(d3d9Device, mExternalMicrocode);
 		}
 		else
 		{
@@ -156,24 +157,44 @@ namespace Ogre {
 	//-----------------------------------------------------------------------------
 	void D3D9GpuProgram::unloadImpl(void)
 	{
-		SAFE_RELEASE(mpExternalMicrocode);
+		SAFE_RELEASE(mExternalMicrocode);
 	}
 	//-----------------------------------------------------------------------------
     void D3D9GpuProgram::loadFromSource(void)
     {
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-
-		for (uint i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
-		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-
-			loadFromSource(d3d9Device);
-		}
+		loadFromSource(NULL);
     }
-
 	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::loadFromSource(IDirect3DDevice9* d3d9Device)
-	{
+   void D3D9GpuProgram::loadFromSource( IDirect3DDevice9* d3d9Device )
+    {
+		if ( GpuProgramManager::getSingleton().isMicrocodeAvailableInCache(mName) )
+		{
+			getMicrocodeFromCache( d3d9Device );
+		}
+		else
+		{
+			compileMicrocode( d3d9Device );
+		}
+	}
+    //-----------------------------------------------------------------------
+    void D3D9GpuProgram::getMicrocodeFromCache( IDirect3DDevice9* d3d9Device )
+    {
+		GpuProgramManager::Microcode cacheMicrocode = 
+			GpuProgramManager::getSingleton().getMicrocodeFromCache(mName);
+		
+		LPD3DXBUFFER microcode;
+		HRESULT hr=D3DXCreateBuffer(cacheMicrocode->size(), &microcode); 
+
+		if(microcode)
+		{
+			memcpy(microcode->GetBufferPointer(), cacheMicrocode->getPtr(), cacheMicrocode->size());
+		}
+		
+		loadFromMicrocode(d3d9Device, microcode);
+	}
+    //-----------------------------------------------------------------------
+    void D3D9GpuProgram::compileMicrocode( IDirect3DDevice9* d3d9Device )
+    {
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 
@@ -201,9 +222,24 @@ namespace Ogre {
 			OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, message,
 				"D3D9GpuProgram::loadFromSource");
 		}
-	
-		loadFromMicrocode(d3d9Device, microcode);		
+		else
+		{
+			if ( GpuProgramManager::getSingleton().getSaveMicrocodesToCache() )
+			{
+		        // create microcode
+		        GpuProgramManager::Microcode newMicrocode = 
+                    GpuProgramManager::getSingleton().createMicrocode(microcode->GetBufferSize());
 
+        		// save microcode
+				memcpy(newMicrocode->getPtr(), microcode->GetBufferPointer(), microcode->GetBufferSize());
+
+				// add to the microcode to the cache
+				GpuProgramManager::getSingleton().addMicrocodeToCache(mName, newMicrocode);
+			}
+		}
+
+		loadFromMicrocode(d3d9Device, microcode);		
+		
 		SAFE_RELEASE(microcode);
 		SAFE_RELEASE(errors);
 	}
@@ -236,6 +272,16 @@ namespace Ogre {
 	//-----------------------------------------------------------------------------
     void D3D9GpuVertexProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
     {		 
+		if (d3d9Device == NULL)
+		{
+			for (uint i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+			{
+				IDirect3DDevice9* curD3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+
+				loadFromMicrocode(curD3d9Device, microcode);		
+			}
+		}		
+
 		DeviceToVertexShaderIterator it = mMapDeviceToVertexShader.find(d3d9Device);
 
 		if (it != mMapDeviceToVertexShader.end())
@@ -253,8 +299,24 @@ namespace Ogre {
 
 			if (FAILED(hr))
 			{
+				String errMsg = "Cannot create D3D9 vertex shader " + mName + " from microcode ";
+				switch (hr)
+				{
+				case D3DERR_INVALIDCALL:
+					errMsg += "(D3DERR_INVALIDCALL)";
+					break;
+				case D3DERR_OUTOFVIDEOMEMORY:
+					errMsg += "(D3DERR_OUTOFVIDEOMEMORY)";
+					break;
+				case E_OUTOFMEMORY:
+					errMsg += "(E_OUTOFMEMORY)";
+					break;
+				default:
+					break;
+				}				
+
 				OGRE_EXCEPT(Exception::ERR_RENDERINGAPI_ERROR, 
-					"Cannot create D3D9 vertex shader " + mName + " from microcode",
+					errMsg,
 					"D3D9GpuVertexProgram::loadFromMicrocode");
 	            
 			}

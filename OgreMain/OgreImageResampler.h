@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ namespace Ogre {
 // stepx = difference between adjacent sx_48 values
 // sx1 = lower-bound integer x-position in source
 // sx2 = upper-bound integer x-position in source
-// sxf = fractional weight beween sx1 and sx2
+// sxf = fractional weight between sx1 and sx2
 // x,y,z = location of output pixel in destination
 
 // nearest-neighbor resampler, does not convert formats.

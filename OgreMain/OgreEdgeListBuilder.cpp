@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -48,11 +48,11 @@ namespace Ogre {
         {
             Triangle& t = *ti;
             l->logMessage("Triangle " + StringConverter::toString(num) + " = {" +
-                "indexSet=" + StringConverter::toString(t.indexSet) + ", " + 
-                "vertexSet=" + StringConverter::toString(t.vertexSet) + ", " + 
-                "v0=" + StringConverter::toString(t.vertIndex[0]) + ", " + 
-                "v1=" + StringConverter::toString(t.vertIndex[1]) + ", " + 
-                "v2=" + StringConverter::toString(t.vertIndex[2]) + "}"); 
+                "indexSet=" + StringConverter::toString(t.indexSet) + ", " +
+                "vertexSet=" + StringConverter::toString(t.vertexSet) + ", " +
+                "v0=" + StringConverter::toString(t.vertIndex[0]) + ", " +
+                "v1=" + StringConverter::toString(t.vertIndex[1]) + ", " +
+                "v2=" + StringConverter::toString(t.vertIndex[2]) + "}");
         }
         iend = edgeGroups.end();
         for (i = edgeGroups.begin(); i != iend; ++i)
@@ -64,13 +64,13 @@ namespace Ogre {
             {
                 Edge& e = *ei;
                 l->logMessage(
-                    "Edge " + StringConverter::toString(num) + " = {\n" + 
-                    "  tri0=" + StringConverter::toString(e.triIndex[0]) + ", \n" + 
-                    "  tri1=" + StringConverter::toString(e.triIndex[1]) + ", \n" + 
-                    "  v0=" + StringConverter::toString(e.vertIndex[0]) + ", \n" + 
+                    "Edge " + StringConverter::toString(num) + " = {\n" +
+                    "  tri0=" + StringConverter::toString(e.triIndex[0]) + ", \n" +
+                    "  tri1=" + StringConverter::toString(e.triIndex[1]) + ", \n" +
+                    "  v0=" + StringConverter::toString(e.vertIndex[0]) + ", \n" +
                     "  v1=" + StringConverter::toString(e.vertIndex[1]) + ", \n"
                     "  degenerate=" + StringConverter::toString(e.degenerate) + " \n"
-                    "}"); 
+                    "}");
             }
         }
     }
@@ -96,7 +96,7 @@ namespace Ogre {
         mVertexDataList.push_back(vertexData);
     }
     //---------------------------------------------------------------------
-    void EdgeListBuilder::addIndexData(const IndexData* indexData, 
+    void EdgeListBuilder::addIndexData(const IndexData* indexData,
         size_t vertexSet, RenderOperation::OperationType opType)
     {
         if (opType != RenderOperation::OT_TRIANGLE_LIST &&
@@ -128,7 +128,7 @@ namespace Ogre {
               If not found
                 Create a new common vertex entry in the list
               End If
-              Populate the original vertex index and common vertex index 
+              Populate the original vertex index and common vertex index
             Next vertex
             Connect to existing edge(v1, v0) or create a new edge(v0, v1)
             Connect to existing edge(v2, v1) or create a new edge(v1, v2)
@@ -137,12 +137,12 @@ namespace Ogre {
         Next index set
 
         Note that all edges 'belong' to the index set which originally caused them
-        to be created, which also means that the 2 vertices on the edge are both referencing the 
+        to be created, which also means that the 2 vertices on the edge are both referencing the
         vertex buffer which this index set uses.
         */
 
 
-        /* 
+        /*
         There is a major consideration: 'What is a common vertex'? This is a
         crucial decision, since to form a completely close hull, you need to treat
         vertices which are not physically the same as equivalent. This is because
@@ -153,11 +153,11 @@ namespace Ogre {
         at the unique vertex indices is not enough, since these seams would render
         the hull invalid.
 
-        So, we look for positions which are the same across vertices, and treat 
+        So, we look for positions which are the same across vertices, and treat
         those as as single vertex for our edge calculation. However, this has
-        it's own problems. There are OTHER vertices which may have a common 
+        it's own problems. There are OTHER vertices which may have a common
         position that should not be welded. Imagine 2 cubes touching along one
-        single edge. The common vertices on that edge, if welded, will cause 
+        single edge. The common vertices on that edge, if welded, will cause
         an ambiguous hull, since the edge will have 4 triangles attached to it,
         whilst a manifold mesh should only have 2 triangles attached to each edge.
         This is a problem.
@@ -211,7 +211,7 @@ namespace Ogre {
         RenderOperation::OperationType opType = geometry.opType;
 
         size_t iterations;
-        
+
         switch (opType)
         {
         case RenderOperation::OT_TRIANGLE_LIST:
@@ -228,23 +228,23 @@ namespace Ogre {
         // The edge group now we are dealing with.
         EdgeData::EdgeGroup& eg = mEdgeData->edgeGroups[vertexSet];
 
-		// locate position element & the buffer to go with it
+        // locate position element & the buffer to go with it
         const VertexData* vertexData = mVertexDataList[vertexSet];
-		const VertexElement* posElem = vertexData->vertexDeclaration->findElementBySemantic(VES_POSITION);
-		HardwareVertexBufferSharedPtr vbuf = 
-			vertexData->vertexBufferBinding->getBuffer(posElem->getSource());
-		// lock the buffer for reading
-		unsigned char* pBaseVertex = static_cast<unsigned char*>(
-			vbuf->lock(HardwareBuffer::HBL_READ_ONLY));
+        const VertexElement* posElem = vertexData->vertexDeclaration->findElementBySemantic(VES_POSITION);
+        HardwareVertexBufferSharedPtr vbuf =
+            vertexData->vertexBufferBinding->getBuffer(posElem->getSource());
+        // lock the buffer for reading
+        unsigned char* pBaseVertex = static_cast<unsigned char*>(
+            vbuf->lock(HardwareBuffer::HBL_READ_ONLY));
 
         // Get the indexes ready for reading
-		bool idx32bit = (indexData->indexBuffer->getType() == HardwareIndexBuffer::IT_32BIT);
-		size_t indexSize = idx32bit ? sizeof(uint32) : sizeof(uint16);
+        bool idx32bit = (indexData->indexBuffer->getType() == HardwareIndexBuffer::IT_32BIT);
+        size_t indexSize = idx32bit ? sizeof(uint32) : sizeof(uint16);
 #if defined(_MSC_VER) && _MSC_VER <= 1300
         // NB: Can't use un-named union with VS.NET 2002 when /RTC1 compile flag enabled.
         void* pIndex = indexData->indexBuffer->lock(HardwareBuffer::HBL_READ_ONLY);
-		pIndex = static_cast<void*>(
-			static_cast<char*>(pIndex) + indexData->indexStart * indexSize);
+        pIndex = static_cast<void*>(
+            static_cast<char*>(pIndex) + indexData->indexStart * indexSize);
         unsigned short* p16Idx = static_cast<unsigned short*>(pIndex);
         unsigned int* p32Idx = static_cast<unsigned int*>(pIndex);
 #else
@@ -254,8 +254,8 @@ namespace Ogre {
             unsigned int* p32Idx;
         };
         pIndex = indexData->indexBuffer->lock(HardwareBuffer::HBL_READ_ONLY);
-		pIndex = static_cast<void*>(
-			static_cast<char*>(pIndex) + indexData->indexStart * indexSize);
+        pIndex = static_cast<void*>(
+            static_cast<char*>(pIndex) + indexData->indexStart * indexSize);
 #endif
 
         // Iterate over all the groups of 3 indexes
@@ -326,7 +326,7 @@ namespace Ogre {
                 v[i].y = *pFloat++;
                 v[i].z = *pFloat++;
                 // find this vertex in the existing vertex map, or create it
-                tri.sharedVertIndex[i] = 
+                tri.sharedVertIndex[i] =
                     findOrCreateCommonVertex(v[i], vertexSet, indexSet, index[i]);
             }
 
@@ -335,21 +335,21 @@ namespace Ogre {
                 tri.sharedVertIndex[1] != tri.sharedVertIndex[2] &&
                 tri.sharedVertIndex[2] != tri.sharedVertIndex[0])
             {
-                // Calculate triangle normal (NB will require recalculation for 
+                // Calculate triangle normal (NB will require recalculation for
                 // skeletally animated meshes)
                 mEdgeData->triangleFaceNormals.push_back(
                     Math::calculateFaceNormalWithoutNormalize(v[0], v[1], v[2]));
                 // Add triangle to list
                 mEdgeData->triangles.push_back(tri);
                 // Connect or create edges from common list
-                connectOrCreateEdge(vertexSet, triangleIndex, 
-                    tri.vertIndex[0], tri.vertIndex[1], 
+                connectOrCreateEdge(vertexSet, triangleIndex,
+                    tri.vertIndex[0], tri.vertIndex[1],
                     tri.sharedVertIndex[0], tri.sharedVertIndex[1]);
-                connectOrCreateEdge(vertexSet, triangleIndex, 
-                    tri.vertIndex[1], tri.vertIndex[2], 
+                connectOrCreateEdge(vertexSet, triangleIndex,
+                    tri.vertIndex[1], tri.vertIndex[2],
                     tri.sharedVertIndex[1], tri.sharedVertIndex[2]);
-                connectOrCreateEdge(vertexSet, triangleIndex, 
-                    tri.vertIndex[2], tri.vertIndex[0], 
+                connectOrCreateEdge(vertexSet, triangleIndex,
+                    tri.vertIndex[2], tri.vertIndex[0],
                     tri.sharedVertIndex[2], tri.sharedVertIndex[0]);
                 ++triangleIndex;
             }
@@ -363,8 +363,8 @@ namespace Ogre {
         vbuf->unlock();
     }
     //---------------------------------------------------------------------
-    void EdgeListBuilder::connectOrCreateEdge(size_t vertexSet, size_t triangleIndex, 
-        size_t vertIndex0, size_t vertIndex1, size_t sharedVertIndex0, 
+    void EdgeListBuilder::connectOrCreateEdge(size_t vertexSet, size_t triangleIndex,
+        size_t vertIndex0, size_t vertIndex1, size_t sharedVertIndex0,
         size_t sharedVertIndex1)
     {
         // Find the existing edge (should be reversed order) on shared vertices
@@ -400,7 +400,7 @@ namespace Ogre {
         }
     }
     //---------------------------------------------------------------------
-    size_t EdgeListBuilder::findOrCreateCommonVertex(const Vector3& vec, 
+    size_t EdgeListBuilder::findOrCreateCommonVertex(const Vector3& vec,
         size_t vertexSet, size_t indexSet, size_t originalIndex)
     {
         // Because the algorithm doesn't care about manifold or not, we just identifying
@@ -431,17 +431,17 @@ namespace Ogre {
         assert(triangleFaceNormals.size() == triangleLightFacings.size());
 
         // Use optimised util to determine if triangle's face normal are light facing
-		if(!triangleFaceNormals.empty())
-		{
-			OptimisedUtil::getImplementation()->calculateLightFacing(
-				lightPos,
-				&triangleFaceNormals.front(),
-				&triangleLightFacings.front(),
-				triangleLightFacings.size());
-		}
+        if(!triangleFaceNormals.empty())
+        {
+            OptimisedUtil::getImplementation()->calculateLightFacing(
+                lightPos,
+                &triangleFaceNormals.front(),
+                &triangleLightFacings.front(),
+                triangleLightFacings.size());
+        }
     }
     //---------------------------------------------------------------------
-    void EdgeData::updateFaceNormals(size_t vertexSet, 
+    void EdgeData::updateFaceNormals(size_t vertexSet,
         const HardwareVertexBufferSharedPtr& positionBuffer)
     {
         assert (positionBuffer->getVertexSize() == sizeof(float) * 3
@@ -456,14 +456,14 @@ namespace Ogre {
 
         // Calculate triangles which are using this vertex set
         const EdgeData::EdgeGroup& eg = edgeGroups[vertexSet];
-		if (eg.triCount != 0) 
-		{
-			OptimisedUtil::getImplementation()->calculateFaceNormals(
-				pVert,
-				&triangles[eg.triStart],
-				&triangleFaceNormals[eg.triStart],
-				eg.triCount);
-		}
+        if (eg.triCount != 0)
+        {
+            OptimisedUtil::getImplementation()->calculateFaceNormals(
+                pVert,
+                &triangles[eg.triStart],
+                &triangleFaceNormals[eg.triStart],
+                eg.triCount);
+        }
 
         // unlock the buffer
         positionBuffer->unlock();
@@ -475,18 +475,18 @@ namespace Ogre {
         l->logMessage("-------------------");
         l->logMessage("Number of vertex sets: " + StringConverter::toString(mVertexDataList.size()));
         l->logMessage("Number of index sets: " + StringConverter::toString(mGeometryList.size()));
-        
+
         size_t i, j;
         // Log original vertex data
         for(i = 0; i < mVertexDataList.size(); ++i)
         {
             const VertexData* vData = mVertexDataList[i];
             l->logMessage(".");
-            l->logMessage("Original vertex set " + 
-                StringConverter::toString(i) + " - vertex count " + 
+            l->logMessage("Original vertex set " +
+                StringConverter::toString(i) + " - vertex count " +
                 StringConverter::toString(vData->vertexCount));
             const VertexElement* posElem = vData->vertexDeclaration->findElementBySemantic(VES_POSITION);
-            HardwareVertexBufferSharedPtr vbuf = 
+            HardwareVertexBufferSharedPtr vbuf =
                 vData->vertexBufferBinding->getBuffer(posElem->getSource());
             // lock the buffer for reading
             unsigned char* pBaseVertex = static_cast<unsigned char*>(
@@ -495,9 +495,9 @@ namespace Ogre {
             for (j = 0; j < vData->vertexCount; ++j)
             {
                 posElem->baseVertexPointerToElement(pBaseVertex, &pFloat);
-                l->logMessage("Vertex " + StringConverter::toString(j) + 
-                    ": (" + StringConverter::toString(pFloat[0]) + 
-                    ", " + StringConverter::toString(pFloat[1]) + 
+                l->logMessage("Vertex " + StringConverter::toString(j) +
+                    ": (" + StringConverter::toString(pFloat[0]) +
+                    ", " + StringConverter::toString(pFloat[1]) +
                     ", " + StringConverter::toString(pFloat[2]) + ")");
                 pBaseVertex += vbuf->getVertexSize();
             }
@@ -509,10 +509,10 @@ namespace Ogre {
         {
             const IndexData* iData = mGeometryList[i].indexData;
             l->logMessage(".");
-            l->logMessage("Original triangle set " + 
-                StringConverter::toString(mGeometryList[i].indexSet) + " - index count " + 
-                StringConverter::toString(iData->indexCount) + " - " + 
-            "vertex set " + StringConverter::toString(mGeometryList[i].vertexSet) + " - " + 
+            l->logMessage("Original triangle set " +
+                StringConverter::toString(mGeometryList[i].indexSet) + " - index count " +
+                StringConverter::toString(iData->indexCount) + " - " +
+            "vertex set " + StringConverter::toString(mGeometryList[i].vertexSet) + " - " +
             "operationType " + StringConverter::toString(mGeometryList[i].opType));
             // Get the indexes ready for reading
             unsigned short* p16Idx = 0;
@@ -536,18 +536,18 @@ namespace Ogre {
                     if (mGeometryList[i].opType == RenderOperation::OT_TRIANGLE_LIST
                         || j == 0)
                     {
-		    	unsigned int n1 = *p32Idx++;
-		    	unsigned int n2 = *p32Idx++;
-		    	unsigned int n3 = *p32Idx++;
-                        l->logMessage("Triangle " + StringConverter::toString(j) + 
-                            ": (" + StringConverter::toString(n1) + 
-                            ", " + StringConverter::toString(n2) + 
+                unsigned int n1 = *p32Idx++;
+                unsigned int n2 = *p32Idx++;
+                unsigned int n3 = *p32Idx++;
+                        l->logMessage("Triangle " + StringConverter::toString(j) +
+                            ": (" + StringConverter::toString(n1) +
+                            ", " + StringConverter::toString(n2) +
                             ", " + StringConverter::toString(n3) + ")");
                         j += 3;
                     }
                     else
                     {
-                        l->logMessage("Triangle " + StringConverter::toString(j) + 
+                        l->logMessage("Triangle " + StringConverter::toString(j) +
                             ": (" + StringConverter::toString(*p32Idx++) + ")");
                         j++;
                     }
@@ -557,18 +557,18 @@ namespace Ogre {
                     if (mGeometryList[i].opType == RenderOperation::OT_TRIANGLE_LIST
                         || j == 0)
                     {
-		    	unsigned short n1 = *p16Idx++;
-		    	unsigned short n2 = *p16Idx++;
-		    	unsigned short n3 = *p16Idx++;
-                        l->logMessage("Index " + StringConverter::toString(j) + 
-                            ": (" + StringConverter::toString(n1) + 
-                            ", " + StringConverter::toString(n2) + 
+                unsigned short n1 = *p16Idx++;
+                unsigned short n2 = *p16Idx++;
+                unsigned short n3 = *p16Idx++;
+                        l->logMessage("Index " + StringConverter::toString(j) +
+                            ": (" + StringConverter::toString(n1) +
+                            ", " + StringConverter::toString(n2) +
                             ", " + StringConverter::toString(n3) + ")");
                         j += 3;
                     }
                     else
                     {
-                        l->logMessage("Triangle " + StringConverter::toString(j) + 
+                        l->logMessage("Triangle " + StringConverter::toString(j) +
                             ": (" + StringConverter::toString(*p16Idx++) + ")");
                         j++;
                     }
@@ -582,14 +582,14 @@ namespace Ogre {
 
             // Log common vertex list
             l->logMessage(".");
-            l->logMessage("Common vertex list - vertex count " + 
+            l->logMessage("Common vertex list - vertex count " +
                 StringConverter::toString(mVertices.size()));
             for (i = 0; i < mVertices.size(); ++i)
             {
                 CommonVertex& c = mVertices[i];
-                l->logMessage("Common vertex " + StringConverter::toString(i) + 
-                    ": (vertexSet=" + StringConverter::toString(c.vertexSet) + 
-                    ", originalIndex=" + StringConverter::toString(c.originalIndex) + 
+                l->logMessage("Common vertex " + StringConverter::toString(i) +
+                    ": (vertexSet=" + StringConverter::toString(c.vertexSet) +
+                    ", originalIndex=" + StringConverter::toString(c.originalIndex) +
                     ", position=" + StringConverter::toString(c.position));
             }
         }

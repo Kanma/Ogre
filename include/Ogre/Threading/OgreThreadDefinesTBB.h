@@ -4,7 +4,7 @@ This source file is a part of OGRE
 
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -54,7 +54,7 @@ THE SOFTWARE
 #define OGRE_THREAD_POINTER_DELETE(var) var.local().setNull()
 // Utility
 #define OGRE_THREAD_HARDWARE_CONCURRENCY tbb::task_scheduler_init::default_num_threads()
-#define OGRE_THREAD_CURRENT_ID tbb::this_tbb_thread::get_id() 
+#define OGRE_THREAD_CURRENT_ID tbb::this_tbb_thread::get_id()
 #define OGRE_THREAD_SLEEP(ms) tbb::this_tbb_thread::sleep(tbb::tick_count::interval_t(double(ms)/1000))
 #define OGRE_THREAD_WORKER_INHERIT
 

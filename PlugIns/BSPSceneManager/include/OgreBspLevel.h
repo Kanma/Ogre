@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -73,13 +73,13 @@ namespace Ogre {
         */
         BspNode* findLeaf(const Vector3& point) const;
 
-        /** Ensures that the MovableObject is attached to the right leaves of the 
+        /** Ensures that the MovableObject is attached to the right leaves of the
             BSP tree.
         */
-        void _notifyObjectMoved(const MovableObject* mov, 
+        void _notifyObjectMoved(const MovableObject* mov,
             const Vector3& pos);
-		/** Internal method, makes sure an object is removed from the leaves when detached from a node. */
-		void _notifyObjectDetached(const MovableObject* mov);
+        /** Internal method, makes sure an object is removed from the leaves when detached from a node. */
+        void _notifyObjectDetached(const MovableObject* mov);
         /** Gets a pointer to the start of the leaf nodes. */
         BspNode* getLeafStart(void) {return &mRootNode[mLeafStart]; }
         /** Gets the number of leaf nodes */
@@ -90,15 +90,15 @@ namespace Ogre {
         /** Calculate the number of loading stages required for a given level */
         static size_t calculateLoadingStages(DataStreamPtr& stream);
 
-		/** Load direct from stream */
-		void load(DataStreamPtr& stream);
+        /** Load direct from stream */
+        void load(DataStreamPtr& stream);
 
-		/** Is sky enabled? */
-		bool isSkyEnabled(void) const;
-		/** Get Sky material name */
-		const String& getSkyMaterialName(void) const;
-		/** Get sky curvature */
-		Real getSkyCurvature(void) const;
+        /** Is sky enabled? */
+        bool isSkyEnabled(void) const;
+        /** Get Sky material name */
+        const String& getSkyMaterialName(void) const;
+        /** Get sky curvature */
+        Real getSkyCurvature(void) const;
 
         /** Utility class just to enable queueing of patches */
     protected:
@@ -117,12 +117,12 @@ namespace Ogre {
         BspNode* mRootNode;
         int mNumNodes;
         int mNumLeaves;
-		int mNumBrushes;
+        int mNumBrushes;
         int mLeafStart; // the index at which leaf nodes begin
 
         /** Vertex format for fixed geometry.
             Note that in this case vertex components (position, normal, texture coords etc)
-            are held interleaved in the same buffer. However, the format here is different from 
+            are held interleaved in the same buffer. However, the format here is different from
             the format used by Quake because older Direct3d drivers like the vertex elements
             to be in a particular order within the buffer. See VertexDeclaration for full
             details of this marvellous(not) feature.
@@ -169,7 +169,7 @@ namespace Ogre {
         BspNode::Brush *mBrushes;
 
         /** Vector of player start points */
-		vector<ViewPoint>::type mPlayerStarts;
+        vector<ViewPoint>::type mPlayerStarts;
 
         /** Internal utility function for loading data from Quake3. */
         void loadQuake3Level(const Quake3Level& q3lvl);
@@ -201,25 +201,25 @@ namespace Ogre {
         /** Internal method for parsing chosen entities. */
         void loadEntities(const Quake3Level& q3lvl);
 
-		typedef map<const MovableObject*, list<BspNode*>::type >::type MovableToNodeMap;
+        typedef map<const MovableObject*, list<BspNode*>::type >::type MovableToNodeMap;
         /// Map for locating the nodes a movable is currently a member of
         MovableToNodeMap mMovableToNodeMap;
 
         void tagNodesWithMovable(BspNode* node, const MovableObject* mov, const Vector3& pos);
 
-        // Storage of patches 
-		typedef map<int, PatchSurface*>::type PatchMap;
+        // Storage of patches
+        typedef map<int, PatchSurface*>::type PatchMap;
         PatchMap mPatches;
         // Total number of vertices required for all patches
         size_t mPatchVertexCount;
         // Total number of indexes required for all patches
         size_t mPatchIndexCount;
-		// Sky enabled?
-		bool mSkyEnabled;
-		// Sky material
-		String mSkyMaterial;
-		// Sky details
-		Real mSkyCurvature;
+        // Sky enabled?
+        bool mSkyEnabled;
+        // Sky material
+        String mSkyMaterial;
+        // Sky details
+        Real mSkyCurvature;
 
 
         void initQuake3Patches(const Quake3Level & q3lvl, VertexDeclaration* decl);
@@ -229,23 +229,23 @@ namespace Ogre {
 
 
     };
-    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to BspLevelPtr 
+    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to BspLevelPtr
     @note Has to be a subclass since we need operator=.
-    We could templatise this instead of repeating per Resource subclass, 
+    We could templatise this instead of repeating per Resource subclass,
     except to do so requires a form VC6 does not support i.e.
     ResourceSubclassPtr<T> : public SharedPtr<T>
     */
-    class BspLevelPtr : public SharedPtr<BspLevel> 
+    class BspLevelPtr : public SharedPtr<BspLevel>
     {
     public:
         BspLevelPtr() : SharedPtr<BspLevel>() {}
         explicit BspLevelPtr(BspLevel* rep) : SharedPtr<BspLevel>(rep) {}
-        BspLevelPtr(const BspLevelPtr& r) : SharedPtr<BspLevel>(r) {} 
+        BspLevelPtr(const BspLevelPtr& r) : SharedPtr<BspLevel>(r) {}
         BspLevelPtr(const ResourcePtr& r) : SharedPtr<BspLevel>()
         {
-			// lock & copy other mutex pointer
-			OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
-			OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
+            // lock & copy other mutex pointer
+            OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
+            OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
             pRep = static_cast<BspLevel*>(r.getPointer());
             pUseCount = r.useCountPointer();
             if (pUseCount)
@@ -260,9 +260,9 @@ namespace Ogre {
             if (pRep == static_cast<BspLevel*>(r.getPointer()))
                 return *this;
             release();
-			// lock & copy other mutex pointer
-			OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
-			OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
+            // lock & copy other mutex pointer
+            OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
+            OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
             pRep = static_cast<BspLevel*>(r.getPointer());
             pUseCount = r.useCountPointer();
             if (pUseCount)

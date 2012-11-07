@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -105,7 +105,7 @@ bool Compiler2Pass::doPass1()
 
 	// start with a clean slate
 	mTokenInstructions.clear();
-	// tokenize and check semantics untill an error occurs or end of source is reached
+	// tokenize and check semantics until an error occurs or end of source is reached
 	// assume RootRulePath has pointer to rules so start at index + 1 for first rule path
 	// first rule token would be a rule definition so skip over it
 	bool passed = processRulePath(0);

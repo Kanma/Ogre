@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,28 +34,28 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	class Pass;
-	class Renderable;
+    class Pass;
+    class Renderable;
 
     /** Abstract interface which classes must implement if they wish to receive
-        events from the scene manager when single object is about to be rendered. 
+        events from the scene manager when single object is about to be rendered.
     */
-	class _OgreExport RenderObjectListener
-	{
-	public:
-		virtual ~RenderObjectListener() {}
-		/** Event raised when render single object started.
-		@remarks
-		This method is called by the SceneManager.
-		@param pass The renderable that is going to be rendered.
-		@param pass The pass which was set.
-		@param source The auto parameter source used within this render call.
-		@pLightList The light list in use.
-		@suppressRenderStateChanges True if render state changes should be suppressed.
-		*/
-		virtual void notifyRenderSingleObject(Renderable* rend, const Pass* pass, const AutoParamDataSource* source, 
-			const LightList* pLightList, bool suppressRenderStateChanges) = 0;
-	};
+    class _OgreExport RenderObjectListener
+    {
+    public:
+        virtual ~RenderObjectListener() {}
+        /** Event raised when render single object started.
+        @remarks
+        This method is called by the SceneManager.
+        @param pass The renderable that is going to be rendered.
+        @param pass The pass which was set.
+        @param source The auto parameter source used within this render call.
+        @pLightList The light list in use.
+        @suppressRenderStateChanges True if render state changes should be suppressed.
+        */
+        virtual void notifyRenderSingleObject(Renderable* rend, const Pass* pass, const AutoParamDataSource* source,
+            const LightList* pLightList, bool suppressRenderStateChanges) = 0;
+    };
 
 
 }

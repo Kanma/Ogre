@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,33 +35,33 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     MovablePlane::MovablePlane(const String& name) : Plane(), MovableObject(name),
-        mLastTranslate(Vector3::ZERO), 
+        mLastTranslate(Vector3::ZERO),
         mLastRotate(Quaternion::IDENTITY),
         mDirty(true)
     {
     }
     //-----------------------------------------------------------------------
-    MovablePlane::MovablePlane (const Plane& rhs) : Plane(rhs), 
-        mLastTranslate(Vector3::ZERO), mLastRotate(Quaternion::IDENTITY), 
+    MovablePlane::MovablePlane (const Plane& rhs) : Plane(rhs),
+        mLastTranslate(Vector3::ZERO), mLastRotate(Quaternion::IDENTITY),
         mDirty(true)
     {
     }
     //-----------------------------------------------------------------------
     MovablePlane::MovablePlane (const Vector3& rkNormal, Real fConstant)
-        : Plane (rkNormal, fConstant), mLastTranslate(Vector3::ZERO), 
+        : Plane (rkNormal, fConstant), mLastTranslate(Vector3::ZERO),
         mLastRotate(Quaternion::IDENTITY), mDirty(true)
     {
     }
     //-----------------------------------------------------------------------
     MovablePlane::MovablePlane (const Vector3& rkNormal, const Vector3& rkPoint)
-        : Plane(rkNormal, rkPoint), mLastTranslate(Vector3::ZERO), 
+        : Plane(rkNormal, rkPoint), mLastTranslate(Vector3::ZERO),
         mLastRotate(Quaternion::IDENTITY), mDirty(true)
     {
     }
     //-----------------------------------------------------------------------
     MovablePlane::MovablePlane (const Vector3& rkPoint0, const Vector3& rkPoint1,
         const Vector3& rkPoint2)
-        : Plane(rkPoint0, rkPoint1, rkPoint2), mLastTranslate(Vector3::ZERO), 
+        : Plane(rkPoint0, rkPoint1, rkPoint2), mLastTranslate(Vector3::ZERO),
         mLastRotate(Quaternion::IDENTITY), mDirty(true)
     {
     }

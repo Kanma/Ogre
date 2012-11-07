@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +36,12 @@ THE SOFTWARE.
 #include "OgreCommon.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Effects
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Effects
+    *  @{
+    */
 
     /** A billboard is a primitive which always faces the camera in every frame.
         @remarks
@@ -63,7 +63,7 @@ namespace Ogre {
             BillboardSet
     */
 
-	class _OgreExport Billboard : public FXAlloc
+    class _OgreExport Billboard : public FXAlloc
     {
         friend class BillboardSet;
         friend class BillboardParticleRenderer;
@@ -169,7 +169,7 @@ namespace Ogre {
         */
         void _notifyOwner(BillboardSet* owner);
 
-        /** Returns true if this billboard use individual texture coordinate rect (i.e. if the 
+        /** Returns true if this billboard use individual texture coordinate rect (i.e. if the
             Billboard::setTexcoordRect method has been called for this instance), or returns
             false if use texture coordinates defined in the parent BillboardSet's texture
             coordinates array (i.e. if the Billboard::setTexcoordIndex method has been called
@@ -180,16 +180,16 @@ namespace Ogre {
         */
         bool isUseTexcoordRect(void) const { return mUseTexcoordRect; }
 
-        /** setTexcoordIndex() sets which texture coordinate rect this billboard will use 
-            when rendering. The parent billboard set may contain more than one, in which 
-            case a billboard can be textured with different pieces of a larger texture 
+        /** setTexcoordIndex() sets which texture coordinate rect this billboard will use
+            when rendering. The parent billboard set may contain more than one, in which
+            case a billboard can be textured with different pieces of a larger texture
             sheet very efficiently.
           @see
             BillboardSet::setTextureCoords()
           */
         void setTexcoordIndex(uint16 texcoordIndex);
 
-        /** getTexcoordIndex() returns the previous value set by setTexcoordIndex(). 
+        /** getTexcoordIndex() returns the previous value set by setTexcoordIndex().
             The default value is 0, which is always a valid texture coordinate set.
             @remarks
                 This value is useful only when isUseTexcoordRect return false.
@@ -210,15 +210,15 @@ namespace Ogre {
         */
         void setTexcoordRect(Real u0, Real v0, Real u1, Real v1);
 
-        /** getTexcoordRect() returns the previous value set by setTexcoordRect(). 
+        /** getTexcoordRect() returns the previous value set by setTexcoordRect().
             @remarks
                 This value is useful only when isUseTexcoordRect return true.
         */
         const FloatRect& getTexcoordRect(void) const { return mTexcoordRect; }
     };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

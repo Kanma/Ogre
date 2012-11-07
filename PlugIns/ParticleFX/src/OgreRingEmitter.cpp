@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -66,7 +66,7 @@ namespace Ogre {
         AreaEmitter::_initParticle(pParticle);
         // create a random angle from 0 .. PI*2
         Radian alpha ( Math::RangeRandom(0,Math::TWO_PI) );
-  
+
         // create two random radius values that are bigger than the inner size
         a = Math::RangeRandom(mInnerSizex,1.0);
         b = Math::RangeRandom(mInnerSizey,1.0);
@@ -78,12 +78,12 @@ namespace Ogre {
         x = a * Math::Sin(alpha);
         y = b * Math::Cos(alpha);
         // the height is simple -1 to 1
-        z = Math::SymmetricRandom();     
+        z = Math::SymmetricRandom();
 
         // scale the found point to the ring's size and move it
         // relatively to the center of the emitter point
 
-        pParticle->position = mPosition + 
+        pParticle->position = mPosition +
          + x * mXRange + y * mYRange + z * mZRange;
 
         // Generate complex data by reference
@@ -93,7 +93,7 @@ namespace Ogre {
 
         // Generate simpler data
         pParticle->timeToLive = pParticle->totalTimeToLive = genEmissionTTL();
-        
+
     }
     //-----------------------------------------------------------------------
     void RingEmitter::setInnerSize(Real x, Real y)

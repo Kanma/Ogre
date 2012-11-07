@@ -1,10 +1,11 @@
+
 /*
 -----------------------------------------------------------------------------
 This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +52,8 @@ namespace Ogre
 		void destroy(void);
 		bool isVisible() const;
 		bool isClosed() const { return mClosed; }
+		bool isHidden() const { return mHidden; }
+		void setHidden(bool hidden);
 		void reposition(int left, int top);
 		void resize(unsigned int width, unsigned int height);
 		void swapBuffers( bool waitForVSync = true );
@@ -93,6 +96,7 @@ namespace Ogre
 		bool	mIsExternal;			// window not created by Ogre
 		bool	mSizing;
 		bool	mClosed;
+		bool	mHidden;
 		bool	mIsSwapChain;			// Is this a secondary window?
 		bool	mSwitchingFullscreen;	// Are we switching from fullscreen to windowed or vice versa
 

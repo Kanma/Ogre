@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -53,9 +53,9 @@ namespace Ogre {
     {
     }
     //-----------------------------------------------------------------------
-    void PatchSurface::defineSurface(void* controlPointBuffer, 
+    void PatchSurface::defineSurface(void* controlPointBuffer,
             VertexDeclaration *declaration, size_t width, size_t height,
-            PatchSurfaceType pType, size_t uMaxSubdivisionLevel, 
+            PatchSurfaceType pType, size_t uMaxSubdivisionLevel,
             size_t vMaxSubdivisionLevel, VisibleSide visibleSide)
     {
         if (height == 0 || width == 0)
@@ -162,7 +162,7 @@ namespace Ogre {
         return mRequiredIndexCount;
     }
     //-----------------------------------------------------------------------
-    void PatchSurface::build(HardwareVertexBufferSharedPtr destVertexBuffer, 
+    void PatchSurface::build(HardwareVertexBufferSharedPtr destVertexBuffer,
         size_t vertexStart, HardwareIndexBufferSharedPtr destIndexBuffer, size_t indexStart)
     {
 
@@ -174,9 +174,9 @@ namespace Ogre {
         mIndexBuffer = destIndexBuffer;
         mIndexOffset = indexStart;
 
-        // Lock just the region we are interested in 
+        // Lock just the region we are interested in
         void* lockedBuffer = mVertexBuffer->lock(
-            mVertexOffset * mDeclaration->getVertexSize(0), 
+            mVertexOffset * mDeclaration->getVertexSize(0),
             mRequiredVertexCount * mDeclaration->getVertexSize(0),
             HardwareBuffer::HBL_NO_OVERWRITE);
 
@@ -199,7 +199,7 @@ namespace Ogre {
         {
             subdivideCurve(lockedBuffer, u, vStep*mMeshWidth, mMeshHeight / vStep, mVLevel);
         }
-        
+
 
         mVertexBuffer->unlock();
 
@@ -311,7 +311,7 @@ namespace Ogre {
             if(d.dotProduct(d) < test) {
                 break;
             }
-            b=a; 
+            b=a;
         }
 
         return level;
@@ -339,8 +339,8 @@ namespace Ogre {
         // Allocate enough buffer memory for maximum subdivision, not current subdivision
         HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().
             createVertexBuffer(
-                mDeclaration->getVertexSize(0), 
-                mMaxMeshHeight * mMaxMeshWidth, // maximum size 
+                mDeclaration->getVertexSize(0),
+                mMaxMeshHeight * mMaxMeshWidth, // maximum size
                 HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY); // dynamic for changing level
 
         // Set binding
@@ -352,8 +352,8 @@ namespace Ogre {
         // Index count will be set on build()
         unsigned short iterations = (mVSide == VS_BOTH ? 2 : 1);
         sm->indexData->indexBuffer = HardwareBufferManager::getSingleton().createIndexBuffer(
-            HardwareIndexBuffer::IT_16BIT, 
-            (mMaxMeshWidth-1) * (mMaxMeshHeight-1) * 2 * iterations * 3,  
+            HardwareIndexBuffer::IT_16BIT,
+            (mMaxMeshWidth-1) * (mMaxMeshHeight-1) * 2 * iterations * 3,
             HardwareBuffer::HBU_DYNAMIC_WRITE_ONLY);
 
         mMesh->load();
@@ -462,7 +462,7 @@ namespace Ogre {
             } // u
         } // v
 
-       
+
     }
     //-----------------------------------------------------------------------
     void PatchSurface::subdivideCurve(void* lockedBuffer, size_t startIdx, size_t stepSize, size_t numSteps, size_t iterations)
@@ -517,7 +517,7 @@ namespace Ogre {
 
         // The mesh is built, just make a list of indexes to spit out the triangles
         int vInc, uInc;
-        
+
         size_t vCount, uCount, v, u, iterations;
 
         if (mVSide == VS_BOTH)
@@ -552,16 +552,16 @@ namespace Ogre {
         {
             p32 = static_cast<unsigned int*>(
                 mIndexBuffer->lock(
-                    mIndexOffset * sizeof(unsigned int), 
-                    mRequiredIndexCount * sizeof(unsigned int), 
+                    mIndexOffset * sizeof(unsigned int),
+                    mRequiredIndexCount * sizeof(unsigned int),
                     HardwareBuffer::HBL_NO_OVERWRITE));
         }
         else
         {
             p16 = static_cast<unsigned short*>(
                 mIndexBuffer->lock(
-                    mIndexOffset * sizeof(unsigned short), 
-                    mRequiredIndexCount * sizeof(unsigned short), 
+                    mIndexOffset * sizeof(unsigned short),
+                    mRequiredIndexCount * sizeof(unsigned short),
                     HardwareBuffer::HBL_NO_OVERWRITE));
         }
 

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,19 +37,19 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup LOD
-	*  @{
-	*/
-	/** A surface which is defined by curves of some kind to form a patch, e.g. a Bezier patch.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup LOD
+    *  @{
+    */
+    /** A surface which is defined by curves of some kind to form a patch, e.g. a Bezier patch.
         @remarks
             This object will take a list of control points with various assorted data, and will
             subdivide it into a patch mesh. Currently only Bezier curves are supported for defining
             the surface, but other techniques such as NURBS would follow the same basic approach.
     */
-	class _OgreExport PatchSurface : public PatchAlloc
+    class _OgreExport PatchSurface : public PatchAlloc
     {
     public:
         PatchSurface();
@@ -83,39 +83,39 @@ namespace Ogre {
                 is left as AUTO_LEVEL, which means the system decides how much subdivision is required (based on the
                 curvature of the surface)
             @param
-                controlPointBuffer A pointer to a buffer containing the vertex data which defines control points 
+                controlPointBuffer A pointer to a buffer containing the vertex data which defines control points
                 of the curves rather than actual vertices. Note that you are expected to provide not
                 just position information, but potentially normals and texture coordinates too. The
                 format of the buffer is defined in the VertexDeclaration parameter
             @param
-                declaration VertexDeclaration describing the contents of the buffer. 
+                declaration VertexDeclaration describing the contents of the buffer.
                 Note this declaration must _only_ draw on buffer source 0!
             @param
                 width Specifies the width of the patch in control points.
             @param
-                height Specifies the height of the patch in control points. 
+                height Specifies the height of the patch in control points.
             @param
                 pType The type of surface - currently only PST_BEZIER is supported
             @param
-                uMaxSubdivisionLevel,vMaxSubdivisionLevel If you want to manually set the top level of subdivision, 
+                uMaxSubdivisionLevel,vMaxSubdivisionLevel If you want to manually set the top level of subdivision,
                 do it here, otherwise let the system decide.
             @param
                 visibleSide Determines which side of the patch (or both) triangles are generated for.
         */
-        void defineSurface(void* controlPointBuffer, 
+        void defineSurface(void* controlPointBuffer,
             VertexDeclaration *declaration, size_t width, size_t height,
-            PatchSurfaceType pType = PST_BEZIER, 
+            PatchSurfaceType pType = PST_BEZIER,
             size_t uMaxSubdivisionLevel = AUTO_LEVEL, size_t vMaxSubdivisionLevel = AUTO_LEVEL,
             VisibleSide visibleSide = VS_FRONT);
 
         /** Based on a previous call to defineSurface, establishes the number of vertices required
-            to hold this patch at the maximum detail level. 
+            to hold this patch at the maximum detail level.
             @remarks This is useful when you wish to build the patch into external vertex / index buffers.
 
         */
         size_t getRequiredVertexCount(void) const;
         /** Based on a previous call to defineSurface, establishes the number of indexes required
-            to hold this patch at the maximum detail level. 
+            to hold this patch at the maximum detail level.
             @remarks This is useful when you wish to build the patch into external vertex / index buffers.
 
         */
@@ -131,14 +131,14 @@ namespace Ogre {
 
         /** Gets the bounds of this patch, only valid after calling defineSurface. */
         const AxisAlignedBox& getBounds(void) const;
-        /** Gets the radius of the bounding sphere for this patch, only valid after defineSurface 
+        /** Gets the radius of the bounding sphere for this patch, only valid after defineSurface
         has been called. */
         Real getBoundingSphereRadius(void) const;
         /** Tells the system to build the mesh relating to the surface into externally created
             buffers.
             @remarks
                 The VertexDeclaration of the vertex buffer must be identical to the one passed into
-                defineSurface.  In addition, there must be enough space in the buffer to 
+                defineSurface.  In addition, there must be enough space in the buffer to
                 accommodate the patch at full detail level; you should call getRequiredVertexCount
                 and getRequiredIndexCount to determine this. This method does not create an internal
                 mesh for this patch and so getMesh will return null if you call it after building the
@@ -157,7 +157,7 @@ namespace Ogre {
                 This method changes the proportionate detail level of the patch; since
                 the U and V directions can have different subdivision levels, this method
                 takes a single Real value where 0 is the minimum detail (the control points)
-                and 1 is the maximum detail level as supplied to the original call to 
+                and 1 is the maximum detail level as supplied to the original call to
                 defineSurface.
         */
         void setSubdivisionFactor(Real factor);
@@ -169,9 +169,9 @@ namespace Ogre {
         {
             return mControlPointBuffer;
         }
-        /** Convenience method for telling the patch that the control points have been 
+        /** Convenience method for telling the patch that the control points have been
             deleted, since once the patch has been built they are not required. */
-        void notifyControlPointBufferDeallocated(void) { 
+        void notifyControlPointBufferDeallocated(void) {
             mControlPointBuffer = 0;
         }
     protected:
@@ -232,8 +232,8 @@ namespace Ogre {
 
     };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 } // namespace
 

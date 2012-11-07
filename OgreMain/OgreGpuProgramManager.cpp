@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,69 +34,70 @@ THE SOFTWARE.
 
 namespace Ogre {
     //-----------------------------------------------------------------------
-    template<> GpuProgramManager* Singleton<GpuProgramManager>::ms_Singleton = 0;
+    template<> GpuProgramManager* Singleton<GpuProgramManager>::msSingleton = 0;
     GpuProgramManager* GpuProgramManager::getSingletonPtr(void)
     {
-        return ms_Singleton;
+        return msSingleton;
     }
     GpuProgramManager& GpuProgramManager::getSingleton(void)
-    {  
-        assert( ms_Singleton );  return ( *ms_Singleton );  
-    }
-	//---------------------------------------------------------------------------
-	GpuProgramManager::GpuProgramManager()
-	{
-		// Loading order
-		mLoadOrder = 50.0f;
-		// Resource type
-		mResourceType = "GpuProgram";
-
-		// subclasses should register with resource group manager
-	}
-	//---------------------------------------------------------------------------
-	GpuProgramManager::~GpuProgramManager()
-	{
-		// subclasses should unregister with resource group manager
-	}
-	//---------------------------------------------------------------------------
-    GpuProgramPtr GpuProgramManager::load(const String& name,
-		const String& groupName, const String& filename, 
-		GpuProgramType gptype, const String& syntaxCode)
     {
-		GpuProgramPtr prg;
-		{
-			OGRE_LOCK_AUTO_MUTEX
-			prg = getByName(name);
-			if (prg.isNull())
-			{
-				prg = createProgram(name, groupName, filename, gptype, syntaxCode);
-			}
-
-		}
-        prg->load();
-        return prg;
+        assert( msSingleton );  return ( *msSingleton );
     }
     //---------------------------------------------------------------------------
-	GpuProgramPtr GpuProgramManager::loadFromString(const String& name, 
-		const String& groupName, const String& code, 
+    GpuProgramManager::GpuProgramManager()
+    {
+        // Loading order
+        mLoadOrder = 50.0f;
+        // Resource type
+        mResourceType = "GpuProgram";
+        mSaveMicrocodesToCache = false;
+
+        // subclasses should register with resource group manager
+    }
+    //---------------------------------------------------------------------------
+    GpuProgramManager::~GpuProgramManager()
+    {
+        // subclasses should unregister with resource group manager
+    }
+    //---------------------------------------------------------------------------
+    GpuProgramPtr GpuProgramManager::load(const String& name,
+        const String& groupName, const String& filename,
         GpuProgramType gptype, const String& syntaxCode)
     {
-		GpuProgramPtr prg;
-		{
-			OGRE_LOCK_AUTO_MUTEX
-			prg = getByName(name);
-			if (prg.isNull())
-			{
-				prg = createProgramFromString(name, groupName, code, gptype, syntaxCode);
-			}
+        GpuProgramPtr prg;
+        {
+            OGRE_LOCK_AUTO_MUTEX
+            prg = getByName(name);
+            if (prg.isNull())
+            {
+                prg = createProgram(name, groupName, filename, gptype, syntaxCode);
+            }
 
-		}
+        }
         prg->load();
         return prg;
     }
     //---------------------------------------------------------------------------
-    ResourcePtr GpuProgramManager::create(const String& name, const String& group, 
-        GpuProgramType gptype, const String& syntaxCode, bool isManual, 
+    GpuProgramPtr GpuProgramManager::loadFromString(const String& name,
+        const String& groupName, const String& code,
+        GpuProgramType gptype, const String& syntaxCode)
+    {
+        GpuProgramPtr prg;
+        {
+            OGRE_LOCK_AUTO_MUTEX
+            prg = getByName(name);
+            if (prg.isNull())
+            {
+                prg = createProgramFromString(name, groupName, code, gptype, syntaxCode);
+            }
+
+        }
+        prg->load();
+        return prg;
+    }
+    //---------------------------------------------------------------------------
+    ResourcePtr GpuProgramManager::create(const String& name, const String& group,
+        GpuProgramType gptype, const String& syntaxCode, bool isManual,
         ManualResourceLoader* loader)
     {
         // Call creation implementation
@@ -109,47 +110,47 @@ namespace Ogre {
         return ret;
     }
     //---------------------------------------------------------------------------
-	GpuProgramPtr GpuProgramManager::createProgram(const String& name, 
-		const String& groupName, const String& filename, 
-		GpuProgramType gptype, const String& syntaxCode)
+    GpuProgramPtr GpuProgramManager::createProgram(const String& name,
+        const String& groupName, const String& filename,
+        GpuProgramType gptype, const String& syntaxCode)
     {
-		GpuProgramPtr prg = create(name, groupName, gptype, syntaxCode);
+        GpuProgramPtr prg = create(name, groupName, gptype, syntaxCode);
         // Set all prarmeters (create does not set, just determines factory)
-		prg->setType(gptype);
-		prg->setSyntaxCode(syntaxCode);
-		prg->setSourceFile(filename);
+        prg->setType(gptype);
+        prg->setSyntaxCode(syntaxCode);
+        prg->setSourceFile(filename);
         return prg;
     }
     //---------------------------------------------------------------------------
-	GpuProgramPtr GpuProgramManager::createProgramFromString(const String& name, 
-		const String& groupName, const String& code, GpuProgramType gptype, 
-		const String& syntaxCode)
+    GpuProgramPtr GpuProgramManager::createProgramFromString(const String& name,
+        const String& groupName, const String& code, GpuProgramType gptype,
+        const String& syntaxCode)
     {
-		GpuProgramPtr prg = create(name, groupName, gptype, syntaxCode);
+        GpuProgramPtr prg = create(name, groupName, gptype, syntaxCode);
         // Set all prarmeters (create does not set, just determines factory)
-		prg->setType(gptype);
-		prg->setSyntaxCode(syntaxCode);
-		prg->setSource(code);
+        prg->setType(gptype);
+        prg->setSyntaxCode(syntaxCode);
+        prg->setSource(code);
         return prg;
     }
     //---------------------------------------------------------------------------
-		const GpuProgramManager::SyntaxCodes& GpuProgramManager::getSupportedSyntax(void) const
+        const GpuProgramManager::SyntaxCodes& GpuProgramManager::getSupportedSyntax(void) const
         {
-				// Use the current render system
-			  RenderSystem* rs = Root::getSingleton().getRenderSystem();
+                // Use the current render system
+              RenderSystem* rs = Root::getSingleton().getRenderSystem();
 
-				// Get the supported syntaxed from RenderSystemCapabilities 
-				return rs->getCapabilities()->getSupportedShaderProfiles();
+                // Get the supported syntaxed from RenderSystemCapabilities
+                return rs->getCapabilities()->getSupportedShaderProfiles();
         }
 
     //---------------------------------------------------------------------------
     bool GpuProgramManager::isSyntaxSupported(const String& syntaxCode) const
         {
-				// Use the current render system
-			  RenderSystem* rs = Root::getSingleton().getRenderSystem();
+                // Use the current render system
+              RenderSystem* rs = Root::getSingleton().getRenderSystem();
 
-				// Get the supported syntaxed from RenderSystemCapabilities 
-				return rs->getCapabilities()->isShaderProfileSupported(syntaxCode);
+                // Get the supported syntaxed from RenderSystemCapabilities
+                return rs->getCapabilities()->isShaderProfileSupported(syntaxCode);
 
     }
     //---------------------------------------------------------------------------
@@ -164,42 +165,165 @@ namespace Ogre {
         }
         return ResourceManager::getByName(name);
     }
-	//-----------------------------------------------------------------------------
-	GpuProgramParametersSharedPtr GpuProgramManager::createParameters(void)
-	{
-		return GpuProgramParametersSharedPtr(OGRE_NEW GpuProgramParameters());
-	}
-	//---------------------------------------------------------------------
-	GpuSharedParametersPtr GpuProgramManager::createSharedParameters(const String& name)
-	{
-		if (mSharedParametersMap.find(name) != mSharedParametersMap.end())
-		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"The shared parameter set '" + name + "' already exists!", 
-				"GpuProgramManager::createSharedParameters");
-		}
-		GpuSharedParametersPtr ret(OGRE_NEW GpuSharedParameters(name));
-		mSharedParametersMap[name] = ret;
-		return ret;
-	}
-	//---------------------------------------------------------------------
-	GpuSharedParametersPtr GpuProgramManager::getSharedParameters(const String& name) const
-	{
-		SharedParametersMap::const_iterator i = mSharedParametersMap.find(name);
-		if (i == mSharedParametersMap.end())
-		{
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"No shared parameter set with name '" + name + "'!", 
-				"GpuProgramManager::createSharedParameters");
-		}
-		return i->second;
-	}
-	//---------------------------------------------------------------------
-	const GpuProgramManager::SharedParametersMap& 
-	GpuProgramManager::getAvailableSharedParameters() const
-	{
-		return mSharedParametersMap;
-	}
-	//---------------------------------------------------------------------
+    //-----------------------------------------------------------------------------
+    GpuProgramParametersSharedPtr GpuProgramManager::createParameters(void)
+    {
+        return GpuProgramParametersSharedPtr(OGRE_NEW GpuProgramParameters());
+    }
+    //---------------------------------------------------------------------
+    GpuSharedParametersPtr GpuProgramManager::createSharedParameters(const String& name)
+    {
+        if (mSharedParametersMap.find(name) != mSharedParametersMap.end())
+        {
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+                "The shared parameter set '" + name + "' already exists!",
+                "GpuProgramManager::createSharedParameters");
+        }
+        GpuSharedParametersPtr ret(OGRE_NEW GpuSharedParameters(name));
+        mSharedParametersMap[name] = ret;
+        return ret;
+    }
+    //---------------------------------------------------------------------
+    GpuSharedParametersPtr GpuProgramManager::getSharedParameters(const String& name) const
+    {
+        SharedParametersMap::const_iterator i = mSharedParametersMap.find(name);
+        if (i == mSharedParametersMap.end())
+        {
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+                "No shared parameter set with name '" + name + "'!",
+                "GpuProgramManager::createSharedParameters");
+        }
+        return i->second;
+    }
+    //---------------------------------------------------------------------
+    const GpuProgramManager::SharedParametersMap&
+    GpuProgramManager::getAvailableSharedParameters() const
+    {
+        return mSharedParametersMap;
+    }
+    //---------------------------------------------------------------------
+    bool GpuProgramManager::getSaveMicrocodesToCache()
+    {
+        return mSaveMicrocodesToCache;
+    }
+    //---------------------------------------------------------------------
+    bool GpuProgramManager::canGetCompiledShaderBuffer()
+    {
+        // Use the current render system
+        RenderSystem* rs = Root::getSingleton().getRenderSystem();
+
+        // Check if the supported
+        return rs->getCapabilities()->hasCapability(RSC_CAN_GET_COMPILED_SHADER_BUFFER);
+    }
+    //---------------------------------------------------------------------
+    void GpuProgramManager::setSaveMicrocodesToCache( const bool val )
+    {
+        mSaveMicrocodesToCache = val;
+    }
+    //---------------------------------------------------------------------
+    String GpuProgramManager::addRenderSystemToName( const String & name )
+    {
+        // Use the current render system
+        RenderSystem* rs = Root::getSingleton().getRenderSystem();
+
+        return rs->getName() + "_" + name;
+    }
+    //---------------------------------------------------------------------
+    bool GpuProgramManager::isMicrocodeAvailableInCache( const String & name ) const
+    {
+        return mMicrocodeCache.find(addRenderSystemToName(name)) != mMicrocodeCache.end();
+    }
+    //---------------------------------------------------------------------
+    const GpuProgramManager::Microcode & GpuProgramManager::getMicrocodeFromCache( const String & name ) const
+    {
+        return mMicrocodeCache.find(addRenderSystemToName(name))->second;
+    }
+    //---------------------------------------------------------------------
+    GpuProgramManager::Microcode GpuProgramManager::createMicrocode( const size_t size ) const
+    {
+        return Microcode(OGRE_NEW MemoryDataStream(size));
+    }
+    //---------------------------------------------------------------------
+    void GpuProgramManager::addMicrocodeToCache( const String & name, const GpuProgramManager::Microcode & microcode )
+    {
+        String nameWithRenderSystem = addRenderSystemToName(name);
+        MicrocodeMap::iterator foundIter = mMicrocodeCache.find(nameWithRenderSystem);
+        if ( foundIter == mMicrocodeCache.end() )
+        {
+            mMicrocodeCache.insert(make_pair(nameWithRenderSystem, microcode));
+        }
+        else
+        {
+            foundIter->second = microcode;
+
+        }
+    }
+    //---------------------------------------------------------------------
+    void GpuProgramManager::saveMicrocodeCache( DataStreamPtr stream ) const
+    {
+        if (!stream->isWriteable())
+        {
+            OGRE_EXCEPT(Exception::ERR_CANNOT_WRITE_TO_FILE,
+                "Unable to write to stream " + stream->getName(),
+                "GpuProgramManager::saveMicrocodeCache");
+        }
+
+        // write the size of the array
+        size_t sizeOfArray = mMicrocodeCache.size();
+        stream->write(&sizeOfArray, sizeof(size_t));
+
+        // loop the array and save it
+        MicrocodeMap::const_iterator iter = mMicrocodeCache.begin();
+        MicrocodeMap::const_iterator iterE = mMicrocodeCache.end();
+        for ( ; iter != iterE ; iter++ )
+        {
+            // saves the name of the shader
+            {
+                const String & nameOfShader = iter->first;
+                size_t stringLength = nameOfShader.size();
+                stream->write(&stringLength, sizeof(size_t));
+                stream->write(&nameOfShader[0], stringLength);
+            }
+            // saves the microcode
+            {
+                const Microcode & microcodeOfShader = iter->second;
+                size_t microcodeLength = microcodeOfShader->size();
+                stream->write(&microcodeLength, sizeof(size_t));
+                stream->write(microcodeOfShader->getPtr(), microcodeLength);
+            }
+        }
+    }
+    //---------------------------------------------------------------------
+    void GpuProgramManager::loadMicrocodeCache( DataStreamPtr stream )
+    {
+        mMicrocodeCache.clear();
+
+        // write the size of the array
+        size_t sizeOfArray = 0;
+        stream->read(&sizeOfArray, sizeof(size_t));
+
+        // loop the array and load it
+
+        for ( size_t i = 0 ; i < sizeOfArray ; i++ )
+        {
+            String nameOfShader;
+            // loads the name of the shader
+            size_t stringLength  = 0;
+            stream->read(&stringLength, sizeof(size_t));
+            nameOfShader.resize(stringLength);
+            stream->read(&nameOfShader[0], stringLength);
+
+            // loads the microcode
+            size_t microcodeLength = 0;
+            stream->read(&microcodeLength, sizeof(size_t));
+
+            Microcode microcodeOfShader(OGRE_NEW MemoryDataStream(nameOfShader, microcodeLength));
+            microcodeOfShader->seek(0);
+            stream->read(microcodeOfShader->getPtr(), microcodeLength);
+
+            mMicrocodeCache.insert(make_pair(nameOfShader, microcodeOfShader));
+        }
+    }
+    //---------------------------------------------------------------------
 
 }

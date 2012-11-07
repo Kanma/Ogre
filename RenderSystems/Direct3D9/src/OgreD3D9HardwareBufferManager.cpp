@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -70,7 +70,7 @@ namespace Ogre {
             }
         }
 #endif
-		D3D9HardwareVertexBuffer* vbuf = new D3D9HardwareVertexBuffer(
+		D3D9HardwareVertexBuffer* vbuf = OGRE_NEW D3D9HardwareVertexBuffer(
 			this, vertexSize, numVerts, usage, false, useShadowBuffer);
 		{
 			OGRE_LOCK_MUTEX(mVertexBuffersMutex)
@@ -102,7 +102,7 @@ namespace Ogre {
             }
         }
 #endif
-		D3D9HardwareIndexBuffer* idx = new D3D9HardwareIndexBuffer(
+		D3D9HardwareIndexBuffer* idx = OGRE_NEW D3D9HardwareIndexBuffer(
 			this, itype, numIndexes, usage, false, useShadowBuffer);
 		{
 			OGRE_LOCK_MUTEX(mIndexBuffersMutex)
@@ -122,11 +122,11 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     VertexDeclaration* D3D9HardwareBufferManagerBase::createVertexDeclarationImpl(void)
     {
-        return new D3D9VertexDeclaration();
+        return OGRE_NEW D3D9VertexDeclaration();
     }
     //-----------------------------------------------------------------------
     void D3D9HardwareBufferManagerBase::destroyVertexDeclarationImpl(VertexDeclaration* decl)
     {
-        delete decl;
+        OGRE_DELETE decl;
     }
 }

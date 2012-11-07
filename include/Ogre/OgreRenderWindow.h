@@ -4,7 +4,7 @@ This source file is a part of OGRE
 
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -32,13 +32,13 @@ THE SOFTWARE
 
 namespace Ogre
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-	/** Manages the target rendering window.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup RenderSystem
+    *  @{
+    */
+    /** Manages the target rendering window.
         @remarks
             This class handles a window into which the contents
             of a scene are rendered. There is a many-to-1 relationship
@@ -90,19 +90,19 @@ namespace Ogre
                 miscParam A variable number of pointers to platform-specific arguments. The
                 actual requirements must be defined by the implementing subclasses.
         */
-		virtual void create(const String& name, unsigned int width, unsigned int height,
-	            bool fullScreen, const NameValuePairList *miscParams) = 0;
+        virtual void create(const String& name, unsigned int width, unsigned int height,
+                bool fullScreen, const NameValuePairList *miscParams) = 0;
 
-		/** Alter fullscreen mode options. 
-		@note Nothing will happen unless the settings here are different from the
-			current settings.
-		@param fullScreen Whether to use fullscreen mode or not. 
-		@param width The new width to use
-		@param height The new height to use
-		*/
-		virtual void setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
+        /** Alter fullscreen mode options.
+        @note Nothing will happen unless the settings here are different from the
+            current settings.
+        @param fullScreen Whether to use fullscreen mode or not.
+        @param width The new width to use
+        @param height The new height to use
+        */
+        virtual void setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
                 { (void)fullScreen; (void)width; (void)height; }
-        
+
         /** Destroys the window.
         */
         virtual void destroy(void) = 0;
@@ -130,6 +130,41 @@ namespace Ogre
         virtual void setVisible(bool visible)
         { (void)visible; }
 
+        /** Indicates whether the window was set to hidden (not displayed)
+        */
+        virtual bool isHidden(void) const { return false; }
+
+        /** Hide (or show) the window. If called with hidden=true, this
+            will make the window completely invisible to the user.
+        @remarks
+            Setting a window to hidden is useful to create a dummy primary
+            RenderWindow hidden from the user so that you can create and
+            recreate your actual RenderWindows without having to recreate
+            all your resources.
+        */
+        virtual void setHidden(bool hidden)
+        { (void)hidden; }
+
+        /** Enable or disable vertical sync for the RenderWindow.
+        */
+        virtual void setVSyncEnabled(bool vsync)
+        { (void)vsync; }
+
+        /** Indicates whether vertical sync is activated for the window.
+        */
+        virtual bool isVSyncEnabled() const { return false; }
+
+        /** Set the vertical sync interval. This indicates the number of vertical retraces to wait for
+            before swapping buffers. A value of 1 is the default.
+        */
+        virtual void setVSyncInterval(unsigned int interval)
+        { (void)interval; }
+
+        /** Returns the vertical sync interval.
+        */
+        virtual unsigned int getVSyncInterval() const { return 1; }
+
+
         /** Overridden from RenderTarget, flags invisible windows as inactive
         */
         virtual bool isActive(void) const { return mActive && isVisible(); }
@@ -137,12 +172,12 @@ namespace Ogre
         /** Indicates whether the window has been closed by the user.
         */
         virtual bool isClosed(void) const = 0;
-        
+
         /** Indicates whether the window is the primary window. The
-        	primary window is special in that it is destroyed when 
-        	ogre is shut down, and cannot be destroyed directly.
-        	This is the case because it holds the context for vertex,
-        	index buffers and textures.
+            primary window is special in that it is destroyed when
+            ogre is shut down, and cannot be destroyed directly.
+            This is the case because it holds the context for vertex,
+            index buffers and textures.
         */
         virtual bool isPrimary(void) const;
 
@@ -153,11 +188,11 @@ namespace Ogre
         /** Overloaded version of getMetrics from RenderTarget, including extra details
             specific to windowing systems.
         */
-        virtual void getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth, 
-			int& left, int& top);
+        virtual void getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth,
+            int& left, int& top);
 
-		/// Override since windows don't usually have alpha
-		PixelFormat suggestPixelFormat() const { return PF_BYTE_RGB; }
+        /// Override since windows don't usually have alpha
+        PixelFormat suggestPixelFormat() const { return PF_BYTE_RGB; }
 
         /** Returns true if the window will automatically de-activate itself when it loses focus.
         */
@@ -175,16 +210,16 @@ namespace Ogre
         bool mAutoDeactivatedOnFocusChange;
         int mLeft;
         int mTop;
-        
+
         /** Indicates that this is the primary window. Only to be called by
             Ogre::Root
         */
         void _setPrimary() { mIsPrimary = true; }
-        
+
         friend class Root;
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 } // Namespace
 #endif

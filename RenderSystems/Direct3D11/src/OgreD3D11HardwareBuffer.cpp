@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,7 +35,7 @@ namespace Ogre {
 	D3D11HardwareBuffer::D3D11HardwareBuffer(
 		BufferType btype, size_t sizeBytes,
 		HardwareBuffer::Usage usage, D3D11Device & device, 
-		bool useSystemMemory, bool useShadowBuffer)
+		bool useSystemMemory, bool useShadowBuffer, bool streamOut)
 		: HardwareBuffer(usage, useSystemMemory,  false /* TODO: useShadowBuffer*/),
 		mlpD3DBuffer(0),
 		mpTempStagingBuffer(0),
@@ -61,9 +61,13 @@ namespace Ogre {
 			mDesc.BindFlags = btype == VERTEX_BUFFER ? D3D11_BIND_VERTEX_BUFFER : D3D11_BIND_INDEX_BUFFER;
 
 		}
+		if (streamOut)
+		{
+			mDesc.BindFlags |= D3D10_BIND_STREAM_OUTPUT;
+		}
 
 		mDesc.MiscFlags = 0;
-		if (!useSystemMemory && (usage | HardwareBuffer::HBU_DYNAMIC))
+		if (!useSystemMemory && (usage & HardwareBuffer::HBU_DYNAMIC))
 		{
 			// We want to be able to map this buffer
 			mDesc.CPUAccessFlags |= D3D11_CPU_ACCESS_WRITE;
@@ -200,7 +204,7 @@ namespace Ogre {
 			{
 				// create another buffer instance but use system memory
 				mpTempStagingBuffer = new D3D11HardwareBuffer(mBufferType, 
-					mSizeInBytes, mUsage, mDevice, true, false);
+					mSizeInBytes, mUsage, mDevice, true, false, false);
 			}
 
 			// schedule a copy to the staging
@@ -303,6 +307,9 @@ namespace Ogre {
 			discardWholeBuffer ? HardwareBuffer::HBL_DISCARD : HardwareBuffer::HBL_NORMAL);
 		memcpy(pDst, pSource, length);
 		this->unlock();
+
+
+		//mDevice.GetImmediateContext()->UpdateSubresource(mlpD3DBuffer, 0, NULL, pSource, offset, length);
 	}
 	//---------------------------------------------------------------------
 

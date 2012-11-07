@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ THE SOFTWARE.
 #include "OgreD3D11Prerequisites.h"
 #include "OgreHardwareVertexBuffer.h"
 #include "OgreHighLevelGpuProgramManager.h"
-#include "OgreFixedFuncState.h"
 
 namespace Ogre { 
 
@@ -45,16 +44,16 @@ namespace Ogre {
 
 		typedef map<D3D11HLSLProgram*, ID3D11InputLayout*>::type ShaderToILayoutMap;
 		typedef ShaderToILayoutMap::iterator ShaderToILayoutMapIterator;
+        typedef map<D3D11HLSLProgram*, D3D11_INPUT_ELEMENT_DESC*>::type ShaderToInputDesc;
+        typedef ShaderToInputDesc::iterator ShaderToInputDescIterator;
 
-		D3D11_INPUT_ELEMENT_DESC*  mD3delems;
+		ShaderToInputDesc  mD3delems;
 
 		ShaderToILayoutMap mShaderToILayoutMap;
 
-		VertexBufferDeclaration mVertexBufferDeclaration;
-
 		/** Gets the D3D11-specific vertex declaration. */
 
-		ID3D11InputLayout	*  getILayoutByShader(D3D11HLSLProgram* boundVertexProgram);
+		ID3D11InputLayout	*  getILayoutByShader(D3D11HLSLProgram* boundVertexProgram, VertexBufferBinding* binding);
 	public:
 		D3D11VertexDeclaration(D3D11Device &  device);
 		~D3D11VertexDeclaration();
@@ -83,10 +82,8 @@ namespace Ogre {
 			VertexElementSemantic semantic, unsigned short index = 0);
 
 
-		D3D11_INPUT_ELEMENT_DESC * getD3DVertexDeclaration(void);
-		void bindToShader(D3D11HLSLProgram* boundVertexProgram);
-
-		const VertexBufferDeclaration & getVertexBufferDeclaration();
+		D3D11_INPUT_ELEMENT_DESC * getD3DVertexDeclaration(D3D11HLSLProgram* boundVertexProgram, VertexBufferBinding* binding);
+		void bindToShader(D3D11HLSLProgram* boundVertexProgram, VertexBufferBinding* binding);
 
 	};
 

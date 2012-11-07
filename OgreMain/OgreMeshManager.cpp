@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -44,14 +44,14 @@ THE SOFTWARE.
 namespace Ogre
 {
     //-----------------------------------------------------------------------
-    template<> MeshManager* Singleton<MeshManager>::ms_Singleton = 0;
+    template<> MeshManager* Singleton<MeshManager>::msSingleton = 0;
     MeshManager* MeshManager::getSingletonPtr(void)
     {
-        return ms_Singleton;
+        return msSingleton;
     }
     MeshManager& MeshManager::getSingleton(void)
-    {  
-        assert( ms_Singleton );  return ( *ms_Singleton );  
+    {
+        assert( msSingleton );  return ( *msSingleton );
     }
     //-----------------------------------------------------------------------
     MeshManager::MeshManager():
@@ -75,72 +75,72 @@ namespace Ogre
     {
         // Create prefab objects
         createPrefabPlane();
-		createPrefabCube();
-		createPrefabSphere();
+        createPrefabCube();
+        createPrefabSphere();
     }
     //-----------------------------------------------------------------------
     MeshManager::ResourceCreateOrRetrieveResult MeshManager::createOrRetrieve(
         const String& name, const String& group,
         bool isManual, ManualResourceLoader* loader,
         const NameValuePairList* params,
-		HardwareBuffer::Usage vertexBufferUsage, 
-		HardwareBuffer::Usage indexBufferUsage, 
-		bool vertexBufferShadowed, bool indexBufferShadowed)
+        HardwareBuffer::Usage vertexBufferUsage,
+        HardwareBuffer::Usage indexBufferUsage,
+        bool vertexBufferShadowed, bool indexBufferShadowed)
     {
-        ResourceCreateOrRetrieveResult res = 
+        ResourceCreateOrRetrieveResult res =
             ResourceManager::createOrRetrieve(name,group,isManual,loader,params);
-		MeshPtr pMesh = res.first;
-		// Was it created?
+        MeshPtr pMesh = res.first;
+        // Was it created?
         if (res.second)
         {
-			pMesh->setVertexBufferPolicy(vertexBufferUsage, vertexBufferShadowed);
-			pMesh->setIndexBufferPolicy(indexBufferUsage, indexBufferShadowed);
+            pMesh->setVertexBufferPolicy(vertexBufferUsage, vertexBufferShadowed);
+            pMesh->setIndexBufferPolicy(indexBufferUsage, indexBufferShadowed);
         }
         return res;
 
     }
     //-----------------------------------------------------------------------
-    MeshPtr MeshManager::prepare( const String& filename, const String& groupName, 
-		HardwareBuffer::Usage vertexBufferUsage, 
-		HardwareBuffer::Usage indexBufferUsage, 
-		bool vertexBufferShadowed, bool indexBufferShadowed)
+    MeshPtr MeshManager::prepare( const String& filename, const String& groupName,
+        HardwareBuffer::Usage vertexBufferUsage,
+        HardwareBuffer::Usage indexBufferUsage,
+        bool vertexBufferShadowed, bool indexBufferShadowed)
     {
-		MeshPtr pMesh = createOrRetrieve(filename,groupName,false,0,0,
+        MeshPtr pMesh = createOrRetrieve(filename,groupName,false,0,0,
                                          vertexBufferUsage,indexBufferUsage,
                                          vertexBufferShadowed,indexBufferShadowed).first;
-		pMesh->prepare();
+        pMesh->prepare();
         return pMesh;
     }
     //-----------------------------------------------------------------------
-    MeshPtr MeshManager::load( const String& filename, const String& groupName, 
-		HardwareBuffer::Usage vertexBufferUsage, 
-		HardwareBuffer::Usage indexBufferUsage, 
-		bool vertexBufferShadowed, bool indexBufferShadowed)
+    MeshPtr MeshManager::load( const String& filename, const String& groupName,
+        HardwareBuffer::Usage vertexBufferUsage,
+        HardwareBuffer::Usage indexBufferUsage,
+        bool vertexBufferShadowed, bool indexBufferShadowed)
     {
-		MeshPtr pMesh = createOrRetrieve(filename,groupName,false,0,0,
+        MeshPtr pMesh = createOrRetrieve(filename,groupName,false,0,0,
                                          vertexBufferUsage,indexBufferUsage,
                                          vertexBufferShadowed,indexBufferShadowed).first;
-		pMesh->load();
+        pMesh->load();
         return pMesh;
     }
     //-----------------------------------------------------------------------
-    MeshPtr MeshManager::createManual( const String& name, const String& groupName, 
+    MeshPtr MeshManager::createManual( const String& name, const String& groupName,
         ManualResourceLoader* loader)
     {
-		// Don't try to get existing, create should fail if already exists
+        // Don't try to get existing, create should fail if already exists
         return create(name, groupName, true, loader);
     }
     //-----------------------------------------------------------------------
     MeshPtr MeshManager::createPlane( const String& name, const String& groupName,
         const Plane& plane, Real width, Real height, int xsegments, int ysegments,
         bool normals, unsigned short numTexCoordSets, Real xTile, Real yTile, const Vector3& upVector,
-		HardwareBuffer::Usage vertexBufferUsage, HardwareBuffer::Usage indexBufferUsage,
-		bool vertexShadowBuffer, bool indexShadowBuffer)
+        HardwareBuffer::Usage vertexBufferUsage, HardwareBuffer::Usage indexBufferUsage,
+        bool vertexShadowBuffer, bool indexShadowBuffer)
     {
         // Create manual mesh which calls back self to load
         MeshPtr pMesh = createManual(name, groupName, this);
-		// Planes can never be manifold
-		pMesh->setAutoBuildEdgeLists(false);
+        // Planes can never be manifold
+        pMesh->setAutoBuildEdgeLists(false);
         // store parameters
         MeshBuildParams params;
         params.type = MBT_PLANE;
@@ -165,18 +165,18 @@ namespace Ogre
 
         return pMesh;
     }
-	
-	//-----------------------------------------------------------------------
-	MeshPtr MeshManager::createCurvedPlane( const String& name, const String& groupName, 
+
+    //-----------------------------------------------------------------------
+    MeshPtr MeshManager::createCurvedPlane( const String& name, const String& groupName,
         const Plane& plane, Real width, Real height, Real bow, int xsegments, int ysegments,
         bool normals, unsigned short numTexCoordSets, Real xTile, Real yTile, const Vector3& upVector,
-			HardwareBuffer::Usage vertexBufferUsage, HardwareBuffer::Usage indexBufferUsage,
-			bool vertexShadowBuffer, bool indexShadowBuffer)
+            HardwareBuffer::Usage vertexBufferUsage, HardwareBuffer::Usage indexBufferUsage,
+            bool vertexShadowBuffer, bool indexShadowBuffer)
     {
         // Create manual mesh which calls back self to load
         MeshPtr pMesh = createManual(name, groupName, this);
-		// Planes can never be manifold
-		pMesh->setAutoBuildEdgeLists(false);
+        // Planes can never be manifold
+        pMesh->setAutoBuildEdgeLists(false);
         // store parameters
         MeshBuildParams params;
         params.type = MBT_CURVED_PLANE;
@@ -204,22 +204,22 @@ namespace Ogre
 
     }
     //-----------------------------------------------------------------------
-	MeshPtr MeshManager::createCurvedIllusionPlane(
+    MeshPtr MeshManager::createCurvedIllusionPlane(
         const String& name, const String& groupName, const Plane& plane,
         Real width, Real height, Real curvature,
         int xsegments, int ysegments,
         bool normals, unsigned short numTexCoordSets,
         Real uTile, Real vTile, const Vector3& upVector,
-		const Quaternion& orientation, 
-        HardwareBuffer::Usage vertexBufferUsage, 
-		HardwareBuffer::Usage indexBufferUsage,
-		bool vertexShadowBuffer, bool indexShadowBuffer,
+        const Quaternion& orientation,
+        HardwareBuffer::Usage vertexBufferUsage,
+        HardwareBuffer::Usage indexBufferUsage,
+        bool vertexShadowBuffer, bool indexShadowBuffer,
         int ySegmentsToKeep)
-	{
+    {
         // Create manual mesh which calls back self to load
         MeshPtr pMesh = createManual(name, groupName, this);
-		// Planes can never be manifold
-		pMesh->setAutoBuildEdgeLists(false);
+        // Planes can never be manifold
+        pMesh->setAutoBuildEdgeLists(false);
         // store parameters
         MeshBuildParams params;
         params.type = MBT_CURVED_ILLUSION_PLANE;
@@ -246,11 +246,11 @@ namespace Ogre
         pMesh->load();
 
         return pMesh;
-	}
+    }
 
     //-----------------------------------------------------------------------
-    void MeshManager::tesselate2DMesh(SubMesh* sm, unsigned short meshWidth, unsigned short meshHeight, 
-		bool doubleSided, HardwareBuffer::Usage indexBufferUsage, bool indexShadowBuffer)
+    void MeshManager::tesselate2DMesh(SubMesh* sm, unsigned short meshWidth, unsigned short meshHeight,
+        bool doubleSided, HardwareBuffer::Usage indexBufferUsage, bool indexShadowBuffer)
     {
         // The mesh is built, just make a list of indexes to spit out the triangles
         unsigned short vInc, uInc, v, u, iterations;
@@ -272,16 +272,16 @@ namespace Ogre
         // Allocate memory for faces
         // Num faces, width*height*2 (2 tris per square), index count is * 3 on top
         sm->indexData->indexCount = (meshWidth-1) * (meshHeight-1) * 2 * iterations * 3;
-		sm->indexData->indexBuffer = HardwareBufferManager::getSingleton().
-			createIndexBuffer(HardwareIndexBuffer::IT_16BIT,
-			sm->indexData->indexCount, indexBufferUsage, indexShadowBuffer);
+        sm->indexData->indexBuffer = HardwareBufferManager::getSingleton().
+            createIndexBuffer(HardwareIndexBuffer::IT_16BIT,
+            sm->indexData->indexCount, indexBufferUsage, indexShadowBuffer);
 
         unsigned short v1, v2, v3;
         //bool firstTri = true;
-		HardwareIndexBufferSharedPtr ibuf = sm->indexData->indexBuffer;
-		// Lock the whole buffer
-		unsigned short* pIndexes = static_cast<unsigned short*>(
-			ibuf->lock(HardwareBuffer::HBL_DISCARD) );
+        HardwareIndexBufferSharedPtr ibuf = sm->indexData->indexBuffer;
+        // Lock the whole buffer
+        unsigned short* pIndexes = static_cast<unsigned short*>(
+            ibuf->lock(HardwareBuffer::HBL_DISCARD) );
 
         while (iterations--)
         {
@@ -329,8 +329,8 @@ namespace Ogre
             vInc = -vInc;
 
         }
-		// Unlock
-		ibuf->unlock();
+        // Unlock
+        ibuf->unlock();
 
     }
 
@@ -338,96 +338,96 @@ namespace Ogre
     void MeshManager::createPrefabPlane(void)
     {
         MeshPtr msh = create(
-            "Prefab_Plane", 
-            ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME, 
+            "Prefab_Plane",
+            ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME,
             true, // manually loaded
             this);
-		// Planes can never be manifold
-		msh->setAutoBuildEdgeLists(false);
+        // Planes can never be manifold
+        msh->setAutoBuildEdgeLists(false);
         // to preserve previous behaviour, load immediately
         msh->load();
     }
-	//-----------------------------------------------------------------------
-	void MeshManager::createPrefabCube(void)
-	{
-		MeshPtr msh = create(
-			"Prefab_Cube", 
-			ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME, 
-			true, // manually loaded
-			this);
-
-		// to preserve previous behaviour, load immediately
-		msh->load();
-	}
-	//-------------------------------------------------------------------------
-	void MeshManager::createPrefabSphere(void)
-	{
-		MeshPtr msh = create(
-			"Prefab_Sphere", 
-			ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME, 
-			true, // manually loaded
-			this);
-
-		// to preserve previous behaviour, load immediately
-		msh->load();
-	}
-	//-------------------------------------------------------------------------
-	void MeshManager::setListener(Ogre::MeshSerializerListener *listener)
-	{
-		mListener = listener;
-	}
-	//-------------------------------------------------------------------------
-	MeshSerializerListener *MeshManager::getListener()
-	{
-		return mListener;
-	}
     //-----------------------------------------------------------------------
-	void MeshManager::loadResource(Resource* res)
-	{
-		Mesh* msh = static_cast<Mesh*>(res);
+    void MeshManager::createPrefabCube(void)
+    {
+        MeshPtr msh = create(
+            "Prefab_Cube",
+            ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME,
+            true, // manually loaded
+            this);
 
-		// attempt to create a prefab mesh
-		bool createdPrefab = PrefabFactory::createPrefab(msh);
+        // to preserve previous behaviour, load immediately
+        msh->load();
+    }
+    //-------------------------------------------------------------------------
+    void MeshManager::createPrefabSphere(void)
+    {
+        MeshPtr msh = create(
+            "Prefab_Sphere",
+            ResourceGroupManager::INTERNAL_RESOURCE_GROUP_NAME,
+            true, // manually loaded
+            this);
 
-		// the mesh was not a prefab..
-		if(!createdPrefab)
-		{
-			// Find build parameters
-			MeshBuildParamsMap::iterator ibld = mMeshBuildParams.find(res);
-			if (ibld == mMeshBuildParams.end())
-			{
-				OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, 
-					"Cannot find build parameters for " + res->getName(),
-					"MeshManager::loadResource");
-			}
-			MeshBuildParams& params = ibld->second;
+        // to preserve previous behaviour, load immediately
+        msh->load();
+    }
+    //-------------------------------------------------------------------------
+    void MeshManager::setListener(Ogre::MeshSerializerListener *listener)
+    {
+        mListener = listener;
+    }
+    //-------------------------------------------------------------------------
+    MeshSerializerListener *MeshManager::getListener()
+    {
+        return mListener;
+    }
+    //-----------------------------------------------------------------------
+    void MeshManager::loadResource(Resource* res)
+    {
+        Mesh* msh = static_cast<Mesh*>(res);
 
-			switch(params.type)
-			{
-			case MBT_PLANE:
-				loadManualPlane(msh, params);
-				break;
-			case MBT_CURVED_ILLUSION_PLANE:
-				loadManualCurvedIllusionPlane(msh, params);
-				break;
-			case MBT_CURVED_PLANE:
-				loadManualCurvedPlane(msh, params);
-				break;
-			default:
-				OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, 
-					"Unknown build parameters for " + res->getName(),
-					"MeshManager::loadResource");
-			}
-		}
-	}
+        // attempt to create a prefab mesh
+        bool createdPrefab = PrefabFactory::createPrefab(msh);
+
+        // the mesh was not a prefab..
+        if(!createdPrefab)
+        {
+            // Find build parameters
+            MeshBuildParamsMap::iterator ibld = mMeshBuildParams.find(res);
+            if (ibld == mMeshBuildParams.end())
+            {
+                OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
+                    "Cannot find build parameters for " + res->getName(),
+                    "MeshManager::loadResource");
+            }
+            MeshBuildParams& params = ibld->second;
+
+            switch(params.type)
+            {
+            case MBT_PLANE:
+                loadManualPlane(msh, params);
+                break;
+            case MBT_CURVED_ILLUSION_PLANE:
+                loadManualCurvedIllusionPlane(msh, params);
+                break;
+            case MBT_CURVED_PLANE:
+                loadManualCurvedPlane(msh, params);
+                break;
+            default:
+                OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND,
+                    "Unknown build parameters for " + res->getName(),
+                    "MeshManager::loadResource");
+            }
+        }
+    }
 
     //-----------------------------------------------------------------------
     void MeshManager::loadManualPlane(Mesh* pMesh, MeshBuildParams& params)
     {
-		if ((params.xsegments + 1) * (params.ysegments + 1) > 65536)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Plane tesselation is too high, must generate max 65536 vertices", 
-				__FUNCTION__);
+        if ((params.xsegments + 1) * (params.ysegments + 1) > 65536)
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+                "Plane tesselation is too high, must generate max 65536 vertices",
+                __FUNCTION__);
         SubMesh *pSub = pMesh->createSubMesh();
 
         // Set up vertex data
@@ -457,7 +457,7 @@ namespace Ogre
         vertexData->vertexCount = (params.xsegments + 1) * (params.ysegments + 1);
 
         // Allocate vertex buffer
-        HardwareVertexBufferSharedPtr vbuf = 
+        HardwareVertexBufferSharedPtr vbuf =
             HardwareBufferManager::getSingleton().
             createVertexBuffer(vertexDecl->getVertexSize(0), vertexData->vertexCount,
             params.vertexBufferUsage, params.vertexShadowBuffer);
@@ -488,7 +488,7 @@ namespace Ogre
         rot3.FromAxes(xAxis, yAxis, zAxis);
         rot = rot3;
 
-        // Set up standard xform from origin
+        // Set up standard transform from origin
         xlate.setTrans(params.plane.normal * -params.plane.d);
 
         // concatenate
@@ -565,7 +565,7 @@ namespace Ogre
         vbuf->unlock();
         // Generate face list
         pSub->useSharedVertices = true;
-        tesselate2DMesh(pSub, params.xsegments + 1, params.ysegments + 1, false, 
+        tesselate2DMesh(pSub, params.xsegments + 1, params.ysegments + 1, false,
             params.indexBufferUsage, params.indexShadowBuffer);
 
         pMesh->_setBounds(AxisAlignedBox(min, max), true);
@@ -574,10 +574,10 @@ namespace Ogre
     //-----------------------------------------------------------------------
     void MeshManager::loadManualCurvedPlane(Mesh* pMesh, MeshBuildParams& params)
     {
-		if ((params.xsegments + 1) * (params.ysegments + 1) > 65536)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Plane tesselation is too high, must generate max 65536 vertices", 
-				__FUNCTION__);
+        if ((params.xsegments + 1) * (params.ysegments + 1) > 65536)
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+                "Plane tesselation is too high, must generate max 65536 vertices",
+                __FUNCTION__);
         SubMesh *pSub = pMesh->createSubMesh();
 
         // Set options
@@ -605,11 +605,11 @@ namespace Ogre
 
 
         // Allocate memory
-        HardwareVertexBufferSharedPtr vbuf = 
+        HardwareVertexBufferSharedPtr vbuf =
             HardwareBufferManager::getSingleton().createVertexBuffer(
-            offset, 
-            pMesh->sharedVertexData->vertexCount, 
-            params.vertexBufferUsage, 
+            offset,
+            pMesh->sharedVertexData->vertexCount,
+            params.vertexBufferUsage,
             params.vertexShadowBuffer);
         bind->setBinding(0, vbuf);
 
@@ -635,7 +635,7 @@ namespace Ogre
         rot3.FromAxes(xAxis, yAxis, zAxis);
         rot = rot3;
 
-        // Set up standard xform from origin
+        // Set up standard transform from origin
         xlate.setTrans(params.plane.normal * -params.plane.d);
 
         // concatenate
@@ -643,7 +643,7 @@ namespace Ogre
 
         // Generate vertex data
         float* pFloat = static_cast<float*>(
-            vbuf->lock(HardwareBuffer::HBL_DISCARD)); 
+            vbuf->lock(HardwareBuffer::HBL_DISCARD));
         Real xSpace = params.width / params.xsegments;
         Real ySpace = params.height / params.ysegments;
         Real halfWidth = params.width / 2;
@@ -670,7 +670,7 @@ namespace Ogre
                 diff_x = (x - ((params.xsegments) / 2)) / static_cast<Real>((params.xsegments));
                 diff_y = (y - ((params.ysegments) / 2)) / static_cast<Real>((params.ysegments));
                 dist = sqrt(diff_x*diff_x + diff_y * diff_y );
-				vec.z = (-sin((1-dist) * (Math::PI/2)) * params.curvature) + params.curvature;
+                vec.z = (-sin((1-dist) * (Math::PI/2)) * params.curvature) + params.curvature;
 
                 // Transform by orientation and distance
                 Vector3 pos = xform.transformAffine(vec);
@@ -697,13 +697,13 @@ namespace Ogre
                 {
                     // This part is kinda 'wrong' for curved planes... but curved planes are
                     //   very valuable outside sky planes, which don't typically need normals
-                    //   so I'm not going to mess with it for now. 
+                    //   so I'm not going to mess with it for now.
 
                     // Default normal is along unit Z
                     //vec = Vector3::UNIT_Z;
                     // Rotate
                     vec = rot.transformAffine(vec);
-					vec.normalise();
+                    vec.normalise();
 
                     *pFloat++ = vec.x;
                     *pFloat++ = vec.y;
@@ -721,7 +721,7 @@ namespace Ogre
         vbuf->unlock();
 
         // Generate face list
-        tesselate2DMesh(pSub, params.xsegments + 1, params.ysegments + 1, 
+        tesselate2DMesh(pSub, params.xsegments + 1, params.ysegments + 1,
             false, params.indexBufferUsage, params.indexShadowBuffer);
 
         pMesh->_setBounds(AxisAlignedBox(min, max), true);
@@ -731,12 +731,12 @@ namespace Ogre
     //-----------------------------------------------------------------------
     void MeshManager::loadManualCurvedIllusionPlane(Mesh* pMesh, MeshBuildParams& params)
     {
-		if (params.ySegmentsToKeep == -1) params.ySegmentsToKeep = params.ysegments;
+        if (params.ySegmentsToKeep == -1) params.ySegmentsToKeep = params.ysegments;
 
-		if ((params.xsegments + 1) * (params.ySegmentsToKeep + 1) > 65536)
-			OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-				"Plane tesselation is too high, must generate max 65536 vertices", 
-				__FUNCTION__);
+        if ((params.xsegments + 1) * (params.ySegmentsToKeep + 1) > 65536)
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+                "Plane tesselation is too high, must generate max 65536 vertices",
+                __FUNCTION__);
         SubMesh *pSub = pMesh->createSubMesh();
 
 
@@ -767,7 +767,7 @@ namespace Ogre
         vertexData->vertexCount = (params.xsegments + 1) * (params.ySegmentsToKeep + 1);
 
         // Allocate vertex buffer
-        HardwareVertexBufferSharedPtr vbuf = 
+        HardwareVertexBufferSharedPtr vbuf =
             HardwareBufferManager::getSingleton().
             createVertexBuffer(vertexDecl->getVertexSize(0), vertexData->vertexCount,
             params.vertexBufferUsage, params.vertexShadowBuffer);
@@ -798,7 +798,7 @@ namespace Ogre
         rot3.FromAxes(xAxis, yAxis, zAxis);
         rot = rot3;
 
-        // Set up standard xform from origin
+        // Set up standard transform from origin
         xlate.setTrans(params.plane.normal * -params.plane.d);
 
         // concatenate
@@ -905,18 +905,18 @@ namespace Ogre
         vbuf->unlock();
         // Generate face list
         pSub->useSharedVertices = true;
-        tesselate2DMesh(pSub, params.xsegments + 1, params.ySegmentsToKeep + 1, false, 
+        tesselate2DMesh(pSub, params.xsegments + 1, params.ySegmentsToKeep + 1, false,
             params.indexBufferUsage, params.indexShadowBuffer);
 
         pMesh->_setBounds(AxisAlignedBox(min, max), true);
         pMesh->_setBoundingSphereRadius(Math::Sqrt(maxSquaredLength));
     }
     //-----------------------------------------------------------------------
-    PatchMeshPtr MeshManager::createBezierPatch(const String& name, const String& groupName, 
-            void* controlPointBuffer, VertexDeclaration *declaration, 
+    PatchMeshPtr MeshManager::createBezierPatch(const String& name, const String& groupName,
+            void* controlPointBuffer, VertexDeclaration *declaration,
             size_t width, size_t height,
             size_t uMaxSubdivisionLevel, size_t vMaxSubdivisionLevel,
-            PatchSurface::VisibleSide visibleSide, 
+            PatchSurface::VisibleSide visibleSide,
             HardwareBuffer::Usage vbUsage, HardwareBuffer::Usage ibUsage,
             bool vbUseShadow, bool ibUseShadow)
     {
@@ -930,7 +930,7 @@ namespace Ogre
         MeshPtr pMesh = getByName(name);
         if (!pMesh.isNull())
         {
-            OGRE_EXCEPT(Exception::ERR_DUPLICATE_ITEM, "A mesh called " + name + 
+            OGRE_EXCEPT(Exception::ERR_DUPLICATE_ITEM, "A mesh called " + name +
                 " already exists!", "MeshManager::createBezierPatch");
         }
         PatchMesh* pm = OGRE_NEW PatchMesh(this, name, getNextHandle(), groupName);
@@ -964,8 +964,8 @@ namespace Ogre
         mBoundsPaddingFactor = paddingFactor;
     }
     //-----------------------------------------------------------------------
-    Resource* MeshManager::createImpl(const String& name, ResourceHandle handle, 
-        const String& group, bool isManual, ManualResourceLoader* loader, 
+    Resource* MeshManager::createImpl(const String& name, ResourceHandle handle,
+        const String& group, bool isManual, ManualResourceLoader* loader,
         const NameValuePairList* createParams)
     {
         // no use for createParams here

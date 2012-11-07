@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,12 +39,12 @@ namespace Ogre {
     {
     }
     //-----------------------------------------------------------------------
-    void PatchMesh::define(void* controlPointBuffer, 
+    void PatchMesh::define(void* controlPointBuffer,
             VertexDeclaration *declaration, size_t width, size_t height,
             size_t uMaxSubdivisionLevel, size_t vMaxSubdivisionLevel,
-            PatchSurface::VisibleSide visibleSide, HardwareBuffer::Usage vbUsage, 
+            PatchSurface::VisibleSide visibleSide, HardwareBuffer::Usage vbUsage,
             HardwareBuffer::Usage ibUsage,
-            bool vbUseShadow, bool ibUseShadow) 
+            bool vbUseShadow, bool ibUseShadow)
     {
         mVertexBufferUsage = vbUsage;
         mVertexBufferShadowBuffer = vbUseShadow;
@@ -55,10 +55,24 @@ namespace Ogre {
         // define the surface
         // NB clone the declaration to make it independent
         mDeclaration = declaration->clone();
-        mSurface.defineSurface(controlPointBuffer, mDeclaration, width, height, 
-            PatchSurface::PST_BEZIER, uMaxSubdivisionLevel, vMaxSubdivisionLevel, 
+        mSurface.defineSurface(controlPointBuffer, mDeclaration, width, height,
+            PatchSurface::PST_BEZIER, uMaxSubdivisionLevel, vMaxSubdivisionLevel,
             visibleSide);
 
+    }
+    //-----------------------------------------------------------------------
+    void PatchMesh::update(void* controlPointBuffer, size_t width, size_t height,
+                           size_t uMaxSubdivisionLevel, size_t vMaxSubdivisionLevel,
+                           PatchSurface::VisibleSide visibleSide)
+    {
+        mSurface.defineSurface(controlPointBuffer, mDeclaration, width, height, PatchSurface::PST_BEZIER, uMaxSubdivisionLevel, vMaxSubdivisionLevel, visibleSide);
+        Ogre::SubMesh* sm = this->getSubMesh(0);
+        Ogre::VertexData* vertex_data = sm->useSharedVertices ? this->sharedVertexData : sm->vertexData;
+        const Ogre::VertexElement* posElem = vertex_data->vertexDeclaration->findElementBySemantic(Ogre::VES_POSITION);
+        Ogre::HardwareVertexBufferSharedPtr vbuf = vertex_data->vertexBufferBinding->getBuffer(posElem->getSource());
+
+        // Build patch with new control points
+        mSurface.build(vbuf, 0, sm->indexData->indexBuffer, 0);
     }
     //-----------------------------------------------------------------------
     void PatchMesh::setSubdivision(Real factor)
@@ -66,7 +80,7 @@ namespace Ogre {
         mSurface.setSubdivisionFactor(factor);
         SubMesh* sm = this->getSubMesh(0);
         sm->indexData->indexCount = mSurface.getCurrentIndexCount();
-        
+
     }
     //-----------------------------------------------------------------------
     void PatchMesh::loadImpl(void)
@@ -81,9 +95,9 @@ namespace Ogre {
         sm->vertexData->vertexDeclaration = mDeclaration;
         HardwareVertexBufferSharedPtr vbuf = HardwareBufferManager::getSingleton().
             createVertexBuffer(
-                mDeclaration->getVertexSize(0), 
-                sm->vertexData->vertexCount, 
-                mVertexBufferUsage, 
+                mDeclaration->getVertexSize(0),
+                sm->vertexData->vertexCount,
+                mVertexBufferUsage,
                 mVertexBufferShadowBuffer);
         sm->vertexData->vertexBufferBinding->setBinding(0, vbuf);
 
@@ -94,9 +108,9 @@ namespace Ogre {
             createIndexBuffer(
                 HardwareIndexBuffer::IT_16BIT, // only 16-bit indexes supported, patches shouldn't be bigger than that
                 sm->indexData->indexCount,
-                mIndexBufferUsage, 
+                mIndexBufferUsage,
                 mIndexBufferShadowBuffer);
-        
+
         // Build patch
         mSurface.build(vbuf, 0, sm->indexData->indexBuffer, 0);
 

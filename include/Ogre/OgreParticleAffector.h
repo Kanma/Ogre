@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,22 +35,22 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Effects
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Effects
+    *  @{
+    */
 /** Abstract class defining the interface to be implemented by particle affectors.
     @remarks
         Particle affectors modify particles in a particle system over their lifetime. They can be
-        grouped into types, e.g. 'vector force' affectors, 'fader' affectors etc; each type will 
+        grouped into types, e.g. 'vector force' affectors, 'fader' affectors etc; each type will
         modify particles in a different way, using different parameters.
     @par
         Because there are so many types of affectors you could use, OGRE chooses not to dictate
         the available types. It comes with some in-built, but allows plugins or applications to extend the affector types available.
         This is done by subclassing ParticleAffector to have the appropriate emission behaviour you want,
-        and also creating a subclass of ParticleAffectorFactory which is responsible for creating instances 
+        and also creating a subclass of ParticleAffectorFactory which is responsible for creating instances
         of your new affector type. You register this factory with the ParticleSystemManager using
         addAffectorFactory, and from then on affectors of this type can be created either from code or through
         text particle scripts by naming the type.
@@ -66,7 +66,7 @@ namespace Ogre {
         /// Name of the type of affector, MUST be initialised by subclasses
         String mType;
 
-        /** Internal method for setting up the basic parameter definitions for a subclass. 
+        /** Internal method for setting up the basic parameter definitions for a subclass.
         @remarks
             Because StringInterface holds a dictionary of parameters per class, subclasses need to
             call this to ask the base class to add it's parameters to their dictionary as well.
@@ -91,7 +91,7 @@ namespace Ogre {
         @param
             pParticle Pointer to a Particle to initialize.
         */
-		virtual void _initParticle(Particle* pParticle)
+        virtual void _initParticle(Particle* pParticle)
                 {
                     /* by default do nothing */
                     (void)pParticle;
@@ -109,7 +109,7 @@ namespace Ogre {
         */
         virtual void _affectParticles(ParticleSystem* pSystem, Real timeElapsed) = 0;
 
-        /** Returns the name of the type of affector. 
+        /** Returns the name of the type of affector.
         @remarks
             This property is useful for determining the type of affector procedurally so another
             can be created.
@@ -117,8 +117,8 @@ namespace Ogre {
         const String &getType(void) const { return mType; }
 
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -51,11 +51,11 @@ namespace Ogre {
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE && defined(__BIG_ENDIAN__)
 #   define OGRE_CPU OGRE_CPU_PPC
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
-#	define OGRE_CPU OGRE_CPU_X86
-#elif OGRE_PLATFORM == OGRE_PLATFORM_IPHONE && (defined(__i386__) || defined(__x86_64__))
-#	define OGRE_CPU OGRE_CPU_X86
+#   define OGRE_CPU OGRE_CPU_X86
+#elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS && (defined(__i386__) || defined(__x86_64__))
+#   define OGRE_CPU OGRE_CPU_X86
 #elif defined(__arm__)
-#	define OGRE_CPU OGRE_CPU_ARM
+#   define OGRE_CPU OGRE_CPU_ARM
 #else
 #   define OGRE_CPU OGRE_CPU_UNKNOWN
 #endif
@@ -65,7 +65,7 @@ namespace Ogre {
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
 #   define OGRE_ALIGNED_DECL(type, var, alignment)  __declspec(align(alignment)) type var
 
-#elif OGRE_COMPILER == OGRE_COMPILER_GNUC
+#elif (OGRE_COMPILER == OGRE_COMPILER_GNUC) || (OGRE_COMPILER == OGRE_COMPILER_CLANG)
 #   define OGRE_ALIGNED_DECL(type, var, alignment)  type var __attribute__((__aligned__(alignment)))
 
 #else
@@ -87,21 +87,23 @@ namespace Ogre {
 
 /* Define whether or not Ogre compiled with SSE supports.
 */
-#if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_X86 && OGRE_COMPILER == OGRE_COMPILER_MSVC
+#if   OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_X86 && OGRE_COMPILER == OGRE_COMPILER_MSVC && \
+    OGRE_PLATFORM != OGRE_PLATFORM_NACL
 #   define __OGRE_HAVE_SSE  1
-#elif OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_X86 && OGRE_COMPILER == OGRE_COMPILER_GNUC && OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS
+#elif OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_X86 && (OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG) && \
+      OGRE_PLATFORM != OGRE_PLATFORM_APPLE_IOS && OGRE_PLATFORM != OGRE_PLATFORM_NACL
 #   define __OGRE_HAVE_SSE  1
 #endif
 
 /* Define whether or not Ogre compiled with VFP supports.
  */
-#if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_ARM && OGRE_COMPILER == OGRE_COMPILER_GNUC && defined(__ARM_ARCH_6K__) && defined(__VFP_FP__)
+#if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_ARM && (OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG) && defined(__ARM_ARCH_6K__) && defined(__VFP_FP__)
 #   define __OGRE_HAVE_VFP  1
 #endif
 
 /* Define whether or not Ogre compiled with NEON supports.
  */
-#if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_ARM && OGRE_COMPILER == OGRE_COMPILER_GNUC && defined(__ARM_ARCH_7A__) && defined(__ARM_NEON__)
+#if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_ARM && (OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG) && defined(__ARM_ARCH_7A__) && defined(__ARM_NEON__)
 #   define __OGRE_HAVE_NEON  1
 #endif
 
@@ -116,13 +118,13 @@ namespace Ogre {
 #ifndef __OGRE_HAVE_NEON
 #   define __OGRE_HAVE_NEON  0
 #endif
-    
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
+
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup General
+    *  @{
+    */
 
 
     /** Class which provides the run-time platform information Ogre runs on.
@@ -180,20 +182,20 @@ namespace Ogre {
         */
         static uint getCpuFeatures(void);
 
-		/** Gets whether a specific feature is supported by the CPU.
-		@note
-			Actual detecting are performs in the first time call to this function,
-			and then all future calls with return internal cached value.
-		*/
-		static bool hasCpuFeature(CpuFeatures feature);
+        /** Gets whether a specific feature is supported by the CPU.
+        @note
+            Actual detecting are performs in the first time call to this function,
+            and then all future calls with return internal cached value.
+        */
+        static bool hasCpuFeature(CpuFeatures feature);
 
 
-		/** Write the CPU information to the passed in Log */
-		static void log(Log* pLog);
+        /** Write the CPU information to the passed in Log */
+        static void log(Log* pLog);
 
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

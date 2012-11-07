@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,15 +32,15 @@ THE SOFTWARE.
 #include "OgrePanelOverlayElement.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Overlays
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Overlays
+    *  @{
+    */
 
     class BorderRenderable;
-    
+
     /** A specialisation of the PanelOverlayElement to provide a panel with a border.
     @remarks
         Whilst the standard panel can use a single tiled material, this class allows
@@ -64,7 +64,7 @@ namespace Ogre {
 
         virtual void initialise(void);
 
-		const String& getTypeName(void) const;
+        const String& getTypeName(void) const;
         /** Sets the size of the border.
         @remarks
             This method sets a constant size for all borders. There are also alternative
@@ -80,7 +80,7 @@ namespace Ogre {
 
         /** Sets the size of the border, with different sizes for vertical and horizontal borders.
         @remarks
-            This method sets a size for the side and top / bottom borders separately. 
+            This method sets a size for the side and top / bottom borders separately.
             Remember that the dimensions specified here are in relation to the size of
             the screen, so 0.1 is 1/10th of the screen width or height. Also note that because
             most screen resolutions are 1.333:1 width:height ratio that using the same
@@ -93,7 +93,7 @@ namespace Ogre {
 
         /** Sets the size of the border separately for all borders.
         @remarks
-            This method sets a size all borders separately. 
+            This method sets a size all borders separately.
             Remember that the dimensions specified here are in relation to the size of
             the screen, so 0.1 is 1/10th of the screen width or height. Also note that because
             most screen resolutions are 1.333:1 width:height ratio that using the same
@@ -117,7 +117,7 @@ namespace Ogre {
 
         /** Sets the texture coordinates for the left edge of the border.
         @remarks
-            The border panel uses 8 panels for the border (9 including the center). 
+            The border panel uses 8 panels for the border (9 including the center).
             Imagine a table with 3 rows and 3 columns. The corners are always the same size,
             but the edges stretch depending on how big the panel is. Those who have done
             resizable HTML tables will be familiar with this approach.
@@ -126,43 +126,43 @@ namespace Ogre {
             bottom-right of the panel, since it is assumed the sections are aligned on the texture.
         */
         void setLeftBorderUV(Real u1, Real v1, Real u2, Real v2);
-        /** Sets the texture coordinates for the right edge of the border. 
+        /** Sets the texture coordinates for the right edge of the border.
         @remarks See setLeftBorderUV.
         */
         void setRightBorderUV(Real u1, Real v1, Real u2, Real v2);
-        /** Sets the texture coordinates for the top edge of the border. 
+        /** Sets the texture coordinates for the top edge of the border.
         @remarks See setLeftBorderUV.
         */
         void setTopBorderUV(Real u1, Real v1, Real u2, Real v2);
-        /** Sets the texture coordinates for the bottom edge of the border. 
+        /** Sets the texture coordinates for the bottom edge of the border.
         @remarks See setLeftBorderUV.
         */
         void setBottomBorderUV(Real u1, Real v1, Real u2, Real v2);
-        /** Sets the texture coordinates for the top-left corner of the border. 
+        /** Sets the texture coordinates for the top-left corner of the border.
         @remarks See setLeftBorderUV.
         */
         void setTopLeftBorderUV(Real u1, Real v1, Real u2, Real v2);
-        /** Sets the texture coordinates for the top-right corner of the border. 
+        /** Sets the texture coordinates for the top-right corner of the border.
         @remarks See setLeftBorderUV.
         */
         void setTopRightBorderUV(Real u1, Real v1, Real u2, Real v2);
-        /** Sets the texture coordinates for the bottom-left corner of the border. 
+        /** Sets the texture coordinates for the bottom-left corner of the border.
         @remarks See setLeftBorderUV.
         */
         void setBottomLeftBorderUV(Real u1, Real v1, Real u2, Real v2);
-        /** Sets the texture coordinates for the bottom-right corner of the border. 
+        /** Sets the texture coordinates for the bottom-right corner of the border.
         @remarks See setLeftBorderUV.
         */
         void setBottomRightBorderUV(Real u1, Real v1, Real u2, Real v2);
 
-		String getLeftBorderUVString() const;
-		String getRightBorderUVString() const;
-		String getTopBorderUVString() const;
-		String getBottomBorderUVString() const;
-		String getTopLeftBorderUVString() const;
-		String getTopRightBorderUVString() const;
-		String getBottomLeftBorderUVString() const;
-		String getBottomRightBorderUVString() const;
+        String getLeftBorderUVString() const;
+        String getRightBorderUVString() const;
+        String getTopBorderUVString() const;
+        String getBottomBorderUVString() const;
+        String getTopLeftBorderUVString() const;
+        String getTopRightBorderUVString() const;
+        String getBottomLeftBorderUVString() const;
+        String getBottomRightBorderUVString() const;
 
 
 
@@ -174,9 +174,9 @@ namespace Ogre {
 
         /** Overridden from OverlayContainer */
         void _updateRenderQueue(RenderQueue* queue);
-		/// @copydoc OvelayElement::visitRenderables
-		void visitRenderables(Renderable::Visitor* visitor, 
-			bool debugRenderables = false);
+        /// @copydoc OvelayElement::visitRenderables
+        void visitRenderables(Renderable::Visitor* visitor,
+            bool debugRenderables = false);
 
         /** Overridden from OverlayElement */
         void setMetricsMode(GuiMetricsMode gmm);
@@ -260,10 +260,10 @@ namespace Ogre {
         Real mRightBorderSize;
         Real mTopBorderSize;
         Real mBottomBorderSize;
-		struct CellUV {
-			Real u1, v1, u2, v2;
-		};
-		CellUV mBorderUV[8];
+        struct CellUV {
+            Real u1, v1, u2, v2;
+        };
+        CellUV mBorderUV[8];
 
         ushort mPixelLeftBorderSize;
         ushort mPixelRightBorderSize;
@@ -271,7 +271,7 @@ namespace Ogre {
         ushort mPixelBottomBorderSize;
 
         String mBorderMaterialName;
-        MaterialPtr mpBorderMaterial;
+        MaterialPtr mBorderMaterial;
 
         // Render operation for the border area
         RenderOperation mRenderOp2;
@@ -280,8 +280,8 @@ namespace Ogre {
 
         /// internal method for setting up geometry, called by OverlayElement::update
         void updatePositionGeometry(void);
-		/// internal method for setting up geometry, called by OverlayElement::update
-		void updateTextureGeometry(void);
+        /// internal method for setting up geometry, called by OverlayElement::update
+        void updateTextureGeometry(void);
         /// Internal method for setting up parameters
         void addBaseParameters(void);
 
@@ -295,7 +295,7 @@ namespace Ogre {
             BCELL_BOTTOM = 6,
             BCELL_BOTTOM_RIGHT = 7
         };
-	    String getCellUVString(BorderCellIndex idx) const;
+        String getCellUVString(BorderCellIndex idx) const;
 
         // Command objects
         static CmdBorderSize msCmdBorderSize;
@@ -315,7 +315,7 @@ namespace Ogre {
     /** Class for rendering the border of a BorderPanelOverlayElement.
     @remarks
         We need this because we have to render twice, once with the inner panel's repeating
-        material (handled by superclass) and once for the border's separate material. 
+        material (handled by superclass) and once for the border's separate material.
     */
     class _OgreExport BorderRenderable : public Renderable, public OverlayAlloc
     {
@@ -328,7 +328,7 @@ namespace Ogre {
             mUseIdentityProjection = true;
             mUseIdentityView = true;
         }
-        const MaterialPtr& getMaterial(void) const { return mParent->mpBorderMaterial; }
+        const MaterialPtr& getMaterial(void) const { return mParent->mBorderMaterial; }
         void getRenderOperation(RenderOperation& op) { op = mParent->mRenderOp2; }
         void getWorldTransforms(Matrix4* xform) const { mParent->getWorldTransforms(xform); }
         unsigned short getNumWorldTransforms(void) const { return 1; }
@@ -339,13 +339,13 @@ namespace Ogre {
             static LightList ll;
             return ll;
         }
-		bool getPolygonModeOverrideable(void) const
-		{
-			return mParent->getPolygonModeOverrideable();
-		}
+        bool getPolygonModeOverrideable(void) const
+        {
+            return mParent->getPolygonModeOverrideable();
+        }
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

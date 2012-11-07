@@ -1,28 +1,15 @@
 set (HEADER_FILES
-  include/OgreHeightmapTerrainZonePageSource.h
   include/OgreOctreeZone.h
   include/OgreOctreeZoneOctree.h
   include/OgreOctreeZonePlugin.h
   include/OgreOctreeZonePrerequisites.h
-  include/OgreTerrainVertexProgram.h
-  include/OgreTerrainZone.h
-  include/OgreTerrainZonePage.h
-  include/OgreTerrainZonePageSource.h
-  include/OgreTerrainZonePrerequisites.h
-  include/OgreTerrainZoneRenderable.h
 )
 
 set (SOURCE_FILES
-  src/OgreHeightmapTerrainZonePageSource.cpp
   src/OgreOctreeZone.cpp
   src/OgreOctreeZoneDll.cpp
   src/OgreOctreeZoneOctree.cpp
   src/OgreOctreeZonePlugin.cpp
-  src/OgreTerrainVertexProgram.cpp
-  src/OgreTerrainZone.cpp
-  src/OgreTerrainZonePage.cpp
-  src/OgreTerrainZonePageSource.cpp
-  src/OgreTerrainZoneRenderable.cpp
 )
 
 include_directories(

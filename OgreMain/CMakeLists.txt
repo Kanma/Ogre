@@ -46,7 +46,10 @@ set (HEADER_FILES
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreDataStream.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreDDSCodec.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreDefaultHardwareBufferManager.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreDeflate.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreDepthBuffer.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreDistanceLodStrategy.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreDualQuaternion.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreDynLib.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreDynLibManager.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreEdgeListBuilder.h
@@ -78,6 +81,13 @@ set (HEADER_FILES
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreHighLevelGpuProgramManager.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreImage.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreImageCodec.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreInstanceBatch.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreInstanceBatchHW.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreInstanceBatchHW_VTF.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreInstanceBatchShader.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreInstanceBatchVTF.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreInstanceManager.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreInstancedEntity.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreInstancedGeometry.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreIteratorRange.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreIteratorWrapper.h
@@ -205,6 +215,7 @@ set (HEADER_FILES
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreSkeletonInstance.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreSkeletonManager.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreSkeletonSerializer.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreSmallVector.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreSphere.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreSpotShadowFadePng.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreStableHeaders.h
@@ -215,6 +226,7 @@ set (HEADER_FILES
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreString.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreStringConverter.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreStringInterface.h
+  ${OGRE_SOURCE_DIR}/include/Ogre/OgreStringSerialiser.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreStringVector.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreSubEntity.h
   ${OGRE_SOURCE_DIR}/include/Ogre/OgreSubMesh.h
@@ -276,7 +288,10 @@ set (SOURCE_FILES
   OgreDDSCodec.cpp
   OgreDefaultHardwareBufferManager.cpp
   OgreDefaultSceneQueries.cpp
+  OgreDeflate.cpp
+  OgreDepthBuffer.cpp
   OgreDistanceLodStrategy.cpp
+  OgreDualQuaternion.cpp
   OgreDynLib.cpp
   OgreDynLibManager.cpp
   OgreEdgeListBuilder.cpp
@@ -302,6 +317,13 @@ set (SOURCE_FILES
   OgreHighLevelGpuProgramManager.cpp
   OgreImage.cpp
   OgreImageResampler.h
+  OgreInstanceBatch.cpp
+  OgreInstanceBatchHW.cpp
+  OgreInstanceBatchHW_VTF.cpp
+  OgreInstanceBatchShader.cpp
+  OgreInstanceBatchVTF.cpp
+  OgreInstanceManager.cpp
+  OgreInstancedEntity.cpp
   OgreInstancedGeometry.cpp
   OgreKeyFrame.cpp
   OgreLight.cpp
@@ -407,11 +429,13 @@ set (SOURCE_FILES
   OgreSkeletonInstance.cpp
   OgreSkeletonManager.cpp
   OgreSkeletonSerializer.cpp
+  OgreSmallVector.cpp
   OgreStaticGeometry.cpp
   OgreStreamSerialiser.cpp
   OgreString.cpp
   OgreStringConverter.cpp
   OgreStringInterface.cpp
+  OgreStringSerialiser.cpp
   OgreSubEntity.cpp
   OgreSubMesh.cpp
   OgreTagPoint.cpp
@@ -480,11 +504,11 @@ elseif (APPLE)
       OSX/OgreTimer.cpp
       OSX/macUtils.cpp
       OgreSearchOps.cpp
-	  ${OGRE_SOURCE_DIR}/include/Ogre/OSX/ogrelogo.png
+      ${OGRE_SOURCE_DIR}/include/Ogre/OSX/ogrelogo.png
     )
 
     set(RESOURCE_FILES
-	  ${OGRE_SOURCE_DIR}/include/Ogre/OSX/ogrelogo.png
+        ${OGRE_SOURCE_DIR}/include/Ogre/OSX/ogrelogo.png
     )
 
     source_group(Resources FILES ${RESOURCE_FILES})
@@ -516,33 +540,33 @@ endif ()
 
 # Configure threading files
 set(THREAD_HEADER_FILES
-	${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadDefines.h
-	${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadHeaders.h
-	${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreDefaultWorkQueue.h
+    ${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadDefines.h
+    ${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadHeaders.h
+    ${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreDefaultWorkQueue.h
 )
 
 if (OGRE_THREAD_PROVIDER EQUAL 0)
     
-	list(APPEND THREAD_HEADER_FILES
-		${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadDefinesNone.h
-		${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreDefaultWorkQueueStandard.h
-	)
-	
-	set(THREAD_SOURCE_FILES
-		Threading/OgreDefaultWorkQueueStandard.cpp
-	)
-	
+    list(APPEND THREAD_HEADER_FILES
+        ${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadDefinesNone.h
+        ${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreDefaultWorkQueueStandard.h
+    )
+    
+    set(THREAD_SOURCE_FILES
+        Threading/OgreDefaultWorkQueueStandard.cpp
+    )
+    
 elseif (OGRE_THREAD_PROVIDER EQUAL 1)
-	
-	list(APPEND THREAD_HEADER_FILES
-		${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadDefinesBoost.h
-		${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadHeadersBoost.h
-		${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreDefaultWorkQueueStandard.h
-	)
-	
-	set(THREAD_SOURCE_FILES
-		Threading/OgreDefaultWorkQueueStandard.cpp
-	)
+    
+    list(APPEND THREAD_HEADER_FILES
+        ${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadDefinesBoost.h
+        ${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreThreadHeadersBoost.h
+        ${OGRE_SOURCE_DIR}/include/Ogre/Threading/OgreDefaultWorkQueueStandard.h
+    )
+    
+    set(THREAD_SOURCE_FILES
+        Threading/OgreDefaultWorkQueueStandard.cpp
+    )
 
 endif ()
 
@@ -586,24 +610,27 @@ xmake_disable_vs_warning(OGRE 4305 NO)
 xmake_project_link(OGRE FREEIMAGE FREETYPE ZZIPLIB)
 target_link_libraries(Ogre ${PLATFORM_LIBS})
 
-if (OGRE_CONFIG_THREADS)
+if (OGRE_THREAD_SUPPORT)
     target_link_libraries(Ogre ${OGRE_THREAD_LIBRARIES})
 endif ()
 
 
 # MacOS X Framework stuff
 if (APPLE)
-    set_target_properties(Ogre PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
+    set(COCOAVIEW_HEADERS ${OGRE_SOURCE_DIR}/RenderSystems/GL/include/OSX/OgreOSXCocoaView.h)
+
+    set_target_properties(Ogre PROPERTIES PUBLIC_HEADER "${HEADER_FILES};${COCOAVIEW_HEADERS}")
 
     add_custom_command(TARGET Ogre POST_BUILD
       COMMAND mkdir ARGS -p ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
-	  COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/Threading/* ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
+      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/Threading/* ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
       COMMAND mkdir ARGS -p ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX
-      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/OSX/*.h ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/	
-	)
+      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/OSX/*.h ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/
+      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${COCOAVIEW_HEADERS} ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/
+    )
 
-	set_target_properties(Ogre PROPERTIES RESOURCE "${RESOURCE_FILES}")
-	set_source_files_properties("${RESOURCE_FILES}" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set_target_properties(Ogre PROPERTIES RESOURCE "${RESOURCE_FILES}")
+    set_source_files_properties("${RESOURCE_FILES}" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 endif ()
 
 

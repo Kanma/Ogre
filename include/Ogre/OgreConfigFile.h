@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,13 +37,13 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
-	/** Class for quickly loading settings from a text file.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup General
+    *  @{
+    */
+    /** Class for quickly loading settings from a text file.
         @remarks
             This class is designed to quickly parse a simple file containing
             key/value pairs, mainly for use in configuration settings.
@@ -56,9 +56,9 @@ namespace Ogre {
             key - value pair must end in a carriage return.
         @par
             Settings can be optionally grouped in sections, using a header
-            beforehand of the form [SectionName]. 
+            beforehand of the form [SectionName].
     */
-	class _OgreExport ConfigFile : public ConfigAlloc
+    class _OgreExport ConfigFile : public ConfigAlloc
     {
     public:
 
@@ -70,15 +70,15 @@ namespace Ogre {
         void load(const String& filename, const String& resourceGroup, const String& separators = "\t:=", bool trimWhitespace = true);
         /// load from a data stream
         void load(const DataStreamPtr& stream, const String& separators = "\t:=", bool trimWhitespace = true);
-		/// load from a filename (not using resource group locations)
-		void loadDirect(const String& filename, const String& separators = "\t:=", bool trimWhitespace = true);
-		/// load from a filename (using resource group locations)
-		void loadFromResourceSystem(const String& filename, const String& resourceGroup, const String& separators = "\t:=", bool trimWhitespace = true);
+        /// load from a filename (not using resource group locations)
+        void loadDirect(const String& filename, const String& separators = "\t:=", bool trimWhitespace = true);
+        /// load from a filename (using resource group locations)
+        void loadFromResourceSystem(const String& filename, const String& resourceGroup, const String& separators = "\t:=", bool trimWhitespace = true);
 
-        /** Gets the first setting from the file with the named key. 
+        /** Gets the first setting from the file with the named key.
         @param key The name of the setting
         @param section The name of the section it must be in (if any)
-		@param defaultValue The value to return if the setting is not found
+        @param defaultValue The value to return if the setting is not found
         */
         String getSetting(const String& key, const String& section = StringUtil::BLANK, const String& defaultValue = StringUtil::BLANK) const;
         /** Gets all settings from the file with the named key. */
@@ -95,14 +95,14 @@ namespace Ogre {
         SettingsIterator getSettingsIterator(const String& section = StringUtil::BLANK);
 
 
-        
+
         /** Clear the settings */
         void clear(void);
     protected:
         SettingsBySection mSettings;
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

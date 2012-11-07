@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,12 +35,12 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup General
+    *  @{
+    */
 
     /// List of parameter types available
     enum ParameterType
@@ -109,7 +109,7 @@ namespace Ogre {
             }
         }
 
-		const ParamCommand* getParamCommand(const String& name) const
+        const ParamCommand* getParamCommand(const String& name) const
         {
             ParamCommandMap::const_iterator i = mParamCommands.find(name);
             if (i != mParamCommands.end())
@@ -123,7 +123,7 @@ namespace Ogre {
         }
     public:
         ParamDictionary()  {}
-        /** Method for adding a parameter definition for this class. 
+        /** Method for adding a parameter definition for this class.
         @param paramDef A ParameterDef object defining the parameter
         @param paramCmd Pointer to a ParamCommand subclass to handle the getting / setting of this parameter.
             NB this class will not destroy this on shutdown, please ensure you do
@@ -134,8 +134,8 @@ namespace Ogre {
             mParamDefs.push_back(paramDef);
             mParamCommands[paramDef.name] = paramCmd;
         }
-        /** Retrieves a list of parameters valid for this object. 
-        @returns
+        /** Retrieves a list of parameters valid for this object.
+        @return
             A reference to a static list of ParameterDef objects.
 
         */
@@ -148,84 +148,84 @@ namespace Ogre {
 
     };
     typedef map<String, ParamDictionary>::type ParamDictionaryMap;
-    
-    /** Class defining the common interface which classes can use to 
+
+    /** Class defining the common interface which classes can use to
         present a reflection-style, self-defining parameter set to callers.
     @remarks
         This class also holds a static map of class name to parameter dictionaries
-        for each subclass to use. See ParamDictionary for details. 
+        for each subclass to use. See ParamDictionary for details.
     @remarks
         In order to use this class, each subclass must call createParamDictionary in their constructors
         which will create a parameter dictionary for the class if it does not exist yet.
     */
-    class _OgreExport StringInterface 
+    class _OgreExport StringInterface
     {
     private:
-		OGRE_STATIC_MUTEX( msDictionaryMutex )
+        OGRE_STATIC_MUTEX( msDictionaryMutex )
 
         /// Dictionary of parameters
         static ParamDictionaryMap msDictionary;
 
         /// Class name for this instance to be used as a lookup (must be initialised by subclasses)
         String mParamDictName;
-		ParamDictionary* mParamDict;
+        ParamDictionary* mParamDict;
 
-	protected:
+    protected:
         /** Internal method for creating a parameter dictionary for the class, if it does not already exist.
         @remarks
             This method will check to see if a parameter dictionary exist for this class yet,
-            and if not will create one. NB you must supply the name of the class (RTTI is not 
+            and if not will create one. NB you must supply the name of the class (RTTI is not
             used or performance).
         @param
             className the name of the class using the dictionary
-        @returns
+        @return
             true if a new dictionary was created, false if it was already there
         */
         bool createParamDictionary(const String& className)
         {
-			OGRE_LOCK_MUTEX( msDictionaryMutex )
+            OGRE_LOCK_MUTEX( msDictionaryMutex )
 
-			ParamDictionaryMap::iterator it = msDictionary.find(className);
+            ParamDictionaryMap::iterator it = msDictionary.find(className);
 
-			if ( it == msDictionary.end() )
-			{
-				mParamDict = &msDictionary.insert( std::make_pair( className, ParamDictionary() ) ).first->second;
-				mParamDictName = className;
-				return true;
-			}
-			else
-			{
-				mParamDict = &it->second;
-				mParamDictName = className;
-				return false;
-			}
+            if ( it == msDictionary.end() )
+            {
+                mParamDict = &msDictionary.insert( std::make_pair( className, ParamDictionary() ) ).first->second;
+                mParamDictName = className;
+                return true;
+            }
+            else
+            {
+                mParamDict = &it->second;
+                mParamDictName = className;
+                return false;
+            }
         }
 
     public:
-		StringInterface() : mParamDict(NULL) { }
+        StringInterface() : mParamDict(NULL) { }
 
         /** Virtual destructor, see Effective C++ */
         virtual ~StringInterface() {}
 
-        /** Retrieves the parameter dictionary for this class. 
+        /** Retrieves the parameter dictionary for this class.
         @remarks
             Only valid to call this after createParamDictionary.
-        @returns
+        @return
             Pointer to ParamDictionary shared by all instances of this class
             which you can add parameters to, retrieve parameters etc.
         */
         ParamDictionary* getParamDictionary(void)
         {
-			return mParamDict;
+            return mParamDict;
         }
 
-		const ParamDictionary* getParamDictionary(void) const
+        const ParamDictionary* getParamDictionary(void) const
         {
-			return mParamDict;
+            return mParamDict;
         }
 
-        /** Retrieves a list of parameters valid for this object. 
-        @returns
+        /** Retrieves a list of parameters valid for this object.
+        @return
             A reference to a static list of ParameterDef objects.
 
         */
@@ -235,14 +235,14 @@ namespace Ogre {
         @remarks
             Call this method with the name of a parameter and a string version of the value
             to set. The implementor will convert the string to a native type internally.
-            If in doubt, check the parameter definition in the list returned from 
+            If in doubt, check the parameter definition in the list returned from
             StringInterface::getParameters.
         @param
             name The name of the parameter to set
         @param
             value String value. Must be in the right format for the type specified in the parameter definition.
             See the StringConverter class for more information.
-        @returns
+        @return
             true if set was successful, false otherwise (NB no exceptions thrown - tolerant method)
         */
         virtual bool setParameter(const String& name, const String& value);
@@ -250,7 +250,7 @@ namespace Ogre {
         @remarks
             Call this method with a list of name / value pairs
             to set. The implementor will convert the string to a native type internally.
-            If in doubt, check the parameter definition in the list returned from 
+            If in doubt, check the parameter definition in the list returned from
             StringInterface::getParameters.
         @param
             paramList Name/value pair list
@@ -264,7 +264,7 @@ namespace Ogre {
             like you can use StringConverter to convert this string back into a native type.
         @param
             name The name of the parameter to get
-        @returns
+        @return
             String value of parameter, blank if not found
         */
         virtual String getParameter(const String& name) const
@@ -290,7 +290,7 @@ namespace Ogre {
         @remarks
             This method takes the values of all the object's parameters and tries to set the
             same values on the destination object. This provides a completely type independent
-            way to copy parameters to other objects. Note that because of the String manipulation 
+            way to copy parameters to other objects. Note that because of the String manipulation
             involved, this should not be regarded as an efficient process and should be saved for
             times outside of the rendering loop.
         @par
@@ -307,8 +307,8 @@ namespace Ogre {
             {
                 // Iterate through own parameters
                 ParameterList::const_iterator i;
-            
-                for (i = dict->mParamDefs.begin(); 
+
+                for (i = dict->mParamDefs.begin();
                 i != dict->mParamDefs.end(); ++i)
                 {
                     dest->setParameter(i->name, getParameter(i->name));
@@ -325,8 +325,8 @@ namespace Ogre {
 
     };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 
 }

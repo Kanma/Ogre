@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,13 +37,13 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-	/** Represents a convex volume bounded by planes.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Math
+    *  @{
+    */
+    /** Represents a convex volume bounded by planes.
     */
     class _OgreExport PlaneBoundedVolume
     {
@@ -55,7 +55,7 @@ namespace Ogre {
 
         PlaneBoundedVolume() :outside(Plane::NEGATIVE_SIDE) {}
         /** Constructor, determines which side is deemed to be 'outside' */
-        PlaneBoundedVolume(Plane::Side theOutside) 
+        PlaneBoundedVolume(Plane::Side theOutside)
             : outside(theOutside) {}
 
         /** Intersection test with AABB
@@ -70,7 +70,7 @@ namespace Ogre {
             Vector3 centre = box.getCenter();
             // Get the half-size of the box
             Vector3 halfSize = box.getHalfSize();
-            
+
             PlaneList::const_iterator i, iend;
             iend = planes.end();
             for (i = planes.begin(); i != iend; ++i)
@@ -114,7 +114,7 @@ namespace Ogre {
         }
 
         /** Intersection test with a Ray
-        @returns std::pair of hit (bool) and distance
+        @return std::pair of hit (bool) and distance
         @remarks May return false positives but will never miss an intersection.
         */
         inline std::pair<bool, Real> intersects(const Ray& ray)
@@ -126,8 +126,8 @@ namespace Ogre {
 
     typedef vector<PlaneBoundedVolume>::type PlaneBoundedVolumeList;
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

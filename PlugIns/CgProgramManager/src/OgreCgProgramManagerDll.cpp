@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,8 +47,8 @@ namespace Ogre {
     }
     extern "C" void _OgreCgPluginExport dllStopPlugin(void)
     {
-		Root::getSingleton().uninstallPlugin(cgPlugin);
-		OGRE_DELETE cgPlugin;
+        Root::getSingleton().uninstallPlugin(cgPlugin);
+        OGRE_DELETE cgPlugin;
     }
 #endif
 
@@ -57,7 +57,7 @@ namespace Ogre {
         CGerror error = cgGetError();
         if (error != CG_NO_ERROR)
         {
-            String msg = errorTextPrefix + cgGetErrorString(error); 
+            String msg = errorTextPrefix + cgGetErrorString(error);
 
             if (error == CG_COMPILER_ERROR)
             {

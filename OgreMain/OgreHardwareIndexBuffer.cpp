@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,13 @@ THE SOFTWARE.
 namespace Ogre {
 
     //-----------------------------------------------------------------------------
-    HardwareIndexBuffer::HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType, 
-        size_t numIndexes, HardwareBuffer::Usage usage, 
-        bool useSystemMemory, bool useShadowBuffer) 
+    HardwareIndexBuffer::HardwareIndexBuffer(HardwareBufferManagerBase* mgr, IndexType idxType,
+        size_t numIndexes, HardwareBuffer::Usage usage,
+        bool useSystemMemory, bool useShadowBuffer)
         : HardwareBuffer(usage, useSystemMemory, useShadowBuffer)
-		, mMgr(mgr)
-		, mIndexType(idxType)
-		, mNumIndexes(numIndexes)
+        , mMgr(mgr)
+        , mIndexType(idxType)
+        , mNumIndexes(numIndexes)
     {
         // Calculate the size of the indexes
         switch (mIndexType)
@@ -57,7 +57,7 @@ namespace Ogre {
         // Create a shadow buffer if required
         if (mUseShadowBuffer)
         {
-            mpShadowBuffer = OGRE_NEW DefaultHardwareIndexBuffer(mIndexType, 
+            mShadowBuffer = OGRE_NEW DefaultHardwareIndexBuffer(mIndexType,
                 mNumIndexes, HardwareBuffer::HBU_DYNAMIC);
         }
 
@@ -66,14 +66,14 @@ namespace Ogre {
     //-----------------------------------------------------------------------------
     HardwareIndexBuffer::~HardwareIndexBuffer()
     {
-		if (mMgr)
-		{
-			mMgr->_notifyIndexBufferDestroyed(this);
-		}
-
-        if (mpShadowBuffer)
+        if (mMgr)
         {
-            OGRE_DELETE mpShadowBuffer;
+            mMgr->_notifyIndexBufferDestroyed(this);
+        }
+
+        if (mShadowBuffer)
+        {
+            OGRE_DELETE mShadowBuffer;
         }
     }
     //-----------------------------------------------------------------------------

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,19 +37,19 @@ THE SOFTWARE.
 namespace Ogre {
 
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Overlays
-	*  @{
-	*/
-	/** Represents a layer which is rendered on top of the 'normal' scene contents.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Overlays
+    *  @{
+    */
+    /** Represents a layer which is rendered on top of the 'normal' scene contents.
     @remarks
-        An overlay is a container for visual components (2D and 3D) which will be 
+        An overlay is a container for visual components (2D and 3D) which will be
         rendered after the main scene in order to composite heads-up-displays, menus
         or other layers on top of the contents of the scene.
     @par
-        An overlay always takes up the entire size of the viewport, although the 
+        An overlay always takes up the entire size of the viewport, although the
         components attached to it do not have to. An overlay has no visual element
         in itself, it it merely a container for visual elements.
     @par
@@ -64,10 +64,10 @@ namespace Ogre {
     @par
         By default overlays are rendered into all viewports. This is fine when you only
         have fullscreen viewports, but if you have picture-in-picture views, you probably
-        don't want the overlay displayed in the smaller viewports. You turn this off for 
+        don't want the overlay displayed in the smaller viewports. You turn this off for
         a specific viewport by calling the Viewport::setDisplayOverlays method.
     */
-	class _OgreExport Overlay : public OverlayAlloc
+    class _OgreExport Overlay : public OverlayAlloc
     {
 
     public:
@@ -93,14 +93,14 @@ namespace Ogre {
         bool mTransformUpdated;
         ulong mZOrder;
         bool mVisible;
-		bool mInitialised;
-		String mOrigin;
+        bool mInitialised;
+        String mOrigin;
         /** Internal lazy update method. */
         void updateTransform(void) const;
-		/** Internal method for initialising an overlay */
-		void initialise(void);
-		/** Internal method for updating container elements' Z-ordering */
-		void assignZOrders(void);
+        /** Internal method for initialising an overlay */
+        void initialise(void);
+        /** Internal method for updating container elements' Z-ordering */
+        void assignZOrders(void);
 
     public:
         /// Constructor: do not call direct, use OverlayManager::create
@@ -108,11 +108,11 @@ namespace Ogre {
         virtual ~Overlay();
 
 
-	    OverlayContainer* getChild(const String& name);
+        OverlayContainer* getChild(const String& name);
 
         /** Gets the name of this overlay. */
         const String& getName(void) const;
-        /** Alters the ZOrder of this overlay. 
+        /** Alters the ZOrder of this overlay.
         @remarks
             Values between 0 and 650 are valid here.
         */
@@ -123,10 +123,10 @@ namespace Ogre {
         /** Gets whether the overlay is displayed or not. */
         bool isVisible(void) const;
 
-		/** Gets whether the overlay is initialised or not. */
-		bool isInitialised(void) const { return mInitialised; }
+        /** Gets whether the overlay is initialised or not. */
+        bool isInitialised(void) const { return mInitialised; }
 
-		/** Shows the overlay if it was hidden. */
+        /** Shows the overlay if it was hidden. */
         void show(void);
 
         /** Hides the overlay if it was visible. */
@@ -145,43 +145,43 @@ namespace Ogre {
         void add2D(OverlayContainer* cont);
 
 
-        /** Removes a 2D container from the overlay. 
+        /** Removes a 2D container from the overlay.
         @remarks
             NOT FAST. Consider OverlayElement::hide.
         */
         void remove2D(OverlayContainer* cont);
 
         /** Adds a node capable of holding 3D objects to the overlay.
-        @remarks    
-            Although overlays are traditionally associated with 2D elements, there 
+        @remarks
+            Although overlays are traditionally associated with 2D elements, there
             are reasons why you might want to attach 3D elements to the overlay too.
             For example, if you wanted to have a 3D cockpit, which was overlaid with a
             HUD, then you would create 2 overlays, one with a 3D object attached for the
-            cockpit, and one with the HUD elements attached (the zorder of the HUD 
+            cockpit, and one with the HUD elements attached (the zorder of the HUD
             overlay would be higher than the cockpit to ensure it was always on top).
-        @par    
+        @par
             A SceneNode can have any number of 3D objects attached to it. SceneNodes
             are usually created using SceneManager::createSceneNode, but in this case
-			you should create a standard SceneNode instance <b>manually</b>; this is
-			because these scene nodes are not managed by the SceneManager and some custom
-			SceneManager plugins will rely on specialist behaviour the overlay does not
-			support. By attaching a SceneNode to an overlay, you indicate that:<OL>
+            you should create a standard SceneNode instance <b>manually</b>; this is
+            because these scene nodes are not managed by the SceneManager and some custom
+            SceneManager plugins will rely on specialist behaviour the overlay does not
+            support. By attaching a SceneNode to an overlay, you indicate that:<OL>
             <LI>You want the contents of this node to only appear when the overlay is active</LI>
             <LI>You want the node to inherit a coordinate space relative to the camera,
                 rather than relative to the root scene node</LI>
             <LI>You want these objects to be rendered after the contents of the main scene
                 to ensure they are rendered on top</LI>
             </OL>
-            One major consideration when using 3D objects in overlays is the behaviour of 
+            One major consideration when using 3D objects in overlays is the behaviour of
             the depth buffer. Overlays should use materials with depth checking off, to ensure
-            that their contents are always displayed on top of the main scene (to do 
+            that their contents are always displayed on top of the main scene (to do
             otherwise would result in objects 'poking through' the overlay). The problem
             with using 3D objects is that if they are concave, or self-overlap, then you
-            can get artefacts because of the lack of depth buffer checking. So you should 
+            can get artefacts because of the lack of depth buffer checking. So you should
             ensure that any 3D objects you us in the overlay are convex, and don't overlap
             each other. If they must overlap, split them up and put them in 2 overlays.
-			Alternatively, use a 2D element underneath them which will clear the depth buffer
-			values underneath ready for the 3D element to be rendered correctly.
+            Alternatively, use a 2D element underneath them which will clear the depth buffer
+            values underneath ready for the 3D element to be rendered correctly.
         */
         void add3D(SceneNode* node);
 
@@ -193,11 +193,11 @@ namespace Ogre {
 
         /** Sets the scrolling factor of this overlay.
         @remarks
-            You can use this to set an offset to be used to scroll an 
+            You can use this to set an offset to be used to scroll an
             overlay around the screen.
         @param x Horizontal scroll value, where 0 = normal, -0.5 = scroll so that only
             the right half the screen is visible etc
-        @param y Vertical scroll value, where 0 = normal, 0.5 = scroll down by half 
+        @param y Vertical scroll value, where 0 = normal, 0.5 = scroll down by half
             a screen etc.
         */
         void setScroll(Real x, Real y);
@@ -227,7 +227,7 @@ namespace Ogre {
 
         /** Sets the scaling factor of this overlay.
         @remarks
-            You can use this to set an scale factor to be used to zoom an 
+            You can use this to set an scale factor to be used to zoom an
             overlay.
         @param x Horizontal scale value, where 1.0 = normal, 0.5 = half size etc
         @param y Vertical scale value, where 1.0 = normal, 0.5 = half size etc
@@ -247,7 +247,7 @@ namespace Ogre {
         void _findVisibleObjects(Camera* cam, RenderQueue* queue);
 
         /** This returns a OverlayElement at position x,y. */
-		virtual OverlayElement* findElementAt(Real x, Real y);
+        virtual OverlayElement* findElementAt(Real x, Real y);
 
         /** Returns an iterator over all 2D elements in this manager.
         @remarks
@@ -258,20 +258,20 @@ namespace Ogre {
         {
             return Overlay2DElementsIterator (m2DElements.begin(), m2DElements.end());
         }
-		/** Get the origin of this overlay, e.g. a script file name.
-		@remarks
-			This property will only contain something if the creator of
-			this overlay chose to populate it. Script loaders are advised
-			to populate it.
-		*/
-		const String& getOrigin(void) const { return mOrigin; }
-		/// Notify this overlay of it's origin
-		void _notifyOrigin(const String& origin) { mOrigin = origin; }
+        /** Get the origin of this overlay, e.g. a script file name.
+        @remarks
+            This property will only contain something if the creator of
+            this overlay chose to populate it. Script loaders are advised
+            to populate it.
+        */
+        const String& getOrigin(void) const { return mOrigin; }
+        /// Notify this overlay of it's origin
+        void _notifyOrigin(const String& origin) { mOrigin = origin; }
 
 
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

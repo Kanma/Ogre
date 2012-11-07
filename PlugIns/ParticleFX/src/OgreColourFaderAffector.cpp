@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 
 namespace Ogre {
-    
+
     // init statics
     ColourFaderAffector::CmdRedAdjust ColourFaderAffector::msRedCmd;
     ColourFaderAffector::CmdGreenAdjust ColourFaderAffector::msGreenCmd;
@@ -50,16 +50,16 @@ namespace Ogre {
         {
             ParamDictionary* dict = getParamDictionary();
 
-            dict->addParameter(ParameterDef("red", 
+            dict->addParameter(ParameterDef("red",
                 "The amount by which to adjust the red component of particles per second.",
                 PT_REAL), &msRedCmd);
-            dict->addParameter(ParameterDef("green", 
+            dict->addParameter(ParameterDef("green",
                 "The amount by which to adjust the green component of particles per second.",
                 PT_REAL), &msGreenCmd);
-            dict->addParameter(ParameterDef("blue", 
+            dict->addParameter(ParameterDef("blue",
                 "The amount by which to adjust the blue component of particles per second.",
                 PT_REAL), &msBlueCmd);
-            dict->addParameter(ParameterDef("alpha", 
+            dict->addParameter(ParameterDef("alpha",
                 "The amount by which to adjust the alpha component of particles per second.",
                 PT_REAL), &msAlphaCmd);
 

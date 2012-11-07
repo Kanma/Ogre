@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -88,19 +88,23 @@ namespace Ogre {
         /// Populate the passed parameters with name->index map, must be overridden
         void buildConstantDefinitions() const;
 
-		/// Recurse down structures getting data on parameters
-		void recurseParams(CGparameter param, size_t contextArraySize = 1) const;
-		/// Turn a Cg type into a GpuConstantType and number of elements
-		void mapTypeAndElementSize(CGtype cgType, bool isRegisterCombiner, GpuConstantDefinition& def) const;
+        /// Recurse down structures getting data on parameters
+        void recurseParams(CGparameter param, size_t contextArraySize = 1);
+        /// Turn a Cg type into a GpuConstantType and number of elements
+        void mapTypeAndElementSize(CGtype cgType, bool isRegisterCombiner, GpuConstantDefinition& def) const;
 
         StringVector mProfiles;
         String mEntryPoint;
         String mSelectedProfile;
+        String mProgramString;
         CGprofile mSelectedCgProfile;
         String mCompileArgs;
         // Unfortunately Cg uses char** for arguments - bleh
         // This is a null-terminated list of char* (each null terminated)
         char** mCgArguments;
+
+        GpuConstantDefinitionMap mParametersMap;
+        size_t mParametersMapSizeAsBuffer;
 
         /// Internal method which works out which profile to use for this program
         void selectProfile(void);
@@ -109,10 +113,12 @@ namespace Ogre {
         /// Releases memory for the horrible Cg char**
         void freeCgArgs(void);
 
-
+        void getMicrocodeFromCache(void);
+        void compileMicrocode(void);
+        void addMicrocodeToCache();
     public:
         CgProgram(ResourceManager* creator, const String& name, ResourceHandle handle,
-            const String& group, bool isManual, ManualResourceLoader* loader, 
+            const String& group, bool isManual, ManualResourceLoader* loader,
             CGcontext context);
         ~CgProgram();
 
@@ -131,11 +137,12 @@ namespace Ogre {
         /// Overridden from GpuProgram
         bool isSupported(void) const;
         /// Overridden from GpuProgram
+        bool getPassTransformStates(void) const { return true; /* CG uses MVP matrix when -posinv argument passed */ }
+        /// Overridden from GpuProgram
         const String& getLanguage(void) const;
 
-		/// scan the file for #include and replace with source from the OGRE resources
-		static String resolveCgIncludes(const String& source, Resource* resourceBeingLoaded, const String& fileName);
-
+        /// Scan the file for #include and replace with source from the OGRE resources
+        static String resolveCgIncludes(const String& source, Resource* resourceBeingLoaded, const String& fileName);
     };
 }
 

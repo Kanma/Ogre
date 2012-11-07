@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,32 +35,32 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	unsigned int D3D11Driver::driverCount = 0;
 	//---------------------------------------------------------------------
-	D3D11Driver::D3D11Driver(D3D11Device & device) : mDevice(device)
+	D3D11Driver::D3D11Driver() 
 	{
 		tempNo = ++driverCount;
 		ZeroMemory( &mAdapterIdentifier, sizeof(mAdapterIdentifier) );
 		ZeroMemory( &mDesktopDisplayMode, sizeof(mDesktopDisplayMode) );
-		mpVideoModeList = NULL;
-		mpDXGIAdapter=NULL;
+		mVideoModeList = NULL;
+		mDXGIAdapter=NULL;
 	}
 	//---------------------------------------------------------------------
-	D3D11Driver::D3D11Driver( const D3D11Driver &ob ) : mDevice(ob.mDevice)
+	D3D11Driver::D3D11Driver( const D3D11Driver &ob ) 
 	{
 		tempNo = ++driverCount;
 		mAdapterNumber = ob.mAdapterNumber;
 		mAdapterIdentifier = ob.mAdapterIdentifier;
 		mDesktopDisplayMode = ob.mDesktopDisplayMode;
-		mpVideoModeList = NULL;
-		mpDXGIAdapter=ob.mpDXGIAdapter;
+		mVideoModeList = NULL;
+		mDXGIAdapter=ob.mDXGIAdapter;
 
 	}
 	//---------------------------------------------------------------------
-	D3D11Driver::D3D11Driver( D3D11Device & device, unsigned int adapterNumber, IDXGIAdapter1* pDXGIAdapter) : mDevice(device)
+	D3D11Driver::D3D11Driver( unsigned int adapterNumber, IDXGIAdapter1* pDXGIAdapter)
 	{
 		tempNo = ++driverCount;
 		mAdapterNumber = adapterNumber;
-		mpVideoModeList = NULL;
-		mpDXGIAdapter=pDXGIAdapter;
+		mVideoModeList = NULL;
+		mDXGIAdapter=pDXGIAdapter;
 
 		// get the description of the adapter
 		pDXGIAdapter->GetDesc1( &mAdapterIdentifier );
@@ -69,7 +69,7 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	D3D11Driver::~D3D11Driver()
 	{
-		SAFE_DELETE( mpVideoModeList );
+		SAFE_DELETE( mVideoModeList );
 		driverCount--;
 	}
 	//---------------------------------------------------------------------
@@ -101,15 +101,10 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	D3D11VideoModeList* D3D11Driver::getVideoModeList()
 	{
-		if( !mpVideoModeList )
-			mpVideoModeList = new D3D11VideoModeList( this );
+		if( !mVideoModeList )
+			mVideoModeList = new D3D11VideoModeList( this );
 
-		return mpVideoModeList;
-	}
-	//---------------------------------------------------------------------
-	void D3D11Driver::setDevice( D3D11Device & device )
-	{
-		mDevice = device;
+		return mVideoModeList;
 	}
 	//---------------------------------------------------------------------
 	unsigned int D3D11Driver::getAdapterNumber() const
@@ -129,7 +124,7 @@ namespace Ogre
 	//---------------------------------------------------------------------
 	IDXGIAdapter1* D3D11Driver::getDeviceAdapter() const
 	{
-		return mpDXGIAdapter;
+		return mDXGIAdapter;
 	}
 	//---------------------------------------------------------------------
 }

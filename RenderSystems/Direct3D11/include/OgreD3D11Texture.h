@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __D3D8TEXTURE_H__
-#define __D3D8TEXTURE_H__
+#ifndef __D3D11TEXTURE_H__
+#define __D3D11TEXTURE_H__
 
 #include "OgreD3D11Prerequisites.h"
 #include "OgreTexture.h"
@@ -36,9 +36,11 @@ namespace Ogre {
 	class D3D11Texture : public Texture
 	{
 	protected:
+        // needed to store data between prepareImpl and loadImpl
+        typedef SharedPtr<vector<MemoryDataStreamPtr>::type > LoadedStreams;
+
 		/// D3DDevice pointer
 		D3D11Device	&	mDevice;	
-
 
 		/// D3D11 pointer
 		//LPDIRECT3D11				*mpD3D;
@@ -74,7 +76,7 @@ namespace Ogre {
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC mSRVDesc;
 		/// internal method, load a normal texture
-		void _loadTex();
+		void _loadTex(LoadedStreams & loadedStreams);
 
 		/// internal method, create a blank normal 1D Dtexture
 		void _create1DTex();
@@ -86,8 +88,12 @@ namespace Ogre {
 		/// internal method, return a D3D pixel format for texture creation
 		DXGI_FORMAT _chooseD3DFormat();
 
+		/// @copydoc Texture::createInternalResources
+		void createInternalResources(void);
 		/// @copydoc Texture::createInternalResourcesImpl
 		void createInternalResourcesImpl(void);
+		/// @copydoc Texture::freeInternalResources
+		void freeInternalResources(void);
 		/// free internal resources
 		void freeInternalResourcesImpl(void);
 		/// internal method, set Texture class source image protected attributes
@@ -103,8 +109,24 @@ namespace Ogre {
 		/// mipmap level. This method must be called after the D3D texture object was created
 		void _createSurfaceList(void);
 
+
+        /// @copydoc Resource::prepareImpl
+        void prepareImpl(void);
+        /// @copydoc Resource::unprepareImpl
+        void unprepareImpl(void);
 		/// overriden from Resource
 		void loadImpl();
+		/// overriden from Resource
+		void postLoadImpl();
+
+        /** Vector of pointers to streams that were pulled from disk by
+            prepareImpl  but have yet to be pushed into texture memory
+            by loadImpl.  Should be cleared on load and on unprepare.
+        */
+        LoadedStreams mLoadedStreams;
+		LoadedStreams _prepareNormTex();
+		LoadedStreams _prepareVolumeTex();
+		LoadedStreams _prepareCubeTex();
 	public:
 		/// constructor 
 		D3D11Texture(ResourceManager* creator, const String& name, ResourceHandle handle,

@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -39,68 +39,68 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	// Forward decl
-	class ParticleSystemFactory;
-	
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Effects
-	*  @{
-	*/
-	/** Manages particle systems, particle system scripts (templates) and the 
-		available emitter & affector factories.
+    // Forward decl
+    class ParticleSystemFactory;
+
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Effects
+    *  @{
+    */
+    /** Manages particle systems, particle system scripts (templates) and the
+        available emitter & affector factories.
     @remarks
-        This singleton class is responsible for creating and managing particle 
-		systems. All particle systems must be created and destroyed using this 
-		object, although the user interface to creating them is via
-		SceneManager. Remember that like all other MovableObject
-        subclasses, ParticleSystems do not get rendered until they are 
-		attached to a SceneNode object.
+        This singleton class is responsible for creating and managing particle
+        systems. All particle systems must be created and destroyed using this
+        object, although the user interface to creating them is via
+        SceneManager. Remember that like all other MovableObject
+        subclasses, ParticleSystems do not get rendered until they are
+        attached to a SceneNode object.
     @par
-        This class also manages factories for ParticleEmitter and 
-		ParticleAffector classes. To enable easy extensions to the types of 
-		emitters (particle sources) and affectors (particle modifiers), the
-        ParticleSystemManager lets plugins or applications register factory 
-		classes which submit new subclasses to ParticleEmitter and 
-		ParticleAffector. Ogre comes with a number of them already provided,
+        This class also manages factories for ParticleEmitter and
+        ParticleAffector classes. To enable easy extensions to the types of
+        emitters (particle sources) and affectors (particle modifiers), the
+        ParticleSystemManager lets plugins or applications register factory
+        classes which submit new subclasses to ParticleEmitter and
+        ParticleAffector. Ogre comes with a number of them already provided,
         such as cone, sphere and box-shaped emitters, and simple affectors such
-	   	as constant directional force and colour faders. However using this 
-		registration process, a plugin can create any behaviour required.
+        as constant directional force and colour faders. However using this
+        registration process, a plugin can create any behaviour required.
     @par
-        This class also manages the loading and parsing of particle system 
-		scripts, which are text files describing named particle system 
-		templates. Instances of particle systems using these templates can
+        This class also manages the loading and parsing of particle system
+        scripts, which are text files describing named particle system
+        templates. Instances of particle systems using these templates can
         then be created easily through the createParticleSystem method.
     */
-    class _OgreExport ParticleSystemManager: 
-		public Singleton<ParticleSystemManager>, public ScriptLoader, public FXAlloc
+    class _OgreExport ParticleSystemManager:
+        public Singleton<ParticleSystemManager>, public ScriptLoader, public FXAlloc
     {
-		friend class ParticleSystemFactory;
-	public:
+        friend class ParticleSystemFactory;
+    public:
         typedef map<String, ParticleSystem*>::type ParticleTemplateMap;
-		typedef map<String, ParticleAffectorFactory*>::type ParticleAffectorFactoryMap;
-		typedef map<String, ParticleEmitterFactory*>::type ParticleEmitterFactoryMap;
-		typedef map<String, ParticleSystemRendererFactory*>::type ParticleSystemRendererFactoryMap;
+        typedef map<String, ParticleAffectorFactory*>::type ParticleAffectorFactoryMap;
+        typedef map<String, ParticleEmitterFactory*>::type ParticleEmitterFactoryMap;
+        typedef map<String, ParticleSystemRendererFactory*>::type ParticleSystemRendererFactoryMap;
     protected:
-		OGRE_AUTO_MUTEX
-			
+        OGRE_AUTO_MUTEX
+
         /// Templates based on scripts
         ParticleTemplateMap mSystemTemplates;
-        
+
         /// Factories for named emitter types (can be extended using plugins)
         ParticleEmitterFactoryMap mEmitterFactories;
 
         /// Factories for named affector types (can be extended using plugins)
         ParticleAffectorFactoryMap mAffectorFactories;
 
-		/// Map of renderer types to factories
-		ParticleSystemRendererFactoryMap mRendererFactories;
+        /// Map of renderer types to factories
+        ParticleSystemRendererFactoryMap mRendererFactories;
 
         StringVector mScriptPatterns;
 
-		// Factory instance
-		ParticleSystemFactory* mFactory;
+        // Factory instance
+        ParticleSystemFactory* mFactory;
 
         /** Internal script parsing method. */
         void parseNewEmitter(const String& type, DataStreamPtr& chunk, ParticleSystem* sys);
@@ -117,15 +117,15 @@ namespace Ogre {
         /** Internal script parsing method. */
         void skipToNextOpenBrace(DataStreamPtr& chunk);
 
-		/// Internal implementation of createSystem
-        ParticleSystem* createSystemImpl(const String& name, size_t quota, 
-			const String& resourceGroup);
-		/// Internal implementation of createSystem
+        /// Internal implementation of createSystem
+        ParticleSystem* createSystemImpl(const String& name, size_t quota,
+            const String& resourceGroup);
+        /// Internal implementation of createSystem
         ParticleSystem* createSystemImpl(const String& name, const String& templateName);
-		/// Internal implementation of destroySystem
+        /// Internal implementation of destroySystem
         void destroySystemImpl(ParticleSystem* sys);
-		
-		
+
+
     public:
 
         ParticleSystemManager();
@@ -135,8 +135,8 @@ namespace Ogre {
         @remarks
             This method allows plugins etc to add new particle emitter types to Ogre. Particle emitters
             are sources of particles, and generate new particles with their start positions, colours and
-            momentums appropriately. Plugins would create new subclasses of ParticleEmitter which 
-            emit particles a certain way, and register a subclass of ParticleEmitterFactory to create them (since multiple 
+            momentums appropriately. Plugins would create new subclasses of ParticleEmitter which
+            emit particles a certain way, and register a subclass of ParticleEmitterFactory to create them (since multiple
             emitters can be created for different particle systems).
         @par
             All particle emitter factories have an assigned name which is used to identify the emitter
@@ -169,23 +169,23 @@ namespace Ogre {
         */
         void addAffectorFactory(ParticleAffectorFactory* factory);
 
-		/** Registers a factory class for creating ParticleSystemRenderer instances. 
+        /** Registers a factory class for creating ParticleSystemRenderer instances.
         @par
             Note that the object passed to this function will not be destroyed by the ParticleSystemManager,
             since it may have been allocated on a different heap in the case of plugins. The caller must
             destroy the object later on, probably on plugin shutdown.
         @param
             factory Pointer to a ParticleSystemRendererFactory subclass created by the plugin or application code.
-		*/
-		void addRendererFactory(ParticleSystemRendererFactory* factory);
+        */
+        void addRendererFactory(ParticleSystemRendererFactory* factory);
 
-        /** Adds a new particle system template to the list of available templates. 
+        /** Adds a new particle system template to the list of available templates.
         @remarks
             Instances of particle systems in a scene are not normally unique - often you want to place the
             same effect in many places. This method allows you to register a ParticleSystem as a named template,
             which can subsequently be used to create instances using the createSystem method.
         @par
-            Note that particle system templates can either be created programmatically by an application 
+            Note that particle system templates can either be created programmatically by an application
             and registered using this method, or they can be defined in a script file (*.particle) which is
             loaded by the engine at startup, very much like Material scripts.
         @param
@@ -193,7 +193,7 @@ namespace Ogre {
         @param
             sysTemplate A pointer to a particle system to be used as a template. The manager
                 will take over ownership of this pointer.
-            
+
         */
         void addTemplate(const String& name, ParticleSystem* sysTemplate);
 
@@ -226,7 +226,7 @@ namespace Ogre {
         */
         void removeTemplatesByResourceGroup(const String& resourceGroup);
 
-        /** Create a new particle system template. 
+        /** Create a new particle system template.
         @remarks
             This method is similar to the addTemplate method, except this just creates a new template
             and returns a pointer to it to be populated. Use this when you don't already have a system
@@ -234,13 +234,13 @@ namespace Ogre {
         @param
             name The name of the template. Must be unique across all templates.
         @param
-            resourceGroup The name of the resource group which will be used to 
+            resourceGroup The name of the resource group which will be used to
                 load any dependent resources.
-            
+
         */
         ParticleSystem* createTemplate(const String& name, const String& resourceGroup);
 
-        /** Retrieves a particle system template for possible modification. 
+        /** Retrieves a particle system template for possible modification.
         @remarks
             Modifying a template does not affect the settings on any ParticleSystems already created
             from this template.
@@ -250,11 +250,11 @@ namespace Ogre {
         /** Internal method for creating a new emitter from a factory.
         @remarks
             Used internally by the engine to create new ParticleEmitter instances from named
-            factories. Applications should use the ParticleSystem::addEmitter method instead, 
+            factories. Applications should use the ParticleSystem::addEmitter method instead,
             which calls this method to create an instance.
         @param
             emitterType String name of the emitter type to be created. A factory of this type must have been registered.
-        @param 
+        @param
             psys The particle system this is being created for
         */
         ParticleEmitter* _createEmitter(const String& emitterType, ParticleSystem* psys);
@@ -272,7 +272,7 @@ namespace Ogre {
         /** Internal method for creating a new affector from a factory.
         @remarks
             Used internally by the engine to create new ParticleAffector instances from named
-            factories. Applications should use the ParticleSystem::addAffector method instead, 
+            factories. Applications should use the ParticleSystem::addAffector method instead,
             which calls this method to create an instance.
         @param
             effectorType String name of the affector type to be created. A factory of this type must have been registered.
@@ -294,7 +294,7 @@ namespace Ogre {
         /** Internal method for creating a new renderer from a factory.
         @remarks
             Used internally by the engine to create new ParticleSystemRenderer instances from named
-            factories. Applications should use the ParticleSystem::setRenderer method instead, 
+            factories. Applications should use the ParticleSystem::setRenderer method instead,
             which calls this method to create an instance.
         @param
             rendererType String name of the renderer type to be created. A factory of this type must have been registered.
@@ -325,15 +325,15 @@ namespace Ogre {
         /// @copydoc ScriptLoader::getLoadingOrder
         Real getLoadingOrder(void) const;
 
-		typedef MapIterator<ParticleAffectorFactoryMap> ParticleAffectorFactoryIterator;
-		typedef MapIterator<ParticleEmitterFactoryMap> ParticleEmitterFactoryIterator;
-		typedef MapIterator<ParticleSystemRendererFactoryMap> ParticleRendererFactoryIterator;
-		/** Return an iterator over the affector factories currently registered */
-		ParticleAffectorFactoryIterator getAffectorFactoryIterator(void);
-		/** Return an iterator over the emitter factories currently registered */
-		ParticleEmitterFactoryIterator getEmitterFactoryIterator(void);
-		/** Return an iterator over the renderer factories currently registered */
-		ParticleRendererFactoryIterator getRendererFactoryIterator(void);
+        typedef MapIterator<ParticleAffectorFactoryMap> ParticleAffectorFactoryIterator;
+        typedef MapIterator<ParticleEmitterFactoryMap> ParticleEmitterFactoryIterator;
+        typedef MapIterator<ParticleSystemRendererFactoryMap> ParticleRendererFactoryIterator;
+        /** Return an iterator over the affector factories currently registered */
+        ParticleAffectorFactoryIterator getAffectorFactoryIterator(void);
+        /** Return an iterator over the emitter factories currently registered */
+        ParticleEmitterFactoryIterator getEmitterFactoryIterator(void);
+        /** Return an iterator over the renderer factories currently registered */
+        ParticleRendererFactoryIterator getRendererFactoryIterator(void);
 
 
         typedef MapIterator<ParticleTemplateMap> ParticleSystemTemplateIterator;
@@ -342,12 +342,12 @@ namespace Ogre {
         {
             return ParticleSystemTemplateIterator(
                 mSystemTemplates.begin(), mSystemTemplates.end());
-        } 
+        }
 
         /** Get an instance of ParticleSystemFactory (internal use). */
-		ParticleSystemFactory* _getFactory(void) { return mFactory; }
-		
-		/** Override standard Singleton retrieval.
+        ParticleSystemFactory* _getFactory(void) { return mFactory; }
+
+        /** Override standard Singleton retrieval.
         @remarks
         Why do we do this? Well, it's because the Singleton
         implementation is in a .h file, which means it gets compiled
@@ -382,23 +382,23 @@ namespace Ogre {
 
     };
 
-	/** Factory object for creating ParticleSystem instances */
-	class _OgreExport ParticleSystemFactory : public MovableObjectFactory
-	{
-	protected:
-		MovableObject* createInstanceImpl(const String& name, const NameValuePairList* params);
-	public:
-		ParticleSystemFactory() {}
-		~ParticleSystemFactory() {}
-		
-		static String FACTORY_TYPE_NAME;
+    /** Factory object for creating ParticleSystem instances */
+    class _OgreExport ParticleSystemFactory : public MovableObjectFactory
+    {
+    protected:
+        MovableObject* createInstanceImpl(const String& name, const NameValuePairList* params);
+    public:
+        ParticleSystemFactory() {}
+        ~ParticleSystemFactory() {}
 
-		const String& getType(void) const;
-		void destroyInstance( MovableObject* obj);  
+        static String FACTORY_TYPE_NAME;
 
-	};
-	/** @} */
-	/** @} */
+        const String& getType(void) const;
+        void destroyInstance( MovableObject* obj);
+
+    };
+    /** @} */
+    /** @} */
 
 }
 

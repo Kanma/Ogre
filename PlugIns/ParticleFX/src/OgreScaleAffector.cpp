@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ THE SOFTWARE.
 
 
 namespace Ogre {
-    
+
     // init statics
     ScaleAffector::CmdScaleAdjust ScaleAffector::msScaleCmd;
 
@@ -48,7 +48,7 @@ namespace Ogre {
         {
             ParamDictionary* dict = getParamDictionary();
 
-            dict->addParameter(ParameterDef("rate", 
+            dict->addParameter(ParameterDef("rate",
                 "The amount by which to adjust the x and y scale components of particles per second.",
                 PT_REAL), &msScaleCmd);
         }
@@ -63,24 +63,24 @@ namespace Ogre {
         // Scale adjustments by time
         ds = mScaleAdj * timeElapsed;
 
-		Real NewWide, NewHigh;
+        Real NewWide, NewHigh;
 
         while (!pi.end())
         {
             p = pi.getNext();
 
-			if( p->hasOwnDimensions() == false )
-			{
-            	NewWide = pSystem->getDefaultWidth() + ds;
-	            NewHigh = pSystem->getDefaultHeight() + ds;
+            if( p->hasOwnDimensions() == false )
+            {
+                NewWide = pSystem->getDefaultWidth() + ds;
+                NewHigh = pSystem->getDefaultHeight() + ds;
 
-			}
-			else
-			{
-            	NewWide = p->getOwnWidth()  + ds;
-            	NewHigh = p->getOwnHeight() + ds;
-			}
-			p->setDimensions( NewWide, NewHigh ); 
+            }
+            else
+            {
+                NewWide = p->getOwnWidth()  + ds;
+                NewHigh = p->getOwnHeight() + ds;
+            }
+            p->setDimensions( NewWide, NewHigh );
         }
 
     }

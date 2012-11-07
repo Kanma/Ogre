@@ -1,3 +1,30 @@
+/*
+ -----------------------------------------------------------------------------
+ This source file is part of OGRE
+ (Object-oriented Graphics Rendering Engine)
+ For the latest info, see http://www.ogre3d.org/
+ 
+ Copyright (c) 2000-2012 Torus Knot Software Ltd
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ -----------------------------------------------------------------------------
+ */
 #include "OgreRoot.h"
 #include "OgreException.h"
 #include "OgreLogManager.h"
@@ -56,15 +83,18 @@ namespace Ogre {
 		ConfigOption optFSAA;
 		ConfigOption optRTTMode;
 		ConfigOption optSRGB;
+#ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
+		ConfigOption optEnableFixedPipeline;
+#endif
 
-		// FS setting possiblities
+		// FS setting possibilities
 		optFullScreen.name = "Full Screen";
 		optFullScreen.possibleValues.push_back("Yes");
 		optFullScreen.possibleValues.push_back("No");
 		optFullScreen.currentValue = "Yes";
 		optFullScreen.immutable = false;
 
-		// Video mode possiblities
+		// Video mode possibilities
 		DEVMODE DevMode;
 		DevMode.dmSize = sizeof(DEVMODE);
 		optVideoMode.name = "Video Mode";
@@ -133,6 +163,13 @@ namespace Ogre {
 		optSRGB.currentValue = "No";
 		optSRGB.immutable = false;
 
+#ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
+		optEnableFixedPipeline.name = "Fixed Pipeline Enabled";
+		optEnableFixedPipeline.possibleValues.push_back( "Yes" );
+		optEnableFixedPipeline.possibleValues.push_back( "No" );
+		optEnableFixedPipeline.currentValue = "Yes";
+		optEnableFixedPipeline.immutable = false;
+#endif
 
 		mOptions[optFullScreen.name] = optFullScreen;
 		mOptions[optVideoMode.name] = optVideoMode;
@@ -143,6 +180,9 @@ namespace Ogre {
 		mOptions[optFSAA.name] = optFSAA;
 		mOptions[optRTTMode.name] = optRTTMode;
 		mOptions[optSRGB.name] = optSRGB;
+#ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
+		mOptions[optEnableFixedPipeline.name] = optEnableFixedPipeline;
+#endif
 
 		refreshConfig();
 	}
@@ -280,6 +320,14 @@ namespace Ogre {
 			String multisample_hint;
 			if (aavalues.size() > 1)
 				multisample_hint = aavalues[1];
+
+#ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
+			opt = mOptions.find("Fixed Pipeline Enabled");
+			if (opt == mOptions.end())
+				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find Fixed Pipeline enabled options!", "Win32GLSupport::createWindow");
+			bool enableFixedPipeline = (opt->second.currentValue == "Yes");
+			renderSystem->setFixedPipelineEnabled(enableFixedPipeline);
+#endif
 
 			winOptions["FSAA"] = StringConverter::toString(multisample);
 			winOptions["FSAAHint"] = multisample_hint;

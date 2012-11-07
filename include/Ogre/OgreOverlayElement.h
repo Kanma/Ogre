@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,21 +40,21 @@ THE SOFTWARE.
 #include "OgreRectangle.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Overlays
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Overlays
+    *  @{
+    */
 
 #if OGRE_UNICODE_SUPPORT
-	typedef UTFString DisplayString;
-#	define OGRE_DEREF_DISPLAYSTRING_ITERATOR(it) it.getCharacter()
+    typedef UTFString DisplayString;
+#   define OGRE_DEREF_DISPLAYSTRING_ITERATOR(it) it.getCharacter()
 #else
-	typedef String DisplayString;
-#	define OGRE_DEREF_DISPLAYSTRING_ITERATOR(it) *it
+    typedef String DisplayString;
+#   define OGRE_DEREF_DISPLAYSTRING_ITERATOR(it) *it
 #endif
-    /** Enum describing how the position / size of an element is to be recorded. 
+    /** Enum describing how the position / size of an element is to be recorded.
     */
     enum GuiMetricsMode
     {
@@ -90,7 +90,7 @@ namespace Ogre {
     This class abstracts all the details of a 2D element which will appear in
     an overlay. In fact, not all OverlayElement instances can be directly added to an
     Overlay, only those which are OverlayContainer instances (a subclass of this class).
-    OverlayContainer objects can contain any OverlayElement however. This is just to 
+    OverlayContainer objects can contain any OverlayElement however. This is just to
     enforce some level of grouping on widgets.
     @par
     OverlayElements should be managed using OverlayManager. This class is responsible for
@@ -132,7 +132,7 @@ namespace Ogre {
         Real mWidth;
         Real mHeight;
         String mMaterialName;
-        MaterialPtr mpMaterial;
+        MaterialPtr mMaterial;
         DisplayString mCaption;
         ColourValue mColour;
         Rectangle mClippingRegion;
@@ -161,8 +161,8 @@ namespace Ogre {
 
         /// Flag indicating if the vertex positions need recalculating
         bool mGeomPositionsOutOfDate;
-		/// Flag indicating if the vertex uvs need recalculating
-		bool mGeomUVsOutOfDate;
+        /// Flag indicating if the vertex uvs need recalculating
+        bool mGeomUVsOutOfDate;
 
         // Zorder for when sending to render queue
         // Derived from parent
@@ -174,8 +174,8 @@ namespace Ogre {
         // is element enabled
         bool mEnabled;
 
-		// is element initialised
-		bool mInitialised;
+        // is element initialised
+        bool mInitialised;
 
         // Used to see if this element is created from a Template
         OverlayElement* mSourceTemplate ;
@@ -185,13 +185,13 @@ namespace Ogre {
         subclasses must implement this.
         */
         virtual void updatePositionGeometry(void) = 0;
-		/** Internal method which is triggered when the UVs of the element get updated,
-		meaning the element should be rebuilding it's mesh UVs. Abstract since
-		subclasses must implement this.
-		*/
-		virtual void updateTextureGeometry(void) = 0;
+        /** Internal method which is triggered when the UVs of the element get updated,
+        meaning the element should be rebuilding it's mesh UVs. Abstract since
+        subclasses must implement this.
+        */
+        virtual void updateTextureGeometry(void) = 0;
 
-        /** Internal method for setting up the basic parameter definitions for a subclass. 
+        /** Internal method for setting up the basic parameter definitions for a subclass.
         @remarks
         Because StringInterface holds a dictionary of parameters per class, subclasses need to
         call this to ask the base class to add it's parameters to their dictionary as well.
@@ -277,13 +277,13 @@ namespace Ogre {
         /** Gets the name of the material this element uses. */
         virtual const String& getMaterialName(void) const;
 
-        /** Sets the name of the material this element will use. 
+        /** Sets the name of the material this element will use.
         @remarks
         Different elements will use different materials. One constant about them
         all though is that a Material used for a OverlayElement must have it's depth
         checking set to 'off', which means it always gets rendered on top. OGRE
-        will set this flag for you if necessary. What it does mean though is that 
-        you should not use the same Material for rendering OverlayElements as standard 
+        will set this flag for you if necessary. What it does mean though is that
+        you should not use the same Material for rendering OverlayElements as standard
         scene objects. It's fine to use the same textures, just not the same
         Material.
         */
@@ -317,10 +317,10 @@ namespace Ogre {
         /** Gets the 'top' position as derived from own left and that of parents. */
         virtual Real _getDerivedTop(void);
 
-		/** Gets the 'width' as derived from own width and metrics mode. */
-		virtual Real _getRelativeWidth(void);
-		/** Gets the 'height' as derived from own height and metrics mode. */
-		virtual Real _getRelativeHeight(void);
+        /** Gets the 'width' as derived from own width and metrics mode. */
+        virtual Real _getRelativeWidth(void);
+        /** Gets the 'height' as derived from own height and metrics mode. */
+        virtual Real _getRelativeHeight(void);
 
 
         /** Gets the clipping region of the element */
@@ -329,14 +329,14 @@ namespace Ogre {
         /** Internal method to notify the element when Zorder of parent overlay
         has changed.
         @remarks
-        Overlays have explicit Z orders. OverlayElements do not, they inherit the 
+        Overlays have explicit Z orders. OverlayElements do not, they inherit the
         ZOrder of the overlay, and the Zorder is incremented for every container
         nested within this to ensure that containers are displayed behind contained
         items. This method is used internally to notify the element of a change in
         final zorder which is used to render the element.
-		@return Return the next zordering number available. For single elements, this
-		is simply newZOrder + 1, but for containers, they increment it once for each
-		child (more if those children are also containers).
+        @return Return the next zordering number available. For single elements, this
+        is simply newZOrder + 1, but for containers, they increment it once for each
+        child (more if those children are also containers).
         */
         virtual ushort _notifyZOrder(ushort newZOrder);
 
@@ -353,23 +353,23 @@ namespace Ogre {
         /** Internal method to put the contents onto the render queue. */
         virtual void _updateRenderQueue(RenderQueue* queue);
 
-		/// @copydoc MovableObject::visitRenderables
-		void visitRenderables(Renderable::Visitor* visitor, 
-			bool debugRenderables = false);
+        /// @copydoc MovableObject::visitRenderables
+        void visitRenderables(Renderable::Visitor* visitor,
+            bool debugRenderables = false);
 
         /** Gets the type name of the element. All concrete subclasses must implement this. */
         virtual const String& getTypeName(void) const = 0;
 
-        /** Sets the caption on elements that support it. 
+        /** Sets the caption on elements that support it.
         @remarks
         This property doesn't do something on all elements, just those that support it.
         However, being a common requirement it is in the top-level interface to avoid
         having to set it via the StringInterface all the time.
         */
-		virtual void setCaption(const DisplayString& text);
+        virtual void setCaption(const DisplayString& text);
         /** Gets the caption for this element. */
         virtual const DisplayString& getCaption(void) const;
-        /** Sets the colour on elements that support it. 
+        /** Sets the colour on elements that support it.
         @remarks
         This property doesn't do something on all elements, just those that support it.
         However, being a common requirement it is in the top-level interface to avoid
@@ -384,7 +384,7 @@ namespace Ogre {
         @remarks
         By default, OverlayElements are positioned and sized according to relative dimensions
         of the screen. This is to ensure portability between different resolutions when you
-        want things to be positioned and sized the same way across all resolutions. However, 
+        want things to be positioned and sized the same way across all resolutions. However,
         sometimes you want things to be sized according to fixed pixels. In order to do this,
         you can call this method with the parameter GMM_PIXELS. Note that if you then want
         to place your element relative to the center, right or bottom of it's parent, you will
@@ -411,7 +411,7 @@ namespace Ogre {
         virtual void setHorizontalAlignment(GuiHorizontalAlignment gha);
         /** Gets the horizontal alignment for this element. */
         virtual GuiHorizontalAlignment getHorizontalAlignment(void) const;
-        /** Sets the vertical origin for this element. 
+        /** Sets the vertical origin for this element.
         @remarks
         By default, the vertical origin for a OverlayElement is the top edge of the parent container
         (or the screen if this is a root element). You can alter this by calling this method, which is
@@ -437,10 +437,10 @@ namespace Ogre {
         virtual bool contains(Real x, Real y) const;
 
         /** Returns true if xy is within the constraints of the component */
-        virtual OverlayElement* findElementAt(Real x, Real y);		// relative to parent
+        virtual OverlayElement* findElementAt(Real x, Real y);      // relative to parent
 
         /**
-        * returns false as this class is not a container type 
+        * returns false as this class is not a container type
         */
         inline virtual bool isContainer() const
         { return false; }
@@ -467,10 +467,10 @@ namespace Ogre {
         { return mZOrder; }
 
         /** Overridden from Renderable */
-        Real getSquaredViewDepth(const Camera* cam) const 
-        { 
+        Real getSquaredViewDepth(const Camera* cam) const
+        {
             (void)cam;
-            return 10000.0f - (Real)getZOrder(); 
+            return 10000.0f - (Real)getZOrder();
         }
 
         /** @copydoc Renderable::getLights */
@@ -491,8 +491,8 @@ namespace Ogre {
     };
 
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

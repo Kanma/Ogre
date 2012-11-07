@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,105 +35,105 @@ THE SOFTWARE.
 #include "OgreHardwareIndexBuffer.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup RenderSystem
+    *  @{
+    */
 
     /// Specialisation of HardwareVertexBuffer for emulation
-    class _OgreExport DefaultHardwareVertexBuffer : public HardwareVertexBuffer 
+    class _OgreExport DefaultHardwareVertexBuffer : public HardwareVertexBuffer
     {
-	protected:
-		unsigned char* mpData;
+    protected:
+        unsigned char* mData;
         /** See HardwareBuffer. */
         void* lockImpl(size_t offset, size_t length, LockOptions options);
         /** See HardwareBuffer. */
-		void unlockImpl(void);
+        void unlockImpl(void);
     public:
-		DefaultHardwareVertexBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage);
-		DefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices, 
+        DefaultHardwareVertexBuffer(size_t vertexSize, size_t numVertices, HardwareBuffer::Usage usage);
+        DefaultHardwareVertexBuffer(HardwareBufferManagerBase* mgr, size_t vertexSize, size_t numVertices,
             HardwareBuffer::Usage usage);
         ~DefaultHardwareVertexBuffer();
         /** See HardwareBuffer. */
         void readData(size_t offset, size_t length, void* pDest);
         /** See HardwareBuffer. */
         void writeData(size_t offset, size_t length, const void* pSource,
-				bool discardWholeBuffer = false);
+                bool discardWholeBuffer = false);
         /** Override HardwareBuffer to turn off all shadowing. */
         void* lock(size_t offset, size_t length, LockOptions options);
         /** Override HardwareBuffer to turn off all shadowing. */
-		void unlock(void);
+        void unlock(void);
 
 
     };
 
-	/// Specialisation of HardwareIndexBuffer for emulation
+    /// Specialisation of HardwareIndexBuffer for emulation
     class _OgreExport DefaultHardwareIndexBuffer : public HardwareIndexBuffer
     {
-	protected:
-		unsigned char* mpData;
+    protected:
+        unsigned char* mData;
         /** See HardwareBuffer. */
         void* lockImpl(size_t offset, size_t length, LockOptions options);
         /** See HardwareBuffer. */
-		void unlockImpl(void);
+        void unlockImpl(void);
     public:
-		DefaultHardwareIndexBuffer(IndexType idxType, size_t numIndexes, HardwareBuffer::Usage usage);
+        DefaultHardwareIndexBuffer(IndexType idxType, size_t numIndexes, HardwareBuffer::Usage usage);
         ~DefaultHardwareIndexBuffer();
         /** See HardwareBuffer. */
         void readData(size_t offset, size_t length, void* pDest);
         /** See HardwareBuffer. */
         void writeData(size_t offset, size_t length, const void* pSource,
-				bool discardWholeBuffer = false);
+                bool discardWholeBuffer = false);
         /** Override HardwareBuffer to turn off all shadowing. */
         void* lock(size_t offset, size_t length, LockOptions options);
         /** Override HardwareBuffer to turn off all shadowing. */
-		void unlock(void);
+        void unlock(void);
 
     };
 
-	/** Specialisation of HardwareBufferManagerBase to emulate hardware buffers.
-	@remarks
-		You might want to instantiate this class if you want to utilise
-		classes like MeshSerializer without having initialised the 
-		rendering system (which is required to create a 'real' hardware
-		buffer manager.
-	*/
-	class _OgreExport DefaultHardwareBufferManagerBase : public HardwareBufferManagerBase
-	{
+    /** Specialisation of HardwareBufferManagerBase to emulate hardware buffers.
+    @remarks
+        You might want to instantiate this class if you want to utilise
+        classes like MeshSerializer without having initialised the
+        rendering system (which is required to create a 'real' hardware
+        buffer manager.
+    */
+    class _OgreExport DefaultHardwareBufferManagerBase : public HardwareBufferManagerBase
+    {
     public:
         DefaultHardwareBufferManagerBase();
         ~DefaultHardwareBufferManagerBase();
         /// Creates a vertex buffer
-		HardwareVertexBufferSharedPtr 
-            createVertexBuffer(size_t vertexSize, size_t numVerts, 
-				HardwareBuffer::Usage usage, bool useShadowBuffer = false);
-		/// Create a hardware vertex buffer
-		HardwareIndexBufferSharedPtr 
-            createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes, 
-				HardwareBuffer::Usage usage, bool useShadowBuffer = false);
-		/// Create a hardware vertex buffer
-		RenderToVertexBufferSharedPtr createRenderToVertexBuffer();
+        HardwareVertexBufferSharedPtr
+            createVertexBuffer(size_t vertexSize, size_t numVerts,
+                HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+        /// Create a hardware vertex buffer
+        HardwareIndexBufferSharedPtr
+            createIndexBuffer(HardwareIndexBuffer::IndexType itype, size_t numIndexes,
+                HardwareBuffer::Usage usage, bool useShadowBuffer = false);
+        /// Create a hardware vertex buffer
+        RenderToVertexBufferSharedPtr createRenderToVertexBuffer();
     };
 
-	/// DefaultHardwareBufferManager as a Singleton
-	class _OgreExport DefaultHardwareBufferManager : public HardwareBufferManager
-	{
-	public:
-		DefaultHardwareBufferManager()
-			: HardwareBufferManager(OGRE_NEW DefaultHardwareBufferManagerBase()) 
-		{
+    /// DefaultHardwareBufferManager as a Singleton
+    class _OgreExport DefaultHardwareBufferManager : public HardwareBufferManager
+    {
+    public:
+        DefaultHardwareBufferManager()
+            : HardwareBufferManager(OGRE_NEW DefaultHardwareBufferManagerBase())
+        {
 
-		}
-		~DefaultHardwareBufferManager()
-		{
-			OGRE_DELETE mImpl;
-		}
-	};
+        }
+        ~DefaultHardwareBufferManager()
+        {
+            OGRE_DELETE mImpl;
+        }
+    };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

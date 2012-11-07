@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,24 +33,24 @@ THE SOFTWARE.
 #include "OgreBone.h"
 #include "OgreMatrix4.h"
 
-namespace Ogre	{
+namespace Ogre  {
 
 
-	
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Animation
-	*  @{
-	*/
-	/** A tagged point on a skeleton, which can be used to attach entities to on specific
+
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Animation
+    *  @{
+    */
+    /** A tagged point on a skeleton, which can be used to attach entities to on specific
         other entities.
     @remarks
         A Skeleton, like a Mesh, is shared between Entity objects and simply updated as required
         when it comes to rendering. However there are times when you want to attach another object
         to an animated entity, and make sure that attachment follows the parent entity's animation
         (for example, a character holding a gun in his / her hand). This class simply identifies
-        attachment points on a skeleton which can be used to attach child objects. 
+        attachment points on a skeleton which can be used to attach child objects.
     @par
         The child objects themselves are not physically attached to this class; as it's name suggests
         this class just 'tags' the area. The actual child objects are attached to the Entity using the
@@ -58,17 +58,17 @@ namespace Ogre	{
         the objects, which creates a new TagPoint on demand.
     */
     class _OgreExport TagPoint : public Bone
-	{
+    {
 
-	public:
-		TagPoint(unsigned short handle, Skeleton* creator);
-		virtual ~TagPoint();
+    public:
+        TagPoint(unsigned short handle, Skeleton* creator);
+        virtual ~TagPoint();
 
-		Entity *getParentEntity(void) const;
+        Entity *getParentEntity(void) const;
         MovableObject* getChildObject(void) const;
-		
-		void setParentEntity(Entity *pEntity);
-		void setChildObject(MovableObject *pObject);
+
+        void setParentEntity(Entity *pEntity);
+        void setChildObject(MovableObject *pObject);
 
         /** Tells the TagPoint whether it should inherit orientation from it's parent entity.
         @param inherit If true, this TagPoint's orientation will be affected by
@@ -76,7 +76,7 @@ namespace Ogre	{
         */
         void setInheritParentEntityOrientation(bool inherit);
 
-        /** Returns true if this TagPoint is affected by orientation applied to the parent entity. 
+        /** Returns true if this TagPoint is affected by orientation applied to the parent entity.
         */
         bool getInheritParentEntityOrientation(void) const;
 
@@ -86,15 +86,15 @@ namespace Ogre	{
         */
         void setInheritParentEntityScale(bool inherit);
 
-        /** Returns true if this TagPoint is affected by scaling factors applied to the parent entity. 
+        /** Returns true if this TagPoint is affected by scaling factors applied to the parent entity.
         */
         bool getInheritParentEntityScale(void) const;
 
-		/** Gets the transform of parent entity. */
-		const Matrix4& getParentEntityTransform(void) const;
+        /** Gets the transform of parent entity. */
+        const Matrix4& getParentEntityTransform(void) const;
 
         /** Gets the transform of this node just for the skeleton (not entity) */
-		const Matrix4& _getFullLocalTransform(void) const;
+        const Matrix4& _getFullLocalTransform(void) const;
 
         /** @copydoc Node::needUpdate */
         void needUpdate(bool forceParentUpdate = false);
@@ -106,16 +106,16 @@ namespace Ogre	{
 
 
 
-	private:
-		Entity *mParentEntity;
-		MovableObject *mChildObject;
+    private:
+        Entity *mParentEntity;
+        MovableObject *mChildObject;
         mutable Matrix4 mFullLocalTransform;
         bool mInheritParentEntityOrientation;
         bool mInheritParentEntityScale;
-	};
+    };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 } //namespace
 

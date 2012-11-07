@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,38 +31,39 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	ConfigDialog* dlg = NULL;
+    ConfigDialog* dlg = NULL;
 
-	ConfigDialog::ConfigDialog()
-	{
-		dlg = this;
-	}
-	
-	ConfigDialog::~ConfigDialog()
-	{
+    ConfigDialog::ConfigDialog()
+    {
+        dlg = this;
+    }
+
+    ConfigDialog::~ConfigDialog()
+    {
         [mWindowDelegate release]; mWindowDelegate = nil;
-	}
-	
-	void ConfigDialog::initialise()
-	{
+    }
+
+    void ConfigDialog::initialise()
+    {
         mWindowDelegate = [[OgreConfigWindowDelegate alloc] init];
 
         if (!mWindowDelegate)
             OGRE_EXCEPT (Exception::ERR_INTERNAL_ERROR, "Could not load config dialog",
                          "ConfigDialog::initialise");
 
-        NSArray *keys = [[NSArray alloc] initWithObjects:@"Full Screen", @"FSAA", @"Colour Depth", @"RTT Preferred Mode", @"Video Mode", @"macAPI", nil];
+        NSArray *keys = [[NSArray alloc] initWithObjects:@"Full Screen", @"FSAA", @"Colour Depth", @"RTT Preferred Mode", @"Video Mode", @"sRGB Gamma Conversion", @"macAPI", nil];
         NSArray *fullScreenOptions = [[NSArray alloc] initWithObjects:@"Yes", @"No", nil];
         NSArray *colourDepthOptions = [[NSArray alloc] initWithObjects:@"32", @"16", nil];
         NSArray *rttOptions = [[NSArray alloc] initWithObjects:@"FBO", @"PBuffer", @"Copy", nil];
         NSMutableArray *videoModeOptions = [[NSMutableArray alloc] initWithCapacity:1];
         NSMutableArray *fsaaOptions = [[NSMutableArray alloc] initWithCapacity:1];
+        NSArray *sRGBOptions = [[NSArray alloc] initWithObjects:@"Yes", @"No", nil];
 #ifdef __LP64__
         NSArray *macAPIOptions = [[NSArray alloc] initWithObjects:@"cocoa", nil];
 #else
         NSArray *macAPIOptions = [[NSArray alloc] initWithObjects:@"cocoa", @"carbon", nil];
 #endif
-		const RenderSystemList& renderers = Root::getSingleton().getAvailableRenderers();
+        const RenderSystemList& renderers = Root::getSingleton().getAvailableRenderers();
 
         // Add renderers and options that are detected per RenderSystem
         for (RenderSystemList::const_iterator pRend = renderers.begin(); pRend != renderers.end(); ++pRend)
@@ -70,22 +71,23 @@ namespace Ogre {
             RenderSystem* rs = *pRend;
 
             // Set defaults per RenderSystem
-			rs->setConfigOption("Video Mode", "800 x 600");
-			rs->setConfigOption("Colour Depth", "32");
-			rs->setConfigOption("FSAA", "0");
-			rs->setConfigOption("Full Screen", "No");
-			rs->setConfigOption("RTT Preferred Mode", "FBO");
+            rs->setConfigOption("Video Mode", "800 x 600");
+            rs->setConfigOption("Colour Depth", "32");
+            rs->setConfigOption("FSAA", "0");
+            rs->setConfigOption("Full Screen", "No");
+            rs->setConfigOption("RTT Preferred Mode", "FBO");
+            rs->setConfigOption("sRGB Gamma Conversion", "No");
 #ifdef __LP64__
-			rs->setConfigOption("macAPI", "cocoa");
+            rs->setConfigOption("macAPI", "cocoa");
 #else
-			rs->setConfigOption("macAPI", "carbon");
+            rs->setConfigOption("macAPI", "carbon");
 #endif
-            
+
             // Add to the drop down
             NSString *renderSystemName = [[NSString alloc] initWithCString:rs->getName().c_str() encoding:NSASCIIStringEncoding];
             [[mWindowDelegate getRenderSystemsPopUp] addItemWithTitle:renderSystemName];
             [renderSystemName release];
-            
+
             // Get detected option values and add them to our config dictionary
             const ConfigOptionMap& opts = rs->getConfigOptions();
             for (ConfigOptionMap::const_iterator pOpt = opts.begin(); pOpt != opts.end(); ++pOpt)
@@ -109,10 +111,10 @@ namespace Ogre {
                     {
                         NSString *optionString = [[NSString alloc] initWithCString:pOpt->second.possibleValues[i].c_str()
                                                                     encoding:NSASCIIStringEncoding];
-                        
+
                         if(![videoModeOptions containsObject:optionString])
                             [videoModeOptions addObject:optionString];
-                        
+
                         [optionString release];
                     }
                 }
@@ -120,8 +122,8 @@ namespace Ogre {
         }
 
         NSArray *objects = [[NSArray alloc] initWithObjects:fullScreenOptions, fsaaOptions,
-                            colourDepthOptions, rttOptions, videoModeOptions, macAPIOptions, nil];
-        [mWindowDelegate setOptions:[[NSDictionary alloc] initWithObjects:objects forKeys:keys]];
+                            colourDepthOptions, rttOptions, videoModeOptions, sRGBOptions, macAPIOptions, nil];
+        [mWindowDelegate setOptions:[NSDictionary dictionaryWithObjects:objects forKeys:keys]];
 
         // Clean up all those arrays
         [fullScreenOptions release];
@@ -129,16 +131,17 @@ namespace Ogre {
         [colourDepthOptions release];
         [rttOptions release];
         [videoModeOptions release];
+        [sRGBOptions release];
         [macAPIOptions release];
         [keys release];
         [objects release];
 
         // Reload table data
         [[mWindowDelegate getOptionsTable] reloadData];
-	}
+    }
 
-	bool ConfigDialog::display()
-	{
+    bool ConfigDialog::display()
+    {
         // Select previously selected rendersystem
         mSelectedRenderSystem = Root::getSingleton().getRenderSystem();
         NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -160,16 +163,16 @@ namespace Ogre {
         Ogre::String selectedRenderSystemName = Ogre::String([[[[mWindowDelegate getRenderSystemsPopUp] selectedItem] title] UTF8String]);
         RenderSystem *rs = Ogre::Root::getSingleton().getRenderSystemByName(selectedRenderSystemName);
         Root::getSingleton().setRenderSystem(rs);
-        
+
         // Relinquish control of the table
         [[mWindowDelegate getOptionsTable] setDataSource:nil];
         [[mWindowDelegate getOptionsTable] setDelegate:nil];
-        
+
         // Drain the auto release pool
         [pool drain];
 
         return (retVal == NSRunStoppedResponse) ? true : false;
-	}
+    }
 
 }
 
@@ -244,12 +247,13 @@ namespace Ogre {
         [tableBox setBorderType:NSLineBorder];
 
         // Set up the tableview
-        mOptionsTable = [[NSTableView alloc] initWithFrame:NSMakeRect(0, 0, 437, 133)];
+        mOptionsTable = [[NSTableView alloc] init];
         [mOptionsTable setDelegate:self];
         [mOptionsTable setDataSource:self];
+        [mOptionsTable setHeaderView:nil];
         [mOptionsTable setUsesAlternatingRowBackgroundColors:YES];
         [mOptionsTable sizeToFit];
-        
+
         // Table column to hold option names
         NSTableColumn *column = [[NSTableColumn alloc] initWithIdentifier: @"optionName"];
         [column setEditable:NO];
@@ -258,11 +262,12 @@ namespace Ogre {
         [column release];
 
         // Scroll view to hold the table in case the list grows some day
-        NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(18, 42, 439, 135)];
+        NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:NSMakeRect(22, 42, 439, 135)];
         [scrollView setBorderType:NSBezelBorder];
         [scrollView setAutoresizesSubviews:YES];
+        [scrollView setAutohidesScrollers:YES];
         [scrollView setDocumentView:mOptionsTable];
-        
+
         [[tableBox contentView] addSubview:scrollView];
         [scrollView release];
 
@@ -307,13 +312,13 @@ namespace Ogre {
 #pragma unused(sender)
     // Grab a copy of the selected RenderSystem name in Ogre::String format
     Ogre::String selectedRenderSystemName = Ogre::String([[[mRenderSystemsPopUp selectedItem] title] UTF8String]);
-    
+
     // Save the current config value
     if((0 <= [mOptionsTable selectedRow]) && [mOptionsPopUp selectedItem])
     {
         Ogre::String value = Ogre::String([[[mOptionsPopUp selectedItem] title] UTF8String]);
         Ogre::String name = Ogre::String([[[[mOptions keyEnumerator] allObjects] objectAtIndex:[mOptionsTable selectedRow]] UTF8String]);
-        
+
         Ogre::Root::getSingleton().getRenderSystemByName(selectedRenderSystemName)->setConfigOption(name, value);
     }
 }
@@ -323,7 +328,7 @@ namespace Ogre {
 #pragma unused(sender)
     // Hide the window
     [mConfigWindow orderOut:nil];
-    
+
     [NSApp abortModal];
 
     return true;
@@ -378,13 +383,13 @@ namespace Ogre {
 #pragma unused(aTableView)
     // Clear out the options popup menu
     [mOptionsPopUp removeAllItems];
-    
+
     // Get the key for the selected table row
     NSString *key = [[[mOptions keyEnumerator] allObjects] objectAtIndex:rowIndex];
-    
+
     // Add the available options
     [mOptionsPopUp addItemsWithTitles:[mOptions objectForKey:key]];
-    
+
     // Grab a copy of the selected RenderSystem name in Ogre::String format
     Ogre::String selectedRenderSystemName = Ogre::String([[[mRenderSystemsPopUp selectedItem] title] UTF8String]);
     const Ogre::ConfigOptionMap& opts = Ogre::Root::getSingleton().getRenderSystemByName(selectedRenderSystemName)->getConfigOptions();

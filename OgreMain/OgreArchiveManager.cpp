@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,19 +38,19 @@ namespace Ogre {
     typedef void (*createFunc)( Archive**, const String& );
 
     //-----------------------------------------------------------------------
-    template<> ArchiveManager* Singleton<ArchiveManager>::ms_Singleton = 0;
+    template<> ArchiveManager* Singleton<ArchiveManager>::msSingleton = 0;
     ArchiveManager* ArchiveManager::getSingletonPtr(void)
     {
-        return ms_Singleton;
+        return msSingleton;
     }
     ArchiveManager& ArchiveManager::getSingleton(void)
-    {  
-        assert( ms_Singleton );  return ( *ms_Singleton );  
+    {
+        assert( msSingleton );  return ( *msSingleton );
     }
     //-----------------------------------------------------------------------
-	ArchiveManager::ArchiveManager()
-	{
-	}
+    ArchiveManager::ArchiveManager()
+    {
+    }
     //-----------------------------------------------------------------------
     Archive* ArchiveManager::load( const String& filename, const String& archiveType)
     {
@@ -77,36 +77,36 @@ namespace Ogre {
         }
         return pArch;
     }
-	//-----------------------------------------------------------------------
-	void ArchiveManager::unload(Archive* arch)
-	{
-		unload(arch->getName());
-	}
-	//-----------------------------------------------------------------------
-	void ArchiveManager::unload(const String& filename)
-	{
-		ArchiveMap::iterator i = mArchives.find(filename);
+    //-----------------------------------------------------------------------
+    void ArchiveManager::unload(Archive* arch)
+    {
+        unload(arch->getName());
+    }
+    //-----------------------------------------------------------------------
+    void ArchiveManager::unload(const String& filename)
+    {
+        ArchiveMap::iterator i = mArchives.find(filename);
 
-		if (i != mArchives.end())
-		{
-			i->second->unload();
-			// Find factory to destroy
-			ArchiveFactoryMap::iterator fit = mArchFactories.find(i->second->getType());
-			if (fit == mArchFactories.end())
-			{
-				// Factory not found
-				OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "Cannot find an archive factory "
-					"to deal with archive of type " + i->second->getType(), "ArchiveManager::~ArchiveManager");
-			}
-			fit->second->destroyInstance(i->second);
-			mArchives.erase(i);
-		}
-	}
-	//-----------------------------------------------------------------------
-	ArchiveManager::ArchiveMapIterator ArchiveManager::getArchiveIterator(void)
-	{
-		return ArchiveMapIterator(mArchives.begin(), mArchives.end());
-	}
+        if (i != mArchives.end())
+        {
+            i->second->unload();
+            // Find factory to destroy
+            ArchiveFactoryMap::iterator fit = mArchFactories.find(i->second->getType());
+            if (fit == mArchFactories.end())
+            {
+                // Factory not found
+                OGRE_EXCEPT(Exception::ERR_ITEM_NOT_FOUND, "Cannot find an archive factory "
+                    "to deal with archive of type " + i->second->getType(), "ArchiveManager::~ArchiveManager");
+            }
+            fit->second->destroyInstance(i->second);
+            mArchives.erase(i);
+        }
+    }
+    //-----------------------------------------------------------------------
+    ArchiveManager::ArchiveMapIterator ArchiveManager::getArchiveIterator(void)
+    {
+        return ArchiveMapIterator(mArchives.begin(), mArchives.end());
+    }
     //-----------------------------------------------------------------------
     ArchiveManager::~ArchiveManager()
     {
@@ -125,14 +125,14 @@ namespace Ogre {
                 "to deal with archive of type " + arch->getType(), "ArchiveManager::~ArchiveManager");
             }
             fit->second->destroyInstance(arch);
-            
+
         }
         // Empty the list
         mArchives.clear();
     }
     //-----------------------------------------------------------------------
     void ArchiveManager::addArchiveFactory(ArchiveFactory* factory)
-    {        
+    {
         mArchFactories.insert( ArchiveFactoryMap::value_type( factory->getType(), factory ) );
         LogManager::getSingleton().logMessage("ArchiveFactory for archive type " +     factory->getType() + " registered.");
     }

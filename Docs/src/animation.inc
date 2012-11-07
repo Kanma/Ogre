@@ -58,7 +58,7 @@ Pose animation is about blending multiple discrete poses, expressed as offsets t
 @heading Why two subtypes?
 So, why two subtypes of vertex animation? Couldn't both be implemented using the same system? The short answer is yes; in fact you can implement both types using pose animation. But for very good reasons we decided to allow morph animation to be specified separately since the subset of features that it uses is both easier to define and has lower requirements on hardware shaders, if animation is implemented through them. If you don't care about the reasons why these are implemented differently, you can skip to the next part.@*@*
 
-Morph animation is a simple approach where we have a whole series of snapshots of vertex data which must be interpolated, e.g. a running animation implemented as morph targets. Because this is based on simple snapshots, it's quite fast to use when animating an entire mesh because it's a simple linear change between keyframes. However, this simplistic approach does not support blending between multiple morph animations. If you need animation blending, you are advised to use skeletal animation for full-mesh animation, and pose animation for animation of subsets of meshes or where skeletal animation doesn't fit - for example facial animation. For animating in a vertex shader, morph animation is quite simple and just requires the 2 vertex buffers (one the original position buffer) of absolute position data, and an interpolation factor. Each track in a morph animation refrences a unique set of vertex data. @*@*
+Morph animation is a simple approach where we have a whole series of snapshots of vertex data which must be interpolated, e.g. a running animation implemented as morph targets. Because this is based on simple snapshots, it's quite fast to use when animating an entire mesh because it's a simple linear change between keyframes. However, this simplistic approach does not support blending between multiple morph animations. If you need animation blending, you are advised to use skeletal animation for full-mesh animation, and pose animation for animation of subsets of meshes or where skeletal animation doesn't fit - for example facial animation. For animating in a vertex shader, morph animation is quite simple and just requires the 2 vertex buffers (one the original position buffer) of absolute position data, and an interpolation factor. Each track in a morph animation references a unique set of vertex data. @*@*
 
 Pose animation is more complex. Like morph animation each track references a single unique set of vertex data, but unlike morph animation, each keyframe references 1 or more 'poses', each with an influence level. A pose is a series of offsets to the base vertex data, and may be sparse - i.e. it may not reference every vertex. Because they're offsets, they can be blended - both within a track and between animations. This set of features is very well suited to facial animation.  @*@*
 
@@ -107,7 +107,7 @@ Skeletal animation and vertex animation (of either subtype) can both be enabled 
 
 Combining the two is, from a user perspective, as simple as just enabling both animations at the same time. When it comes to using this feature efficiently though, there are a few points to bear in mind:
 
-@itemize bullet
+@itemize @bullet
 @item @ref{Combined Hardware Skinning}
 @item @ref{Submesh Splits}
 @end itemize
@@ -116,7 +116,7 @@ Combining the two is, from a user perspective, as simple as just enabling both a
 @heading Combined Hardware Skinning
 For complex characters it is a very good idea to implement hardware skinning by including a technique in your materials which has a vertex program which can perform the kinds of animation you are using in hardware. See @ref{Skeletal Animation in Vertex Programs}, @ref{Morph Animation in Vertex Programs}, @ref{Pose Animation in Vertex Programs}. @*@*
 
-When combining animation types, your vertex programs must support both types of animation that the combined mesh needs, otherwise hardware skinning will be disabled. You should implement the animation in the same way that OGRE does, ie perform vertex animation first, then apply skeletal animation to the result of that. Remember that the implementation of morph animation passes 2 absolute snapshot buffers of the from & to keyframes, along with a single parametric, which you have to linearly interpolate, whilst pose animation passes the base vertex data plus 'n' pose offset buffers, and 'n' parametric weight values. @*@*
+When combining animation types, your vertex programs must support both types of animation that the combined mesh needs, otherwise hardware skinning will be disabled. You should implement the animation in the same way that OGRE does, i.e. perform vertex animation first, then apply skeletal animation to the result of that. Remember that the implementation of morph animation passes 2 absolute snapshot buffers of the from & to keyframes, along with a single parametric, which you have to linearly interpolate, whilst pose animation passes the base vertex data plus 'n' pose offset buffers, and 'n' parametric weight values. @*@*
 
 @anchor{Submesh Splits}
 @heading Submesh Splits

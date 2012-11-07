@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,9 +31,14 @@ THE SOFTWARE.
 namespace Ogre {
 
     //-----------------------------------------------------------------------
-    String StringConverter::toString(Real val, unsigned short precision, 
+    String StringConverter::toString(Real val, unsigned short precision,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        static char buffer[128] = "";
+        int n = snprintf(buffer, 128, "%f", val);
+        return String(buffer, n);
+#else
         stringstream stream;
         stream.precision(precision);
         stream.width(width);
@@ -42,22 +47,10 @@ namespace Ogre {
             stream.setf(flags);
         stream << val;
         return stream.str();
+#endif
     }
     //-----------------------------------------------------------------------
-    String StringConverter::toString(int val, 
-        unsigned short width, char fill, std::ios::fmtflags flags)
-    {
-        stringstream stream;
-		stream.width(width);
-        stream.fill(fill);
-        if (flags)
-            stream.setf(flags);
-        stream << val;
-        return stream.str();
-    }
-    //-----------------------------------------------------------------------
-#if OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_64 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
-    String StringConverter::toString(unsigned int val, 
+    String StringConverter::toString(int val,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
         stringstream stream;
@@ -69,7 +62,20 @@ namespace Ogre {
         return stream.str();
     }
     //-----------------------------------------------------------------------
-    String StringConverter::toString(size_t val, 
+#if OGRE_PLATFORM != OGRE_PLATFORM_NACL &&  ( OGRE_ARCH_TYPE == OGRE_ARCHITECTURE_64 || OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS )
+    String StringConverter::toString(unsigned int val,
+        unsigned short width, char fill, std::ios::fmtflags flags)
+    {
+        stringstream stream;
+        stream.width(width);
+        stream.fill(fill);
+        if (flags)
+            stream.setf(flags);
+        stream << val;
+        return stream.str();
+    }
+    //-----------------------------------------------------------------------
+    String StringConverter::toString(size_t val,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
         stringstream stream;
@@ -82,7 +88,7 @@ namespace Ogre {
     }
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
     //-----------------------------------------------------------------------
-    String StringConverter::toString(unsigned long val, 
+    String StringConverter::toString(unsigned long val,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
         stringstream stream;
@@ -97,11 +103,11 @@ namespace Ogre {
 #endif
     //-----------------------------------------------------------------------
 #else
-    String StringConverter::toString(size_t val, 
+    String StringConverter::toString(size_t val,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
         stringstream stream;
-		stream.width(width);
+        stream.width(width);
         stream.fill(fill);
         if (flags)
             stream.setf(flags);
@@ -109,11 +115,11 @@ namespace Ogre {
         return stream.str();
     }
     //-----------------------------------------------------------------------
-    String StringConverter::toString(unsigned long val, 
+    String StringConverter::toString(unsigned long val,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
         stringstream stream;
-		stream.width(width);
+        stream.width(width);
         stream.fill(fill);
         if (flags)
             stream.setf(flags);
@@ -122,52 +128,78 @@ namespace Ogre {
     }
     //-----------------------------------------------------------------------
 #endif
-    String StringConverter::toString(long val, 
+    String StringConverter::toString(long val,
         unsigned short width, char fill, std::ios::fmtflags flags)
     {
         stringstream stream;
-		stream.width(width);
+        stream.width(width);
         stream.fill(fill);
         if (flags)
             stream.setf(flags);
         stream << val;
         return stream.str();
     }
-	//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     String StringConverter::toString(const Vector2& val)
     {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        static char buffer[128] = "";
+        int n = snprintf(buffer, 128, "%f %f", val.x, val.y);
+        return String(buffer, n);
+#else
         stringstream stream;
-		stream << val.x << " " << val.y;
+        stream << val.x << " " << val.y;
         return stream.str();
+#endif
     }
     //-----------------------------------------------------------------------
     String StringConverter::toString(const Vector3& val)
     {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        static char buffer[128] = "";
+        int n = snprintf(buffer, 128, "%f %f %f", val.x, val.y, val.z);
+        return String(buffer, n);
+#else
         stringstream stream;
-		stream << val.x << " " << val.y << " " << val.z;
+        stream << val.x << " " << val.y << " " << val.z;
         return stream.str();
+#endif
     }
-	//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     String StringConverter::toString(const Vector4& val)
     {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        static char buffer[128] = "";
+        int n = snprintf(buffer, 128, "%f %f %f %f", val.x, val.y, val.z, val.w);
+        return String(buffer, n);
+#else
         stringstream stream;
-		stream << val.x << " " << val.y << " " << val.z << " " << val.w;
+        stream << val.x << " " << val.y << " " << val.z << " " << val.w;
         return stream.str();
+#endif
     }
     //-----------------------------------------------------------------------
     String StringConverter::toString(const Matrix3& val)
     {
-		stringstream stream;
-        stream << val[0][0] << " " 
-            << val[0][1] << " "             
-            << val[0][2] << " "             
-            << val[1][0] << " "             
-            << val[1][1] << " "             
-            << val[1][2] << " "             
-            << val[2][0] << " "             
-            << val[2][1] << " "             
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        static char buffer[128] = "";
+        int n = snprintf(buffer, 128, "%f %f %f %f %f %f %f %f %f", val[0][0],
+            val[0][1], val[0][2], val[1][0], val[1][1], val[1][2],
+            val[2][0], val[2][1], val[2][2]);
+        return String(buffer, n);
+#else
+        stringstream stream;
+        stream << val[0][0] << " "
+            << val[0][1] << " "
+            << val[0][2] << " "
+            << val[1][0] << " "
+            << val[1][1] << " "
+            << val[1][2] << " "
+            << val[2][0] << " "
+            << val[2][1] << " "
             << val[2][2];
         return stream.str();
+#endif
     }
     //-----------------------------------------------------------------------
     String StringConverter::toString(bool val, bool yesNo)
@@ -196,43 +228,65 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     String StringConverter::toString(const Matrix4& val)
     {
-		stringstream stream;
-        stream << val[0][0] << " " 
-            << val[0][1] << " "             
-            << val[0][2] << " "             
-            << val[0][3] << " "             
-            << val[1][0] << " "             
-            << val[1][1] << " "             
-            << val[1][2] << " "             
-            << val[1][3] << " "             
-            << val[2][0] << " "             
-            << val[2][1] << " "             
-            << val[2][2] << " "             
-            << val[2][3] << " "             
-            << val[3][0] << " "             
-            << val[3][1] << " "             
-            << val[3][2] << " "             
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        static char buffer[128] = "";
+        int n = snprintf(buffer, 128, "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+            val[0][0], val[0][1], val[0][2], val[0][3],
+            val[1][0], val[1][1], val[1][2], val[1][3],
+            val[2][0], val[2][1], val[2][2], val[2][3],
+            val[3][0], val[3][1], val[3][2], val[3][3]);
+        return String(buffer, n);
+#else
+        stringstream stream;
+        stream << val[0][0] << " "
+            << val[0][1] << " "
+            << val[0][2] << " "
+            << val[0][3] << " "
+            << val[1][0] << " "
+            << val[1][1] << " "
+            << val[1][2] << " "
+            << val[1][3] << " "
+            << val[2][0] << " "
+            << val[2][1] << " "
+            << val[2][2] << " "
+            << val[2][3] << " "
+            << val[3][0] << " "
+            << val[3][1] << " "
+            << val[3][2] << " "
             << val[3][3];
         return stream.str();
+#endif
     }
     //-----------------------------------------------------------------------
     String StringConverter::toString(const Quaternion& val)
     {
-		stringstream stream;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        static char buffer[128] = "";
+        int n = snprintf(buffer, 128, "%f %f %f %f", val.w, val.x, val.y, val.z);
+        return String(buffer, n);
+#else
+        stringstream stream;
         stream  << val.w << " " << val.x << " " << val.y << " " << val.z;
         return stream.str();
+#endif
     }
     //-----------------------------------------------------------------------
     String StringConverter::toString(const ColourValue& val)
     {
-		stringstream stream;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        static char buffer[128] = "";
+        int n = snprintf(buffer, 128, "%f %f %f %f", val.r, val.g, val.b, val.a);
+        return String(buffer, n);
+#else
+        stringstream stream;
         stream << val.r << " " << val.g << " " << val.b << " " << val.a;
         return stream.str();
+#endif
     }
     //-----------------------------------------------------------------------
     String StringConverter::toString(const StringVector& val)
     {
-		stringstream stream;
+        stringstream stream;
         StringVector::const_iterator i, iend, ibegin;
         ibegin = val.begin();
         iend = val.end();
@@ -241,71 +295,99 @@ namespace Ogre {
             if (i != ibegin)
                 stream << " ";
 
-            stream << *i; 
+            stream << *i;
         }
         return stream.str();
     }
     //-----------------------------------------------------------------------
     Real StringConverter::parseReal(const String& val, Real defaultValue)
     {
-		// Use istringstream for direct correspondence with toString
-		StringStream str(val);
-		Real ret = defaultValue;
-		str >> ret;
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        Real ret = 0;
+        int n = sscanf(val.c_str(), "%f", &ret);
 
+        if(n == 0){
+            // Nothing read, so try integer format
+            int ret2 = 0;
+            n = sscanf(val.c_str(), "%d", &ret2);
+            if(n == 1)
+                ret = (Real)ret2;
+        }
+#else
+        // Use istringstream for direct correspondence with toString
+        StringStream str(val);
+        Real ret = defaultValue;
+        if( !(str >> ret) )
+            return defaultValue;
+#endif
         return ret;
     }
     //-----------------------------------------------------------------------
     int StringConverter::parseInt(const String& val, int defaultValue)
     {
-		// Use istringstream for direct correspondence with toString
-		StringStream str(val);
-		int ret = defaultValue;
-		str >> ret;
+        // Use istringstream for direct correspondence with toString
+        StringStream str(val);
+        int ret = defaultValue;
+        if( !(str >> ret) )
+            return defaultValue;
 
         return ret;
     }
     //-----------------------------------------------------------------------
     unsigned int StringConverter::parseUnsignedInt(const String& val, unsigned int defaultValue)
     {
-		// Use istringstream for direct correspondence with toString
-		StringStream str(val);
-		unsigned int ret = defaultValue;
-		str >> ret;
+        // Use istringstream for direct correspondence with toString
+        StringStream str(val);
+        unsigned int ret = defaultValue;
+        if( !(str >> ret) )
+            return defaultValue;
 
-		return ret;
+        return ret;
     }
     //-----------------------------------------------------------------------
     long StringConverter::parseLong(const String& val, long defaultValue)
     {
-		// Use istringstream for direct correspondence with toString
-		StringStream str(val);
-		long ret = defaultValue;
-		str >> ret;
+        // Use istringstream for direct correspondence with toString
+        StringStream str(val);
+        long ret = defaultValue;
+        if( !(str >> ret) )
+            return defaultValue;
 
-		return ret;
+        return ret;
     }
     //-----------------------------------------------------------------------
     unsigned long StringConverter::parseUnsignedLong(const String& val, unsigned long defaultValue)
     {
-		// Use istringstream for direct correspondence with toString
-		StringStream str(val);
-		unsigned long ret = defaultValue;
-		str >> ret;
+        // Use istringstream for direct correspondence with toString
+        StringStream str(val);
+        unsigned long ret = defaultValue;
+        if( !(str >> ret) )
+            return defaultValue;
 
-		return ret;
+        return ret;
+    }
+    //-----------------------------------------------------------------------
+    size_t StringConverter::parseSizeT(const String& val, size_t defaultValue)
+    {
+        // Use istringstream for direct correspondence with toString
+        StringStream str(val);
+        size_t ret = defaultValue;
+        if( !(str >> ret) )
+            return defaultValue;
+
+        return ret;
     }
     //-----------------------------------------------------------------------
     bool StringConverter::parseBool(const String& val, bool defaultValue)
     {
-		if ((StringUtil::startsWith(val, "true") || StringUtil::startsWith(val, "yes")
-			|| StringUtil::startsWith(val, "1")))
-			return true;
-		else if ((StringUtil::startsWith(val, "false") || StringUtil::startsWith(val, "no")
-			|| StringUtil::startsWith(val, "0")))
-			return false;
-		else
-			return defaultValue;
+        if ((StringUtil::startsWith(val, "true") || StringUtil::startsWith(val, "yes")
+            || StringUtil::startsWith(val, "1")))
+            return true;
+        else if ((StringUtil::startsWith(val, "false") || StringUtil::startsWith(val, "no")
+            || StringUtil::startsWith(val, "0")))
+            return false;
+        else
+            return defaultValue;
     }
     //-----------------------------------------------------------------------
     Vector2 StringConverter::parseVector2(const String& val, const Vector2& defaultValue)
@@ -322,7 +404,7 @@ namespace Ogre {
             return Vector2(parseReal(vec[0]),parseReal(vec[1]));
         }
     }
-	//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     Vector3 StringConverter::parseVector3(const String& val, const Vector3& defaultValue)
     {
         // Split on space
@@ -337,7 +419,7 @@ namespace Ogre {
             return Vector3(parseReal(vec[0]),parseReal(vec[1]),parseReal(vec[2]));
         }
     }
-	//-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
     Vector4 StringConverter::parseVector4(const String& val, const Vector4& defaultValue)
     {
         // Split on space
@@ -426,14 +508,20 @@ namespace Ogre {
     {
         return StringUtil::split(val);
     }
-	//-----------------------------------------------------------------------
-	bool StringConverter::isNumber(const String& val)
-	{
-		StringStream str(val);
-		float tst;
-		str >> tst;
-		return !str.fail() && str.eof();
-	}
+    //-----------------------------------------------------------------------
+    bool StringConverter::isNumber(const String& val)
+    {
+#if OGRE_PLATFORM == OGRE_PLATFORM_ANDROID
+        float test;
+        int n = sscanf(val.c_str(), "%f", &test);
+        return n == 1;
+#else
+        StringStream str(val);
+        float tst;
+        str >> tst;
+        return !str.fail() && str.eof();
+#endif
+    }
 }
 
 

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -70,10 +70,10 @@ namespace Ogre {
 
         // State variables for rendering WIP
         // Set of face groups (by index) already included
-		typedef set<int>::type FaceGroupSet;
+        typedef set<int>::type FaceGroupSet;
         FaceGroupSet mFaceGroupSet;
         // Material -> face group hashmap
-		typedef map<Material*, vector<StaticFaceGroup*>::type, materialLess >::type MaterialFaceGroupMap;
+        typedef map<Material*, vector<StaticFaceGroup*>::type, materialLess >::type MaterialFaceGroupMap;
         MaterialFaceGroupMap mMatFaceGroupMap;
 
         RenderOperation mRenderOp;
@@ -86,12 +86,12 @@ namespace Ogre {
             is in, and tags any geometry which is in a visible leaf for
             later processing.
             @param camera Pointer to the viewpoint.
-            @returns The BSP node the camera was found in, for info.
+            @return The BSP node the camera was found in, for info.
         */
         BspNode* walkTree(Camera* camera, VisibleObjectsBoundsInfo* visibleBounds, bool onlyShadowCasters);
         /** Tags geometry in the leaf specified for later rendering. */
-        void processVisibleLeaf(BspNode* leaf, Camera* cam, 
-			VisibleObjectsBoundsInfo* visibleBounds, bool onlyShadowCasters);
+        void processVisibleLeaf(BspNode* leaf, Camera* cam,
+            VisibleObjectsBoundsInfo* visibleBounds, bool onlyShadowCasters);
 
         /** Caches a face group for imminent rendering. */
         unsigned int cacheGeometry(unsigned int* pIndexes, const StaticFaceGroup* faceGroup);
@@ -105,13 +105,13 @@ namespace Ogre {
         /** Renders the static level geometry tagged in walkTree. */
         void renderStaticGeometry(void);
 
-		/** @copydoc SceneManager::clearScene */
-		void clearScene(void);
+        /** @copydoc SceneManager::clearScene */
+        void clearScene(void);
 
-		// Overridden so we can manually render world geometry
-		bool fireRenderQueueEnded(uint8 id, const String& invocation);
+        // Overridden so we can manually render world geometry
+        bool fireRenderQueueEnded(uint8 id, const String& invocation);
 
-		typedef set<const MovableObject*>::type MovablesForRendering;
+        typedef set<const MovableObject*>::type MovablesForRendering;
         MovablesForRendering mMovablesForRendering;
 
     public:
@@ -119,24 +119,24 @@ namespace Ogre {
         ~BspSceneManager();
 
 
-		/// @copydoc SceneManager::getTypeName
-		const String& getTypeName(void) const;
+        /// @copydoc SceneManager::getTypeName
+        const String& getTypeName(void) const;
 
         /** Specialised from SceneManager to support Quake3 bsp files. */
         void setWorldGeometry(const String& filename);
 
         /** Specialised from SceneManager to support Quake3 bsp files. */
         size_t estimateWorldGeometry(const String& filename);
-        
-        /** Specialised from SceneManager to support Quake3 bsp files. */
-        void setWorldGeometry(DataStreamPtr& stream, 
-			const String& typeName = StringUtil::BLANK);
 
         /** Specialised from SceneManager to support Quake3 bsp files. */
-        size_t estimateWorldGeometry(DataStreamPtr& stream, 
-			const String& typeName = StringUtil::BLANK);
+        void setWorldGeometry(DataStreamPtr& stream,
+            const String& typeName = StringUtil::BLANK);
 
-		/** Tells the manager whether to draw the axis-aligned boxes that surround
+        /** Specialised from SceneManager to support Quake3 bsp files. */
+        size_t estimateWorldGeometry(DataStreamPtr& stream,
+            const String& typeName = StringUtil::BLANK);
+
+        /** Tells the manager whether to draw the axis-aligned boxes that surround
             nodes in the Bsp tree. For debugging purposes.
         */
         void showNodeBoxes(bool show);
@@ -147,8 +147,8 @@ namespace Ogre {
         const BspLevelPtr& getLevel(void) {return mLevel; }
 
         /** Overriden from SceneManager. */
-        void _findVisibleObjects(Camera* cam, VisibleObjectsBoundsInfo* visibleBounds, 
-			bool onlyShadowCasters);
+        void _findVisibleObjects(Camera* cam, VisibleObjectsBoundsInfo* visibleBounds,
+            bool onlyShadowCasters);
 
         /** Creates a specialized BspSceneNode */
         SceneNode * createSceneNodeImpl ( void );
@@ -157,13 +157,13 @@ namespace Ogre {
 
         /** Internal method for tagging BspNodes with objects which intersect them. */
         void _notifyObjectMoved(const MovableObject* mov, const Vector3& pos);
-		/** Internal method for notifying the level that an object has been detached from a node */
-		void _notifyObjectDetached(const MovableObject* mov);
+        /** Internal method for notifying the level that an object has been detached from a node */
+        void _notifyObjectDetached(const MovableObject* mov);
 
-        /** Creates an AxisAlignedBoxSceneQuery for this scene manager. 
+        /** Creates an AxisAlignedBoxSceneQuery for this scene manager.
         @remarks
-            This method creates a new instance of a query object for this scene manager, 
-            for an axis aligned box region. See SceneQuery and AxisAlignedBoxSceneQuery 
+            This method creates a new instance of a query object for this scene manager,
+            for an axis aligned box region. See SceneQuery and AxisAlignedBoxSceneQuery
             for full details.
         @par
             The instance returned from this method must be destroyed by calling
@@ -173,13 +173,13 @@ namespace Ogre {
             certain objects; see SceneQuery for details.
         */
         /*
-        virtual AxisAlignedBoxSceneQuery* 
+        virtual AxisAlignedBoxSceneQuery*
             createAABBQuery(const AxisAlignedBox& box, unsigned long mask = 0xFFFFFFFF);
         */
-        /** Creates a SphereSceneQuery for this scene manager. 
+        /** Creates a SphereSceneQuery for this scene manager.
         @remarks
-            This method creates a new instance of a query object for this scene manager, 
-            for a spherical region. See SceneQuery and SphereSceneQuery 
+            This method creates a new instance of a query object for this scene manager,
+            for a spherical region. See SceneQuery and SphereSceneQuery
             for full details.
         @par
             The instance returned from this method must be destroyed by calling
@@ -189,13 +189,13 @@ namespace Ogre {
             certain objects; see SceneQuery for details.
         */
         /*
-        virtual SphereSceneQuery* 
+        virtual SphereSceneQuery*
             createSphereQuery(const Sphere& sphere, unsigned long mask = 0xFFFFFFFF);
         */
-        /** Creates a RaySceneQuery for this scene manager. 
+        /** Creates a RaySceneQuery for this scene manager.
         @remarks
-            This method creates a new instance of a query object for this scene manager, 
-            looking for objects which fall along a ray. See SceneQuery and RaySceneQuery 
+            This method creates a new instance of a query object for this scene manager,
+            looking for objects which fall along a ray. See SceneQuery and RaySceneQuery
             for full details.
         @par
             The instance returned from this method must be destroyed by calling
@@ -204,9 +204,9 @@ namespace Ogre {
         @param mask The query mask to apply to this query; can be used to filter out
             certain objects; see SceneQuery for details.
         */
-        virtual RaySceneQuery* 
+        virtual RaySceneQuery*
             createRayQuery(const Ray& ray, unsigned long mask = 0xFFFFFFFF);
-        /** Creates an IntersectionSceneQuery for this scene manager. 
+        /** Creates an IntersectionSceneQuery for this scene manager.
         @remarks
             This method creates a new instance of a query object for locating
             intersecting objects. See SceneQuery and IntersectionSceneQuery
@@ -217,7 +217,7 @@ namespace Ogre {
         @param mask The query mask to apply to this query; can be used to filter out
             certain objects; see SceneQuery for details.
         */
-        virtual IntersectionSceneQuery* 
+        virtual IntersectionSceneQuery*
             createIntersectionQuery(unsigned long mask = 0xFFFFFFFF);
 
     };
@@ -244,37 +244,37 @@ namespace Ogre {
         void execute(RaySceneQueryListener* listener);
     protected:
         /// Set for eliminating duplicates since objects can be in > 1 node
-		set<MovableObject*>::type mObjsThisQuery;
+        set<MovableObject*>::type mObjsThisQuery;
         /// list of the last single intersection world fragments (derived)
-		vector<SceneQuery::WorldFragment*>::type mSingleIntersections;
+        vector<SceneQuery::WorldFragment*>::type mSingleIntersections;
 
         void clearTemporaries(void);
         /** Internal processing of a single node.
-        @returns true if we should continue tracing, false otherwise
+        @return true if we should continue tracing, false otherwise
         */
         bool processNode(const BspNode* node, const Ray& tracingRay, RaySceneQueryListener* listener,
             Real maxDistance = Math::POS_INFINITY, Real traceDistance = 0.0f);
         /** Internal processing of a single leaf.
-        @returns true if we should continue tracing, false otherwise
+        @return true if we should continue tracing, false otherwise
         */
         bool processLeaf(const BspNode* node, const Ray& tracingRay, RaySceneQueryListener* listener,
             Real maxDistance = Math::POS_INFINITY, Real traceDistance = 0.0f);
 
     };
 
-	/// Factory for BspSceneManager
-	class BspSceneManagerFactory : public SceneManagerFactory
-	{
-	protected:
-		void initMetaData(void) const;
-	public:
-		BspSceneManagerFactory() {}
-		~BspSceneManagerFactory() {}
-		/// Factory type name
-		static const String FACTORY_TYPE_NAME;
-		SceneManager* createInstance(const String& instanceName);
-		void destroyInstance(SceneManager* instance);
-	};
+    /// Factory for BspSceneManager
+    class BspSceneManagerFactory : public SceneManagerFactory
+    {
+    protected:
+        void initMetaData(void) const;
+    public:
+        BspSceneManagerFactory() {}
+        ~BspSceneManagerFactory() {}
+        /// Factory type name
+        static const String FACTORY_TYPE_NAME;
+        SceneManager* createInstance(const String& instanceName);
+        void destroyInstance(SceneManager* instance);
+    };
 }
 
 #endif

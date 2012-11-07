@@ -4,7 +4,7 @@ This source file is a part of OGRE
 
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -43,8 +43,8 @@ THE SOFTWARE
 #define OGRE_MUTEX_CONDITIONAL(mutex) if (mutex)
 #define OGRE_THREAD_SYNCHRONISER(sync) Poco::Condition sync;
 #define OGRE_THREAD_WAIT(sync, mutex, lock) sync.wait(mutex);
-#define OGRE_THREAD_NOTIFY_ONE(sync) sync.signal(); 
-#define OGRE_THREAD_NOTIFY_ALL(sync) sync.broadcast(); 
+#define OGRE_THREAD_NOTIFY_ONE(sync) sync.signal();
+#define OGRE_THREAD_NOTIFY_ALL(sync) sync.broadcast();
 // Read-write mutex
 #define OGRE_RW_MUTEX(name) mutable Poco::RWLock name
 #define OGRE_LOCK_RW_MUTEX_READ(name) Poco::RWLock::ScopedLock ogrenameLock(name, false);
@@ -58,7 +58,7 @@ THE SOFTWARE
 #define OGRE_THREAD_POINTER_DELETE(var) var.get().setNull()
 // Thread objects and related functions
 #define OGRE_THREAD_TYPE Poco::Thread
-#define OGRE_THREAD_CREATE(name, worker) Poco::Thread* name = OGRE_NEW_T(Poco::Thread, MEMCATEGORY_GENERAL)(); name->start(worker); 
+#define OGRE_THREAD_CREATE(name, worker) Poco::Thread* name = OGRE_NEW_T(Poco::Thread, MEMCATEGORY_GENERAL)(); name->start(worker);
 #define OGRE_THREAD_DESTROY(name) OGRE_DELETE_T(name, Thread, MEMCATEGORY_GENERAL)
 #define OGRE_THREAD_HARDWARE_CONCURRENCY 2
 #define OGRE_THREAD_CURRENT_ID (size_t)Poco::Thread::current()

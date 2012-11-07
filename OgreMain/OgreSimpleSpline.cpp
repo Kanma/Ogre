@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -78,11 +78,11 @@ namespace Ogre {
         // change where this is not the case
         // TODO: base on arclength?
 
-        
+
         // Work out which segment this is in
         Real fSeg = t * (mPoints.size() - 1);
         unsigned int segIdx = (unsigned int)fSeg;
-        // Apportion t 
+        // Apportion t
         t = fSeg - segIdx;
 
         return interpolate(segIdx, t);
@@ -158,7 +158,7 @@ namespace Ogre {
     void SimpleSpline::recalcTangents(void)
     {
         // Catmull-Rom approach
-        // 
+        //
         // tangent[i] = 0.5 * (point[i+1] - point[i-1])
         //
         // Assume endpoint tangents are parallel with line with neighbour
@@ -219,7 +219,7 @@ namespace Ogre {
             {
                 mTangents[i] = 0.5 * (mPoints[i+1] - mPoints[i-1]);
             }
-            
+
         }
 
 

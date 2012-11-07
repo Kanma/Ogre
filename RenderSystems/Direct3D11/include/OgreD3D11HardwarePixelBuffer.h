@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,13 @@ namespace Ogre {
 		D3D11Texture * mParentTexture;
 		size_t mSubresourceIndex;
 
+		// if the usage is static - alloc at lock then use device UpdateSubresource when unlock and free memory
+		int8 * mDataForStaticUsageLock; 
+
 		size_t mFace;
+
+		Image::Box mLockBox;
+		PixelBox mCurrentLock;
 
 		D3D11_BOX OgreImageBoxToDx11Box(const Image::Box &inBox) const;
 
@@ -84,11 +90,15 @@ namespace Ogre {
 		/// Notify TextureBuffer of destruction of render target
 		virtual void _clearSliceRTT(size_t zoffset)
 		{
-			mSliceTRT[zoffset] = 0;
+			if (mSliceTRT.size() > zoffset)
+			{
+				mSliceTRT[zoffset] = 0;
+			}
 		}
 
 		D3D11Texture * getParentTexture() const;
 		size_t getSubresourceIndex() const;
+		size_t getFace() const;
 	};
 };
 #endif

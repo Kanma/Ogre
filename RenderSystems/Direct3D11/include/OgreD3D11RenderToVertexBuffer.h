@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ namespace Ogre {
 		public RenderToVertexBuffer
 	{
 	public:
-		D3D11RenderToVertexBuffer(void);
+		D3D11RenderToVertexBuffer(D3D11Device & device, D3D11HardwareBufferManagerBase * bufManager);
 		virtual ~D3D11RenderToVertexBuffer(void);
 
 		/**
@@ -57,7 +57,15 @@ namespace Ogre {
 		Update the contents of this vertex buffer by rendering
 		*/
 		virtual void update(SceneManager* sceneMgr);
-	private:
+		void reallocateBuffer(size_t index);
+	protected:
+		void setupGeometryShaderLinkageToStreamOut(Pass* pass);
+
+		ID3D11GeometryShader* mpGeometryShader;
+        D3D11Device & mDevice;
+		HardwareVertexBufferSharedPtr mVertexBuffers[2];
+		size_t mFrontBufferIndex;
+		D3D11HardwareBufferManagerBase * mBufManager;
 	};
 }
 #endif

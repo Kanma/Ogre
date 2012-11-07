@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,13 +33,13 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Image
-	*  @{
-	*/
-	/** Codec specialized in images.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Image
+    *  @{
+    */
+    /** Codec specialized in images.
         @remarks
             The users implementing subclasses of ImageCodec are required to return
             a valid pointer to a ImageData class from the decode(...) function.
@@ -53,16 +53,16 @@ namespace Ogre {
         class _OgrePrivate ImageData : public Codec::CodecData
         {
         public:
-			ImageData():
-				height(0), width(0), depth(1), size(0),
-				num_mipmaps(0), flags(0), format(PF_UNKNOWN)
-			{
-			}
+            ImageData():
+                height(0), width(0), depth(1), size(0),
+                num_mipmaps(0), flags(0), format(PF_UNKNOWN)
+            {
+            }
             size_t height;
             size_t width;
-			size_t depth;
+            size_t depth;
             size_t size;
-            
+
             ushort num_mipmaps;
             uint flags;
 
@@ -82,8 +82,8 @@ namespace Ogre {
         }
     };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 } // namespace
 
 #endif

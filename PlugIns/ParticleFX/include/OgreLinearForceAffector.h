@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,14 +38,14 @@ namespace Ogre {
     /** This class defines a ParticleAffector which applies a linear force to particles in a system.
     @remarks
         This affector (see ParticleAffector) applies a linear force, such as gravity, to a particle system.
-        This force can be applied in 2 ways: by taking the average of the particle's current momentum and the 
-        force vector, or by adding the force vector to the current particle's momentum. 
+        This force can be applied in 2 ways: by taking the average of the particle's current momentum and the
+        force vector, or by adding the force vector to the current particle's momentum.
     @par
         The former approach is self-stabilising i.e. once a particle's momentum
         is equal to the force vector, no further change is made to it's momentum. It also results in
         a non-linear acceleration of particles.
         The latter approach is simpler and applies a constant acceleration to particles. However,
-        it is not self-stabilising and can lead to perpetually increasing particle velocities. 
+        it is not self-stabilising and can lead to perpetually increasing particle velocities.
         You choose the approach by calling the setForceApplication method.
     */
     class _OgreParticleFXExport LinearForceAffector : public ParticleAffector
@@ -87,14 +87,14 @@ namespace Ogre {
         /** Gets the force vector to apply to the particles in a system. */
         Vector3 getForceVector(void) const;
 
-        /** Sets how the force vector is applied to a particle. 
+        /** Sets how the force vector is applied to a particle.
         @remarks
           The default is FA_ADD.
         @param fa A member of the ForceApplication enum.
         */
         void setForceApplication(ForceApplication fa);
 
-        /** Retrieves how the force vector is applied to a particle. 
+        /** Retrieves how the force vector is applied to a particle.
         @param fa A member of the ForceApplication enum.
         */
         ForceApplication getForceApplication(void) const;

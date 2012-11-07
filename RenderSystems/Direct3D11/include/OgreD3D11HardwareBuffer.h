@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -63,7 +63,7 @@ namespace Ogre {
 
 	public:
 		D3D11HardwareBuffer(BufferType btype, size_t sizeBytes, HardwareBuffer::Usage usage, 
-			D3D11Device & device, bool useSystemMem, bool useShadowBuffer);
+			D3D11Device & device, bool useSystemMem, bool useShadowBuffer, bool streamOut);
 		~D3D11HardwareBuffer();
 		/** See HardwareBuffer. */
 		void readData(size_t offset, size_t length, void* pDest);

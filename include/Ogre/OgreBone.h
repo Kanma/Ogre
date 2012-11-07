@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,14 +33,14 @@ THE SOFTWARE.
 #include "OgreNode.h"
 
 
-namespace Ogre 
+namespace Ogre
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Animation
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Animation
+    *  @{
+    */
 
     /** A bone in a skeleton.
     @remarks
@@ -61,21 +61,21 @@ namespace Ogre
         @remarks
             This method creates a new bone which will inherit the transforms of this
             bone, with the handle specified.
-            @param 
+            @param
                 handle The numeric handle to give the new bone; must be unique within the Skeleton.
             @param
                 translate Initial translation offset of child relative to parent
             @param
                 rotate Initial rotation relative to parent
         */
-        Bone* createChild(unsigned short handle, 
+        Bone* createChild(unsigned short handle,
             const Vector3& translate = Vector3::ZERO, const Quaternion& rotate = Quaternion::IDENTITY);
 
 
         /** Gets the numeric handle for this bone (unique within the skeleton). */
         unsigned short getHandle(void) const;
 
-        /** Sets the current position / orientation to be the 'binding pose' ie the layout in which 
+        /** Sets the current position / orientation to be the 'binding pose' ie the layout in which
             bones were originally bound to a mesh.
         */
         void setBindingPose(void);
@@ -88,39 +88,39 @@ namespace Ogre
         */
         void reset(void);
 
-        /** Sets whether or not this bone is manually controlled. 
+        /** Sets whether or not this bone is manually controlled.
         @remarks
-            Manually controlled bones can be altered by the application at runtime, 
-            and their positions will not be reset by the animation routines. Note 
+            Manually controlled bones can be altered by the application at runtime,
+            and their positions will not be reset by the animation routines. Note
             that you should also make sure that there are no AnimationTrack objects
             referencing this bone, or if there are, you should disable them using
             pAnimation->destroyTrack(pBone->getHandle());
-		@par
-			You can also use AnimationState::setBlendMask to mask out animation from 
-		    chosen tracks if you want to prevent application of a scripted animation 
-		    to a bone without altering the Animation definition.
+        @par
+            You can also use AnimationState::setBlendMask to mask out animation from
+            chosen tracks if you want to prevent application of a scripted animation
+            to a bone without altering the Animation definition.
         */
         void setManuallyControlled(bool manuallyControlled);
 
         /** Getter for mManuallyControlled Flag */
         bool isManuallyControlled() const;
 
-        
-        /** Gets the transform which takes bone space to current from the binding pose. 
+
+        /** Gets the transform which takes bone space to current from the binding pose.
         @remarks
             Internal use only.
         */
         void _getOffsetTransform(Matrix4& m) const;
 
-		/** Gets the inverted binding pose scale. */
-		const Vector3& _getBindingPoseInverseScale(void) const { return mBindDerivedInverseScale; }
-		/** Gets the inverted binding pose position. */
-		const Vector3& _getBindingPoseInversePosition(void) const { return mBindDerivedInversePosition; }
-		/** Gets the inverted binding pose orientation. */
-		const Quaternion& _getBindingPoseInverseOrientation(void) const { return mBindDerivedInverseOrientation; }
+        /** Gets the inverted binding pose scale. */
+        const Vector3& _getBindingPoseInverseScale(void) const { return mBindDerivedInverseScale; }
+        /** Gets the inverted binding pose position. */
+        const Vector3& _getBindingPoseInversePosition(void) const { return mBindDerivedInversePosition; }
+        /** Gets the inverted binding pose orientation. */
+        const Quaternion& _getBindingPoseInverseOrientation(void) const { return mBindDerivedInverseOrientation; }
 
-		/// @see Node::needUpdate
-		void needUpdate(bool forceParentUpdate = false);
+        /// @see Node::needUpdate
+        void needUpdate(bool forceParentUpdate = false);
 
 
     protected:
@@ -146,8 +146,8 @@ namespace Ogre
         Vector3 mBindDerivedInversePosition;
     };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

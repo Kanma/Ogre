@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,13 +42,13 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-	/** Defines a plane in 3D space.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Math
+    *  @{
+    */
+    /** Defines a plane in 3D space.
         @remarks
             A plane is defined in 3D space by the equation
             Ax + By + Cz + D = 0
@@ -67,8 +67,8 @@ namespace Ogre {
         Plane (const Plane& rhs);
         /** Construct a plane through a normal, and a distance to move the plane along the normal.*/
         Plane (const Vector3& rkNormal, Real fConstant);
-		/** Construct a plane using the 4 constants directly **/
-		Plane (Real a, Real b, Real c, Real d);
+        /** Construct a plane using the 4 constants directly **/
+        Plane (Real a, Real b, Real c, Real d);
         Plane (const Vector3& rkNormal, const Vector3& rkPoint);
         Plane (const Vector3& rkPoint0, const Vector3& rkPoint1,
             const Vector3& rkPoint2);
@@ -97,7 +97,7 @@ namespace Ogre {
             The box is defined as centre/half-size pairs for effectively.
         @param centre The centre of the box.
         @param halfSize The half-size of the box.
-        @returns
+        @return
             POSITIVE_SIDE if the box complete lies on the "positive side" of the plane,
             NEGATIVE_SIDE if the box complete lies on the "negative side" of the plane,
             and BOTH_SIDE if the box intersects the plane.
@@ -118,17 +118,17 @@ namespace Ogre {
         void redefine(const Vector3& rkPoint0, const Vector3& rkPoint1,
             const Vector3& rkPoint2);
 
-		/** Redefine this plane based on a normal and a point. */
-		void redefine(const Vector3& rkNormal, const Vector3& rkPoint);
+        /** Redefine this plane based on a normal and a point. */
+        void redefine(const Vector3& rkNormal, const Vector3& rkPoint);
 
-		/** Project a vector onto the plane. 
-		@remarks This gives you the element of the input vector that is perpendicular 
-			to the normal of the plane. You can get the element which is parallel
-			to the normal of the plane by subtracting the result of this method
-			from the original vector, since parallel + perpendicular = original.
-		@param v The input vector
-		*/
-		Vector3 projectVector(const Vector3& v) const;
+        /** Project a vector onto the plane.
+        @remarks This gives you the element of the input vector that is perpendicular
+            to the normal of the plane. You can get the element which is parallel
+            to the normal of the plane by subtracting the result of this method
+            from the original vector, since parallel + perpendicular = original.
+        @param v The input vector
+        */
+        Vector3 projectVector(const Vector3& v) const;
 
         /** Normalises the plane.
             @remarks
@@ -137,11 +137,11 @@ namespace Ogre {
             @note
                 This function will not crash for zero-sized vectors, but there
                 will be no changes made to their components.
-            @returns The previous length of the plane's normal.
+            @return The previous length of the plane's normal.
         */
         Real normalise(void);
 
-		Vector3 normal;
+        Vector3 normal;
         Real d;
 
         /// Comparison operator
@@ -158,8 +158,8 @@ namespace Ogre {
     };
 
     typedef vector<Plane>::type PlaneList;
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 } // namespace Ogre
 

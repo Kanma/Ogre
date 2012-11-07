@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,48 +47,18 @@ THE SOFTWARE.
 // For intel's compiler, simply calling alloca seems to do the right
 // thing. The size of the allocated block seems to be irrelevant.
 #define __OGRE_SIMD_ALIGN_STACK()   _alloca(16)
+#define __OGRE_SIMD_ALIGN_ATTRIBUTE
 
-#elif OGRE_CPU == OGRE_CPU_X86 && OGRE_COMPILER == OGRE_COMPILER_GNUC
-//
-// Horrible hack to align the stack to a 16-bytes boundary for gcc.
-//
-// We assume a gcc version >= 2.95 so that
-// -mpreferred-stack-boundary works.  Otherwise, all bets are
-// off.  However, -mpreferred-stack-boundary does not create a
-// stack alignment, but it only preserves it.  Unfortunately,
-// since Ogre are designed as a flexibility library, user might
-// compile their application with wrong stack alignment, even
-// if user taken care with stack alignment, but many versions
-// of libc on linux call main() with the wrong initial stack
-// alignment the result that the code is now pessimally aligned
-// instead of having a 50% chance of being correct.
-//
-#if OGRE_ARCH_TYPE != OGRE_ARCHITECTURE_64
-
-#define __OGRE_SIMD_ALIGN_STACK()                                   \
-    {                                                               \
-        /* Use alloca to allocate some memory on the stack.  */     \
-        /* This alerts gcc that something funny is going on, */     \
-        /* so that it does not omit the frame pointer etc.   */     \
-        (void)__builtin_alloca(16);                                 \
-        /* Now align the stack pointer */                           \
-        __asm__ __volatile__ ("andl $-16, %esp");                   \
-    }
-
-#else // 64
-#define __OGRE_SIMD_ALIGN_STACK()                                   \
-    {                                                               \
-        /* Use alloca to allocate some memory on the stack.  */     \
-        /* This alerts gcc that something funny is going on, */     \
-        /* so that it does not omit the frame pointer etc.   */     \
-        (void)__builtin_alloca(16);                                 \
-        /* Now align the stack pointer */                           \
-        __asm__ __volatile__ ("andq $-16, %rsp");                   \
-    }
-#endif //64
+#elif OGRE_CPU == OGRE_CPU_X86 && (OGRE_COMPILER == OGRE_COMPILER_GNUC || OGRE_COMPILER == OGRE_COMPILER_CLANG) && (OGRE_ARCH_TYPE != OGRE_ARCHITECTURE_64)
+// mark functions with GCC attribute to force stack alignment to 16 bytes
+#define __OGRE_SIMD_ALIGN_ATTRIBUTE __attribute__((force_align_arg_pointer))
 
 #elif defined(_MSC_VER)
 // Fortunately, MSVC will align the stack automatically
+#define __OGRE_SIMD_ALIGN_ATTRIBUTE
+
+#else
+#define __OGRE_SIMD_ALIGN_ATTRIBUTE
 
 #endif
 
@@ -100,145 +70,11 @@ THE SOFTWARE.
 
 #if OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_X86
 
-#if OGRE_COMPILER == OGRE_COMPILER_MSVC || defined(__INTEL_COMPILER)
+// GCC version 4.0 upwards should be reliable for official SSE now,
+// so no longer define SSE macros ourselves
+// We don't support gcc 3.x anymore anyway, although that had SSE it was a bit flaky?
 #include <xmmintrin.h>
 
-#elif OGRE_COMPILER == OGRE_COMPILER_GNUC
-// Don't define ourself version SSE intrinsics if "xmmintrin.h" already included.
-//
-// Note: gcc in some platform already included "xmmintrin.h" for some reason.
-// I pick up macro _XMMINTRIN_H_INCLUDED here which based on the "xmmintrin.h"
-// comes with cygwin gcc 3.4.4, guess it should be solved duplicate definition
-// problem on gcc for x86.
-//
-#if !defined(_XMMINTRIN_H_INCLUDED)
-
-// Simulate VC/ICC intrinsics. Only used intrinsics are declared here.
-#   if OGRE_COMP_VER >= 350
-typedef float __m128 __attribute__ ((vector_size (16), aligned(16)));
-typedef int __m64 __attribute__ ((vector_size (8)));
-#   else
-typedef float __m128 __attribute__ ((mode(V4SF),aligned(16)));
-typedef int __m64 __attribute__ ((mode(V2SI)));
-#   endif
-
-// Macro for declare intrinsic routines always inline even if in debug build
-#define __ALWAYS_INLINE    FORCEINLINE __attribute__ ((__always_inline__))
-
-// Shuffle instruction must be declare as macro
-
-#define _MM_SHUFFLE(fp3,fp2,fp1,fp0) \
-    (((fp3) << 6) | ((fp2) << 4) | ((fp1) << 2) | ((fp0)))
-
-#define _mm_shuffle_ps(a, b, imm8) __extension__                                        \
-    ({				                                                                    \
-        __m128 result;								                                    \
-        __asm__("shufps %3, %2, %0" : "=x" (result) : "0" (a), "xm" (b), "N" (imm8));   \
-        result;								                                            \
-    })
-
-
-// Load/store instructions
-
-#define __MM_DECL_LD(name, instruction, type)                               \
-    static __ALWAYS_INLINE __m128 _mm_##name(const type *addr)              \
-    {                                                                       \
-        __m128 result;                                                      \
-        __asm__( #instruction " %1, %0" : "=x" (result) : "m" (*addr));     \
-        return result;                                                      \
-    }
-
-#define __MM_DECL_LD2(name, instruction, type)                                      \
-    static __ALWAYS_INLINE __m128 _mm_##name(__m128 val, const type *addr)          \
-    {                                                                               \
-        __m128 result;                                                              \
-        __asm__( #instruction " %2, %0" : "=x" (result) : "0"(val), "m" (*addr));   \
-        return result;                                                              \
-    }
-
-#define __MM_DECL_ST(name, instruction, type)                               \
-    static __ALWAYS_INLINE void _mm_##name(type *addr, __m128 val)          \
-    {                                                                       \
-        __asm__( #instruction " %1, %0" : "=m" (*addr) : "x" (val));        \
-    }
-
-__MM_DECL_LD(loadu_ps, movups, float)
-__MM_DECL_ST(storeu_ps, movups, float)
-
-__MM_DECL_LD(load_ss, movss, float)
-__MM_DECL_ST(store_ss, movss, float)
-
-__MM_DECL_ST(storel_pi, movlps, __m64)
-__MM_DECL_ST(storeh_pi, movhps, __m64)
-__MM_DECL_LD2(loadl_pi, movlps, __m64)
-__MM_DECL_LD2(loadh_pi, movhps, __m64)
-
-#undef __MM_DECL_LD
-#undef __MM_DECL_LD2
-#undef __MM_DECL_ST
-
-// Two operand instructions
-
-#define __MM_DECL_OP2(name, instruction, constraint)                                    \
-    static __ALWAYS_INLINE __m128 _mm_##name(__m128 a, __m128 b)                        \
-    {                                                                                   \
-        __m128 result;                                                                  \
-        __asm__( #instruction " %2, %0" : "=x" (result) : "0" (a), #constraint (b));    \
-        return result;                                                                  \
-    }
-
-__MM_DECL_OP2(add_ps, addps, xm)
-__MM_DECL_OP2(add_ss, addss, xm)
-__MM_DECL_OP2(sub_ps, subps, xm)
-__MM_DECL_OP2(sub_ss, subss, xm)
-__MM_DECL_OP2(mul_ps, mulps, xm)
-__MM_DECL_OP2(mul_ss, mulss, xm)
-
-__MM_DECL_OP2(xor_ps, xorps, xm)
-
-__MM_DECL_OP2(unpacklo_ps, unpcklps, xm)
-__MM_DECL_OP2(unpackhi_ps, unpckhps, xm)
-
-__MM_DECL_OP2(movehl_ps, movhlps, x)
-__MM_DECL_OP2(movelh_ps, movlhps, x)
-
-__MM_DECL_OP2(cmpnle_ps, cmpnleps, xm)
-
-#undef __MM_DECL_OP2
-
-// Other used instructions
-
-    static __ALWAYS_INLINE __m128 _mm_load_ps1(const float *addr)
-    {
-        __m128 tmp = _mm_load_ss(addr);
-        return _mm_shuffle_ps(tmp, tmp, 0);
-    }
-
-    static __ALWAYS_INLINE __m128 _mm_setzero_ps(void)
-    {
-        __m128 result;
-        __asm__("xorps %0, %0" : "=x" (result));
-        return result;
-    }
-
-    static __ALWAYS_INLINE __m128 _mm_rsqrt_ps(__m128 val)
-    {
-        __m128 result;
-        __asm__("rsqrtps %1, %0" : "=x" (result) : "xm" (val));
-        //__asm__("rsqrtps %0, %0" : "=x" (result) : "0" (val));
-        return result;
-    }
-
-    static __ALWAYS_INLINE int _mm_movemask_ps(__m128 val)
-    {
-        int result;
-        __asm__("movmskps %1, %0" : "=r" (result) : "x" (val));
-        return result;
-    }
-
-#endif // !defined(_XMMINTRIN_H_INCLUDED)
-
-#endif // OGRE_COMPILER == OGRE_COMPILER_GNUC
 
 #endif // OGRE_DOUBLE_PRECISION == 0 && OGRE_CPU == OGRE_CPU_X86
 

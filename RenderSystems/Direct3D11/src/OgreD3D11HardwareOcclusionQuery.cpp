@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,8 +49,9 @@ namespace Ogre {
 	{ 
 		D3D11_QUERY_DESC queryDesc;
 		queryDesc.Query = D3D11_QUERY_OCCLUSION;
+        queryDesc.MiscFlags = 0;
 		// create the occlusion query
-		const HRESULT hr = mDevice->CreateQuery(&queryDesc, &mpQuery);
+		const HRESULT hr = mDevice->CreateQuery(&queryDesc, &mQuery);
 
 		if (FAILED(hr) || mDevice.isError()) 
 		{	
@@ -66,7 +67,7 @@ namespace Ogre {
 	*/
 	D3D11HardwareOcclusionQuery::~D3D11HardwareOcclusionQuery() 
 	{ 
-		SAFE_RELEASE(mpQuery); 
+		SAFE_RELEASE(mQuery); 
 	}
 
 	//------------------------------------------------------------------
@@ -74,14 +75,14 @@ namespace Ogre {
 	//--
 	void D3D11HardwareOcclusionQuery::beginOcclusionQuery() 
 	{	    	
-		mDevice.GetImmediateContext()->Begin(mpQuery);//Issue(D3DISSUE_BEGIN); 
+		mDevice.GetImmediateContext()->Begin(mQuery);//Issue(D3DISSUE_BEGIN); 
         mIsQueryResultStillOutstanding = true;
         mPixelCount = 0;
 	}
 
 	void D3D11HardwareOcclusionQuery::endOcclusionQuery() 
 	{ 
-		mDevice.GetImmediateContext()->End(mpQuery);//Issue(D3DISSUE_END); 
+		mDevice.GetImmediateContext()->End(mQuery);//Issue(D3DISSUE_END); 
 	}
 
 	//------------------------------------------------------------------
@@ -91,11 +92,11 @@ namespace Ogre {
         if (mIsQueryResultStillOutstanding)
         {
             // Loop until the data becomes available
-            DWORD pixels;
-            const size_t dataSize = sizeof( DWORD );
+            UINT64 pixels;
+            const size_t dataSize = sizeof( UINT64 );
 			while (1)
             {
-                const HRESULT hr = mDevice.GetImmediateContext()->GetData(mpQuery, (void *)&pixels, dataSize, 0);//D3DGETDATA_FLUSH
+                const HRESULT hr = mDevice.GetImmediateContext()->GetData(mQuery, (void *)&pixels, dataSize, 0);//D3DGETDATA_FLUSH
 
                 if  (hr == S_FALSE)
                     continue;
@@ -112,7 +113,7 @@ namespace Ogre {
                     mPixelCount = 100000;
 					D3D11_QUERY_DESC queryDesc;
 					queryDesc.Query = D3D11_QUERY_OCCLUSION;
-					mDevice->CreateQuery(%queryDesc, &mpQuery);
+					mDevice->CreateQuery(%queryDesc, &mQuery);
                     break;
                 }
 				*/
@@ -133,8 +134,8 @@ namespace Ogre {
         if (!mIsQueryResultStillOutstanding)
             return false;
 
-        DWORD pixels;
-        const HRESULT hr = mDevice.GetImmediateContext()->GetData(mpQuery, (void *) &pixels, sizeof( DWORD ), 0);
+        UINT64 pixels;
+        const HRESULT hr = mDevice.GetImmediateContext()->GetData(mQuery, (void *) &pixels, sizeof( UINT64 ), 0);
 
         if (hr  == S_FALSE)
             return true;
@@ -144,7 +145,7 @@ namespace Ogre {
             mPixelCount = 100000;
             D3D11_QUERY_DESC queryDesc;
 			queryDesc.Query = D3D11_QUERY_OCCLUSION;
-			mDevice->CreateQuery(&queryDesc, &mpQuery);
+			mDevice->CreateQuery(&queryDesc, &mQuery);
         }
 		*/
         mPixelCount = pixels;

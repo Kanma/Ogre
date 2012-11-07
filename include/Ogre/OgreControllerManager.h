@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,12 +38,12 @@ THE SOFTWARE.
 #include "OgreSharedPtr.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup General
+    *  @{
+    */
 
     typedef SharedPtr< ControllerValue<Real> > ControllerValueRealPtr;
     typedef SharedPtr< ControllerFunction<Real> > ControllerFunctionRealPtr;
@@ -62,11 +62,11 @@ namespace Ogre {
 
         /// Global predefined controller
         ControllerValueRealPtr mFrameTimeController;
-        
-		/// Global predefined controller
-		ControllerFunctionRealPtr mPassthroughFunction;
 
-		// Last frame number updated
+        /// Global predefined controller
+        ControllerFunctionRealPtr mPassthroughFunction;
+
+        // Last frame number updated
         unsigned long mLastFrameNumber;
 
     public:
@@ -103,8 +103,8 @@ namespace Ogre {
         */
         const ControllerValueRealPtr& getFrameTimeSource(void) const;
 
-		/** Retrieve a simple passthrough controller function. */
-		const ControllerFunctionRealPtr& getPassthroughControllerFunction(void) const;
+        /** Retrieve a simple passthrough controller function. */
+        const ControllerFunctionRealPtr& getPassthroughControllerFunction(void) const;
 
         /** Creates a texture layer animator controller.
             @remarks
@@ -117,13 +117,13 @@ namespace Ogre {
         */
         Controller<Real>* createTextureAnimator(TextureUnitState* layer, Real sequenceTime);
 
-		/** Creates a basic time-based texture uv coordinate modifier designed for creating scrolling textures.
+        /** Creates a basic time-based texture uv coordinate modifier designed for creating scrolling textures.
             @remarks
-                This simple method allows you to easily create constant-speed uv scrolling textures. If you want to 
-				specify different speed values for horizontal and vertical scroll, use the specific methods
-				ControllerManager::createTextureUScroller and ControllerManager::createTextureVScroller.
-				If you want more control, look up the ControllerManager::createTextureWaveTransformer 
-				for more complex wave-based scrollers / stretchers / rotators.
+                This simple method allows you to easily create constant-speed uv scrolling textures. If you want to
+                specify different speed values for horizontal and vertical scroll, use the specific methods
+                ControllerManager::createTextureUScroller and ControllerManager::createTextureVScroller.
+                If you want more control, look up the ControllerManager::createTextureWaveTransformer
+                for more complex wave-based scrollers / stretchers / rotators.
             @param
                 layer The texture layer to animate.
             @param
@@ -143,13 +143,13 @@ namespace Ogre {
         */
         Controller<Real>* createTextureUScroller(TextureUnitState* layer, Real uSpeed);
 
-		/** Creates a basic time-based texture v coordinate modifier designed for creating scrolling textures.
+        /** Creates a basic time-based texture v coordinate modifier designed for creating scrolling textures.
             @remarks
                 This simple method allows you to easily create constant-speed v scrolling textures. If you want more
                 control, look up the ControllerManager::createTextureWaveTransformer for more complex wave-based
                 scrollers / stretchers / rotators.
             @param
-                layer The texture layer to animate.            
+                layer The texture layer to animate.
             @param
                 vSpeed Speed of vertical (v-coord) scroll, in complete wraps per second
         */
@@ -203,42 +203,42 @@ namespace Ogre {
         */
         void destroyController(Controller<Real>* controller);
 
-		/** Return relative speed of time as perceived by time based controllers.
+        /** Return relative speed of time as perceived by time based controllers.
         @remarks
             See setTimeFactor for full information on the meaning of this value.
-		*/
-		Real getTimeFactor(void) const;
+        */
+        Real getTimeFactor(void) const;
 
-		/** Set the relative speed to update frame time based controllers.
+        /** Set the relative speed to update frame time based controllers.
         @remarks
             Normally any controllers which use time as an input (FrameTimeController) are updated
             automatically in line with the real passage of time. This method allows you to change
             that, so that controllers are told that the time is passing slower or faster than it
             actually is. Use this to globally speed up / slow down the effect of time-based controllers.
         @param tf The virtual speed of time (1.0 is real time).
-		*/
-		void setTimeFactor(Real tf);
+        */
+        void setTimeFactor(Real tf);
 
-		/** Gets the constant that is added to time lapsed between each frame.
-		@remarks
-			See setFrameDelay for full information on the meaning of this value.
-		*/
-		Real getFrameDelay(void) const;
+        /** Gets the constant that is added to time lapsed between each frame.
+        @remarks
+            See setFrameDelay for full information on the meaning of this value.
+        */
+        Real getFrameDelay(void) const;
 
-		/** Sets a constant frame rate.
-		@remarks
-			This function is useful when rendering a sequence to
-			files that should create a film clip with constant frame
-			rate.
-			It will ensure that scrolling textures and animations
-			move at a constant frame rate.
-		@param fd The delay in seconds wanted between each frame 
-			(1.0f / 25.0f means a seconds worth of animation is done 
-			in 25 frames).
-		*/
-		void setFrameDelay(Real fd);
+        /** Sets a constant frame rate.
+        @remarks
+            This function is useful when rendering a sequence to
+            files that should create a film clip with constant frame
+            rate.
+            It will ensure that scrolling textures and animations
+            move at a constant frame rate.
+        @param fd The delay in seconds wanted between each frame
+            (1.0f / 25.0f means a seconds worth of animation is done
+            in 25 frames).
+        */
+        void setFrameDelay(Real fd);
 
-		/** Return the elapsed time.
+        /** Return the elapsed time.
         @remarks
             See setElapsedTime for full information on the meaning of this value.
         */
@@ -287,8 +287,8 @@ namespace Ogre {
         static ControllerManager* getSingletonPtr(void);
     };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 #endif

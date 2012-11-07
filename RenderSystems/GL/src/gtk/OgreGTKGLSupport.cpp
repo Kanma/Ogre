@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,14 +37,14 @@ THE SOFTWARE.
 
 using namespace Ogre;
 
-template<> GTKGLSupport* Singleton<GTKGLSupport>::ms_Singleton = 0;
+template<> GTKGLSupport* Singleton<GTKGLSupport>::msSingleton = 0;
 GTKGLSupport* GTKGLSupport::getSingletonPtr(void)
 {
-    return ms_Singleton;
+    return msSingleton;
 }
 GTKGLSupport& GTKGLSupport::getSingleton(void)
 {  
-    assert( ms_Singleton );  return ( *ms_Singleton );  
+    assert( msSingleton );  return ( *msSingleton );  
 }
 
 GTKGLSupport::GTKGLSupport() : 
@@ -62,14 +62,14 @@ void GTKGLSupport::addConfig()
     ConfigOption optFullScreen;
     ConfigOption optVideoMode;
 
-     // FS setting possiblities
+     // FS setting possibilities
     optFullScreen.name = "Full Screen";
     optFullScreen.possibleValues.push_back("Yes");
     optFullScreen.possibleValues.push_back("No");
     optFullScreen.currentValue = "No";
     optFullScreen.immutable = false;
  
-    // Video mode possiblities
+    // Video mode possibilities
     // XXX Actually do this
     optVideoMode.name = "Video Mode";
     optVideoMode.immutable = false;

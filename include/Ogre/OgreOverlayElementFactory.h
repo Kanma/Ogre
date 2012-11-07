@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,25 +36,25 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Overlays
-	*  @{
-	*/
-	/** Defines the interface which all components wishing to 
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Overlays
+    *  @{
+    */
+    /** Defines the interface which all components wishing to
         supply OverlayElement subclasses must implement.
     @remarks
-        To allow the OverlayElement types available for inclusion on 
+        To allow the OverlayElement types available for inclusion on
         overlays to be extended, OGRE allows external apps or plugins
         to register their ability to create custom OverlayElements with
         the OverlayManager, using the addOverlayElementFactory method. Classes
         wanting to do this must implement this interface.
     @par
-        Each OverlayElementFactory creates a single type of OverlayElement, 
+        Each OverlayElementFactory creates a single type of OverlayElement,
         identified by a 'type name' which must be unique.
     */
-	class _OgreExport OverlayElementFactory : public OverlayAlloc
+    class _OgreExport OverlayElementFactory : public OverlayAlloc
     {
     public:
         /** Destroy the overlay element factory */
@@ -106,8 +106,8 @@ namespace Ogre {
         /** See OverlayElementFactory */
         virtual const String& getTypeName(void) const;
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

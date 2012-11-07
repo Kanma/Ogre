@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,9 +37,9 @@ namespace Ogre {
     @remarks
         This basic particle emitter emits particles from a box area. The
         initial direction of these particles can either be a single direction (i.e. a line),
-        a random scattering inside a cone, or a random scattering in all directions, 
-        depending the 'angle' parameter, which is the angle across which to scatter the 
-        particles either side of the base direction of the emitter. 
+        a random scattering inside a cone, or a random scattering in all directions,
+        depending the 'angle' parameter, which is the angle across which to scatter the
+        particles either side of the base direction of the emitter.
     */
     class _OgreParticleFXExport BoxEmitter : public AreaEmitter
     {

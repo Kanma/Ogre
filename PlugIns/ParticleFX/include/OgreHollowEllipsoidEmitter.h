@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ namespace Ogre {
         direction (i.e. a line), a random scattering inside a cone, or a random
         scattering in all directions, depending the 'angle' parameter, which
         is the angle across which to scatter the particles either side of the
-        base direction of the emitter. 
+        base direction of the emitter.
     */
     class _OgreParticleFXExport HollowEllipsoidEmitter : public EllipsoidEmitter
     {
@@ -81,19 +81,19 @@ namespace Ogre {
         */
         void setInnerSize(Real x, Real y, Real z);
 
-        /** Sets the x component of the area inside the ellipsoid which doesn't emit particles. 
+        /** Sets the x component of the area inside the ellipsoid which doesn't emit particles.
         @param x
             Parametric value describing the proportion of the shape which is hollow in this direction.
             E.g. 0 is solid, 0.5 is half-hollow etc
         */
         void setInnerSizeX(Real x);
-        /** Sets the y component of the area inside the ellipsoid which doesn't emit particles. 
+        /** Sets the y component of the area inside the ellipsoid which doesn't emit particles.
         @param y
             Parametric value describing the proportion of the shape which is hollow in this direction.
             E.g. 0 is solid, 0.5 is half-hollow etc
         */
         void setInnerSizeY(Real y);
-        /** Sets the z component of the area inside the ellipsoid which doesn't emit particles. 
+        /** Sets the z component of the area inside the ellipsoid which doesn't emit particles.
         @param z
             Parametric value describing the proportion of the shape which is hollow in this direction.
             E.g. 0 is solid, 0.5 is half-hollow etc

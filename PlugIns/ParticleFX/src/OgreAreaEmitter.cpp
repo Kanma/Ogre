@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -60,13 +60,13 @@ namespace Ogre {
             ParamDictionary* dict = getParamDictionary();
 
             // Custom params
-            dict->addParameter(ParameterDef("width", 
+            dict->addParameter(ParameterDef("width",
                 "Width of the shape in world coordinates.",
                 PT_REAL),&msWidthCmd);
-            dict->addParameter(ParameterDef("height", 
+            dict->addParameter(ParameterDef("height",
                 "Height of the shape in world coordinates.",
                 PT_REAL),&msHeightCmd);
-            dict->addParameter(ParameterDef("depth", 
+            dict->addParameter(ParameterDef("depth",
                 "Depth of the shape in world coordinates.",
                 PT_REAL),&msDepthCmd);
             return true;
@@ -78,7 +78,7 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     unsigned short AreaEmitter::_getEmissionCount(Real timeElapsed)
     {
-        // Use basic constant emission 
+        // Use basic constant emission
         return genConstantEmissionCount(timeElapsed);
     }
     //-----------------------------------------------------------------------

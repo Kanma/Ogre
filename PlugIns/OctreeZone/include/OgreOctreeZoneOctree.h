@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -92,7 +92,7 @@ public:
     */
     AxisAlignedBox mBox;
     WireBoundingBox* mWireBoundingBox;
-    
+
     /** Creates the wire frame bounding box for this octant
     */
     WireBoundingBox* getWireBoundingBox();
@@ -131,42 +131,42 @@ public:
 
     /* Recurse through the Octree to find the scene nodes which intersect an aab
     */
-    void _findNodes(const AxisAlignedBox &t, 
-                    PCZSceneNodeList &list, 
-                    PCZSceneNode *exclude, 
-					bool includeVisitors,
+    void _findNodes(const AxisAlignedBox &t,
+                    PCZSceneNodeList &list,
+                    PCZSceneNode *exclude,
+                    bool includeVisitors,
                     bool full );
 
     /* Recurse through the Octree to find the scene nodes which intersect a ray
     */
-    void _findNodes(const Ray &t, 
-                    PCZSceneNodeList &list, 
-                    PCZSceneNode *exclude, 
-					bool includeVisitors,
+    void _findNodes(const Ray &t,
+                    PCZSceneNodeList &list,
+                    PCZSceneNode *exclude,
+                    bool includeVisitors,
                     bool full );
 
     /* Recurse through the Octree to find the scene nodes which intersect a sphere
     */
-    void _findNodes(const Sphere &t, 
-                    PCZSceneNodeList &list, 
-                    PCZSceneNode *exclude, 
-					bool includeVisitors,
+    void _findNodes(const Sphere &t,
+                    PCZSceneNodeList &list,
+                    PCZSceneNode *exclude,
+                    bool includeVisitors,
                     bool full );
 
     /* Recurse through the Octree to find the scene nodes which intersect a PBV
     */
-    void _findNodes(const PlaneBoundedVolume &t, 
-                    PCZSceneNodeList &list, 
-                    PCZSceneNode *exclude, 
-					bool includeVisitors,
+    void _findNodes(const PlaneBoundedVolume &t,
+                    PCZSceneNodeList &list,
+                    PCZSceneNode *exclude,
+                    bool includeVisitors,
                     bool full );
 
     /** Public list of SceneNodes attached to this particular octree
     */
     PCZSceneNodeList mNodes;
 
-	/* Zone that this octree is in */
-	PCZone * mZone;
+    /* Zone that this octree is in */
+    PCZone * mZone;
 
 protected:
 

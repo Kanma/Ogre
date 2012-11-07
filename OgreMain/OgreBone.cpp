@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -33,12 +33,12 @@ THE SOFTWARE.
 namespace Ogre {
 
     //---------------------------------------------------------------------
-    Bone::Bone(unsigned short handle, Skeleton* creator) 
+    Bone::Bone(unsigned short handle, Skeleton* creator)
         : Node(), mHandle(handle), mManuallyControlled(false), mCreator(creator)
     {
     }
     //---------------------------------------------------------------------
-    Bone::Bone(const String& name, unsigned short handle, Skeleton* creator) 
+    Bone::Bone(const String& name, unsigned short handle, Skeleton* creator)
         : Node(name), mHandle(handle), mManuallyControlled(false), mCreator(creator)
     {
     }
@@ -47,7 +47,7 @@ namespace Ogre {
     {
     }
     //---------------------------------------------------------------------
-    Bone* Bone::createChild(unsigned short handle, const Vector3& inTranslate, 
+    Bone* Bone::createChild(unsigned short handle, const Vector3& inTranslate,
         const Quaternion& inRotate)
     {
         Bone* retBone = mCreator->createBone(handle);
@@ -82,10 +82,10 @@ namespace Ogre {
         resetToInitialState();
     }
     //---------------------------------------------------------------------
-    void Bone::setManuallyControlled(bool manuallyControlled) 
-	{
+    void Bone::setManuallyControlled(bool manuallyControlled)
+    {
         mManuallyControlled = manuallyControlled;
-		mCreator->_notifyManualBoneStateChange(this);
+        mCreator->_notifyManualBoneStateChange(this);
     }
     //---------------------------------------------------------------------
     bool Bone::isManuallyControlled() const {
@@ -115,18 +115,18 @@ namespace Ogre {
     {
         return mHandle;
     }
-	//---------------------------------------------------------------------
-	void Bone::needUpdate(bool forceParentUpdate)
-	{
-		Node::needUpdate(forceParentUpdate);
+    //---------------------------------------------------------------------
+    void Bone::needUpdate(bool forceParentUpdate)
+    {
+        Node::needUpdate(forceParentUpdate);
 
-		if (isManuallyControlled())
-		{
-			// Dirty the skeleton if manually controlled so animation can be updated
-			mCreator->_notifyManualBonesDirty();
-		}
+        if (isManuallyControlled())
+        {
+            // Dirty the skeleton if manually controlled so animation can be updated
+            mCreator->_notifyManualBonesDirty();
+        }
 
-	}
+    }
 
 
 

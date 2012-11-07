@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,10 +38,10 @@ THE SOFTWARE.
 #include "OgreStringConverter.h"
 
 #define FOURCC(c0, c1, c2, c3) (c0 | (c1 << 8) | (c2 << 16) | (c3 << 24))
-#define PVR_TEXTURE_FLAG_TYPE_MASK	0xff
+#define PVR_TEXTURE_FLAG_TYPE_MASK  0xff
 
 namespace Ogre {
-	
+
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
 #pragma pack (push, 1)
 #else
@@ -55,7 +55,7 @@ namespace Ogre {
         kPVRTextureFlagTypePVRTC_2 = 24,
         kPVRTextureFlagTypePVRTC_4
     };
-    
+
     typedef struct _PVRTCTexHeader
     {
         uint32 headerLength;
@@ -72,58 +72,58 @@ namespace Ogre {
         uint32 pvrTag;
         uint32 numSurfs;
     } PVRTCTexHeader;
-	
+
 #if OGRE_COMPILER == OGRE_COMPILER_MSVC
 #pragma pack (pop)
 #else
 #pragma pack ()
 #endif
 
-	//---------------------------------------------------------------------
-	PVRTCCodec* PVRTCCodec::msInstance = 0;
-	//---------------------------------------------------------------------
-	void PVRTCCodec::startup(void)
-	{
-		if (!msInstance)
-		{
-			LogManager::getSingleton().logMessage(
-				LML_NORMAL,
-				"PVRTC codec registering");
+    //---------------------------------------------------------------------
+    PVRTCCodec* PVRTCCodec::msInstance = 0;
+    //---------------------------------------------------------------------
+    void PVRTCCodec::startup(void)
+    {
+        if (!msInstance)
+        {
+            LogManager::getSingleton().logMessage(
+                LML_NORMAL,
+                "PVRTC codec registering");
 
-			msInstance = OGRE_NEW PVRTCCodec();
-			Codec::registerCodec(msInstance);
-		}
-	}
-	//---------------------------------------------------------------------
-	void PVRTCCodec::shutdown(void)
-	{
-		if(msInstance)
-		{
-			Codec::unRegisterCodec(msInstance);
-			OGRE_DELETE msInstance;
-			msInstance = 0;
-		}
-	}
-	//---------------------------------------------------------------------
+            msInstance = OGRE_NEW PVRTCCodec();
+            Codec::registerCodec(msInstance);
+        }
+    }
+    //---------------------------------------------------------------------
+    void PVRTCCodec::shutdown(void)
+    {
+        if(msInstance)
+        {
+            Codec::unRegisterCodec(msInstance);
+            OGRE_DELETE msInstance;
+            msInstance = 0;
+        }
+    }
+    //---------------------------------------------------------------------
     PVRTCCodec::PVRTCCodec():
         mType("pvr")
-    { 
+    {
     }
     //---------------------------------------------------------------------
     DataStreamPtr PVRTCCodec::code(MemoryDataStreamPtr& input, Codec::CodecDataPtr& pData) const
-    {        
-		OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
+    {
+        OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
                     "PVRTC encoding not supported",
                     "PVRTCCodec::code" ) ;
     }
     //---------------------------------------------------------------------
-    void PVRTCCodec::codeToFile(MemoryDataStreamPtr& input, 
+    void PVRTCCodec::codeToFile(MemoryDataStreamPtr& input,
         const String& outFileName, Codec::CodecDataPtr& pData) const
     {
-		OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
+        OGRE_EXCEPT(Exception::ERR_NOT_IMPLEMENTED,
                     "PVRTC encoding not supported",
                     "PVRTCCodec::codeToFile" ) ;
-	}
+    }
     //---------------------------------------------------------------------
     Codec::DecodeResult PVRTCCodec::decode(DataStreamPtr& stream) const
     {
@@ -132,7 +132,7 @@ namespace Ogre {
         size_t numFaces = 1; // Assume one face until we know otherwise
 
         ImageData *imgData = OGRE_NEW ImageData();
-		MemoryDataStreamPtr output;
+        MemoryDataStreamPtr output;
 
         // Read the PVRTC header
         stream->read(&header, sizeof(PVRTCTexHeader));
@@ -142,7 +142,7 @@ namespace Ogre {
 
         if (PVR_MAGIC != pvrTag)
         {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
                     "This is not a PVR file!", "PVRTCCodec::decode");
         }
 
@@ -175,39 +175,39 @@ namespace Ogre {
         }
 
         // Calculate total size from number of mipmaps, faces and size
-		imgData->size = Image::calculateSize(imgData->num_mipmaps, numFaces, 
+        imgData->size = Image::calculateSize(imgData->num_mipmaps, numFaces,
                                              imgData->width, imgData->height, imgData->depth, imgData->format);
 
-		// Bind output buffer
-		output.bind(OGRE_NEW MemoryDataStream(imgData->size));
+        // Bind output buffer
+        output.bind(OGRE_NEW MemoryDataStream(imgData->size));
 
-		// Now deal with the data
-		void *destPtr = output->getPtr();
+        // Now deal with the data
+        void *destPtr = output->getPtr();
         stream->read(destPtr, imgData->size);
         destPtr = static_cast<void*>(static_cast<uchar*>(destPtr));
 
-		DecodeResult ret;
-		ret.first = output;
-		ret.second = CodecDataPtr(imgData);
+        DecodeResult ret;
+        ret.first = output;
+        ret.second = CodecDataPtr(imgData);
 
-		return ret;
+        return ret;
     }
-    //---------------------------------------------------------------------    
-    String PVRTCCodec::getType() const 
+    //---------------------------------------------------------------------
+    String PVRTCCodec::getType() const
     {
         return mType;
     }
-    //---------------------------------------------------------------------    
+    //---------------------------------------------------------------------
     void PVRTCCodec::flipEndian(void * pData, size_t size, size_t count) const
     {
 #if OGRE_ENDIAN == OGRE_ENDIAN_BIG
-		for(unsigned int index = 0; index < count; index++)
+        for(unsigned int index = 0; index < count; index++)
         {
             flipEndian((void *)((long)pData + (index * size)), size);
         }
 #endif
     }
-    //---------------------------------------------------------------------    
+    //---------------------------------------------------------------------
     void PVRTCCodec::flipEndian(void * pData, size_t size) const
     {
 #if OGRE_ENDIAN == OGRE_ENDIAN_BIG
@@ -220,21 +220,21 @@ namespace Ogre {
         }
 #endif
     }
-	//---------------------------------------------------------------------
-	String PVRTCCodec::magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const
-	{
-		if (maxbytes >= sizeof(uint32))
-		{
-			uint32 fileType;
-			memcpy(&fileType, magicNumberPtr, sizeof(uint32));
-			flipEndian(&fileType, sizeof(uint32), 1);
+    //---------------------------------------------------------------------
+    String PVRTCCodec::magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const
+    {
+        if (maxbytes >= sizeof(uint32))
+        {
+            uint32 fileType;
+            memcpy(&fileType, magicNumberPtr, sizeof(uint32));
+            flipEndian(&fileType, sizeof(uint32), 1);
 
-			if (PVR_MAGIC == fileType)
-			{
-				return String("pvr");
-			}
-		}
+            if (PVR_MAGIC == fileType)
+            {
+                return String("pvr");
+            }
+        }
 
-		return StringUtil::BLANK;
-	}
+        return StringUtil::BLANK;
+    }
 }

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -55,11 +55,11 @@ namespace Ogre {
             addBaseParameters();
             // Add extra paramaters
             ParamDictionary* dict = getParamDictionary();
-            dict->addParameter(ParameterDef("force_vector", 
+            dict->addParameter(ParameterDef("force_vector",
                 "The vector representing the force to apply.",
                 PT_VECTOR3),&msForceVectorCmd);
-            dict->addParameter(ParameterDef("force_application", 
-                "How to apply the force vector to partices.",
+            dict->addParameter(ParameterDef("force_application",
+                "How to apply the force vector to particles.",
                 PT_STRING),&msForceAppCmd);
 
         }
@@ -92,7 +92,7 @@ namespace Ogre {
                 p->direction = (p->direction + mForceVector) / 2;
             }
         }
-        
+
     }
     //-----------------------------------------------------------------------
     void LinearForceAffector::setForceVector(const Vector3& force)

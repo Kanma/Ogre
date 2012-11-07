@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,14 +35,14 @@ THE SOFTWARE.
 
 namespace Ogre {
     //-----------------------------------------------------------------------
-    template<> DistanceLodStrategy* Singleton<DistanceLodStrategy>::ms_Singleton = 0;
+    template<> DistanceLodStrategy* Singleton<DistanceLodStrategy>::msSingleton = 0;
     DistanceLodStrategy* DistanceLodStrategy::getSingletonPtr(void)
     {
-        return ms_Singleton;
+        return msSingleton;
     }
     DistanceLodStrategy& DistanceLodStrategy::getSingleton(void)
     {
-        assert( ms_Singleton );  return ( *ms_Singleton );
+        assert( msSingleton );  return ( *msSingleton );
     }
     //-----------------------------------------------------------------------
     DistanceLodStrategy::DistanceLodStrategy()
@@ -54,9 +54,9 @@ namespace Ogre {
     Real DistanceLodStrategy::getValueImpl(const MovableObject *movableObject, const Ogre::Camera *camera) const
     {
         // Get squared depth taking into account bounding radius
-        // (d - r) ^ 2 = d^2 - 2dr + r^2, but this requires a lot 
-        // more computation (including a sqrt) so we approximate 
-        // it with d^2 - r^2, which is good enough for determining 
+        // (d - r) ^ 2 = d^2 - 2dr + r^2, but this requires a lot
+        // more computation (including a sqrt) so we approximate
+        // it with d^2 - r^2, which is good enough for determining
         // lod.
         Real squaredDepth = movableObject->getParentNode()->getSquaredViewDepth(camera) - Math::Sqr(movableObject->getBoundingRadius());
 

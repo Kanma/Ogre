@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -80,8 +80,8 @@ namespace Ogre {
       , mInitialised(false)
       , mSourceTemplate(0)
     {
-		// default overlays to preserve their own detail level
-		mPolygonModeOverrideable = false;
+        // default overlays to preserve their own detail level
+        mPolygonModeOverrideable = false;
 
         // use identity projection and view matrices
         mUseIdentityProjection = true;
@@ -90,11 +90,11 @@ namespace Ogre {
     //---------------------------------------------------------------------
     OverlayElement::~OverlayElement()
     {
-		if (mParent)
-		{
-			mParent->removeChild(mName);
-			mParent = 0;
-		}
+        if (mParent)
+        {
+            mParent->removeChild(mName);
+            mParent = 0;
+        }
     }
     //---------------------------------------------------------------------
     const String& OverlayElement::getName(void) const
@@ -168,12 +168,12 @@ namespace Ogre {
     {
         if (mMetricsMode != GMM_RELATIVE)
         {
-			return mPixelWidth;
-		}
-		else
-		{
-        	return mWidth;
-		}
+            return mPixelWidth;
+        }
+        else
+        {
+            return mWidth;
+        }
     }
     //---------------------------------------------------------------------
     void OverlayElement::setHeight(Real height)
@@ -194,12 +194,12 @@ namespace Ogre {
     {
         if (mMetricsMode != GMM_RELATIVE)
         {
-			return mPixelHeight;
-		}
-		else
-		{
-			return mHeight;
-		}
+            return mPixelHeight;
+        }
+        else
+        {
+            return mHeight;
+        }
     }
     //---------------------------------------------------------------------
     void OverlayElement::setLeft(Real left)
@@ -220,12 +220,12 @@ namespace Ogre {
     {
         if (mMetricsMode != GMM_RELATIVE)
         {
-			return mPixelLeft;
-		}
-		else
-		{
-        	return mLeft;
-		}
+            return mPixelLeft;
+        }
+        else
+        {
+            return mLeft;
+        }
     }
     //---------------------------------------------------------------------
     void OverlayElement::setTop(Real top)
@@ -247,12 +247,12 @@ namespace Ogre {
     {
         if (mMetricsMode != GMM_RELATIVE)
         {
-			return mPixelTop;
-		}
-		else
-		{
-	        return mTop;
-		}
+            return mPixelTop;
+        }
+        else
+        {
+            return mTop;
+        }
     }
     //---------------------------------------------------------------------
     void OverlayElement::_setLeft(Real left)
@@ -322,27 +322,27 @@ namespace Ogre {
     void OverlayElement::setMaterialName(const String& matName)
     {
         mMaterialName = matName;
-		if (matName != StringUtil::BLANK)
-		{
-			mpMaterial = MaterialManager::getSingleton().getByName(matName);
-			if (mpMaterial.isNull())
-				OGRE_EXCEPT( Exception::ERR_ITEM_NOT_FOUND, "Could not find material " + matName,
-					"OverlayElement::setMaterialName" );
-			mpMaterial->load();
-			// Set some prerequisites to be sure
-			mpMaterial->setLightingEnabled(false);
-			mpMaterial->setDepthCheckEnabled(false);
-		}
-		else
-		{
-			mpMaterial.setNull();
-		}
+        if (matName != StringUtil::BLANK)
+        {
+            mMaterial = MaterialManager::getSingleton().getByName(matName);
+            if (mMaterial.isNull())
+                OGRE_EXCEPT( Exception::ERR_ITEM_NOT_FOUND, "Could not find material " + matName,
+                    "OverlayElement::setMaterialName" );
+            mMaterial->load();
+            // Set some prerequisites to be sure
+            mMaterial->setLightingEnabled(false);
+            mMaterial->setDepthCheckEnabled(false);
+        }
+        else
+        {
+            mMaterial.setNull();
+        }
 
     }
     //---------------------------------------------------------------------
     const MaterialPtr& OverlayElement::getMaterial(void) const
     {
-        return mpMaterial;
+        return mMaterial;
     }
     //---------------------------------------------------------------------
     void OverlayElement::getWorldTransforms(Matrix4* xform) const
@@ -350,10 +350,10 @@ namespace Ogre {
         mOverlay->_getWorldTransforms(xform);
     }
     //---------------------------------------------------------------------
-	void OverlayElement::_positionsOutOfDate(void)
-	{
-		mGeomPositionsOutOfDate = true;
-	}
+    void OverlayElement::_positionsOutOfDate(void)
+    {
+        mGeomPositionsOutOfDate = true;
+    }
 
     //---------------------------------------------------------------------
     void OverlayElement::_update(void)
@@ -409,12 +409,12 @@ namespace Ogre {
             updatePositionGeometry();
             mGeomPositionsOutOfDate = false;
         }
-		// Tell self to update own texture geometry
-		if (mGeomUVsOutOfDate && mInitialised)
-		{
-			updateTextureGeometry();
-			mGeomUVsOutOfDate = false;
-		}
+        // Tell self to update own texture geometry
+        if (mGeomUVsOutOfDate && mInitialised)
+        {
+            updateTextureGeometry();
+            mGeomUVsOutOfDate = false;
+        }
     }
     //---------------------------------------------------------------------
     void OverlayElement::_updateFromParent(void)
@@ -453,7 +453,7 @@ namespace Ogre {
 
         // Sort out position based on alignment
         // NB all we do is derived the origin, we don't automatically sort out the position
-        // This is more flexible than forcing absolute right & middle 
+        // This is more flexible than forcing absolute right & middle
         switch(mHorzAlign)
         {
         case GHA_CENTER:
@@ -509,10 +509,10 @@ namespace Ogre {
         mParent = parent;
         mOverlay = overlay;
 
-		if (mOverlay && mOverlay->isInitialised() && !mInitialised)
-		{
-			initialise();
-		}
+        if (mOverlay && mOverlay->isInitialised() && !mInitialised)
+        {
+            initialise();
+        }
 
         mDerivedOutOfDate = true;
     }
@@ -534,17 +534,17 @@ namespace Ogre {
         }
         return mDerivedTop;
     }
-	//---------------------------------------------------------------------
-	Real OverlayElement::_getRelativeWidth(void)
-	{
-		return mWidth;
-	}
-	//---------------------------------------------------------------------
-	Real OverlayElement::_getRelativeHeight(void)
-	{
-		return mHeight;
-	}
-    //---------------------------------------------------------------------    
+    //---------------------------------------------------------------------
+    Real OverlayElement::_getRelativeWidth(void)
+    {
+        return mWidth;
+    }
+    //---------------------------------------------------------------------
+    Real OverlayElement::_getRelativeHeight(void)
+    {
+        return mHeight;
+    }
+    //---------------------------------------------------------------------
     void OverlayElement::_getClippingRegion(Rectangle &clippingRegion)
     {
         if (mDerivedOutOfDate)
@@ -557,7 +557,7 @@ namespace Ogre {
     ushort OverlayElement::_notifyZOrder(ushort newZOrder)
     {
         mZOrder = newZOrder;
-		return mZOrder + 1;
+        return mZOrder + 1;
     }
 
     //---------------------------------------------------------------------
@@ -620,56 +620,56 @@ namespace Ogre {
         {
             queue->addRenderable(this, RENDER_QUEUE_OVERLAY, mZOrder);
         }
-      
+
     }
-	//---------------------------------------------------------------------
-	void OverlayElement::visitRenderables(Renderable::Visitor* visitor, 
-		bool debugRenderables)
-	{
-		visitor->visit(this, 0, false);
-	}
+    //---------------------------------------------------------------------
+    void OverlayElement::visitRenderables(Renderable::Visitor* visitor,
+        bool debugRenderables)
+    {
+        visitor->visit(this, 0, false);
+    }
     //-----------------------------------------------------------------------
-    void OverlayElement::addBaseParameters(void)    
+    void OverlayElement::addBaseParameters(void)
     {
         ParamDictionary* dict = getParamDictionary();
 
-        dict->addParameter(ParameterDef("left", 
+        dict->addParameter(ParameterDef("left",
             "The position of the left border of the gui element."
             , PT_REAL),
             &msLeftCmd);
-        dict->addParameter(ParameterDef("top", 
+        dict->addParameter(ParameterDef("top",
             "The position of the top border of the gui element."
             , PT_REAL),
             &msTopCmd);
-        dict->addParameter(ParameterDef("width", 
+        dict->addParameter(ParameterDef("width",
             "The width of the element."
             , PT_REAL),
             &msWidthCmd);
-        dict->addParameter(ParameterDef("height", 
+        dict->addParameter(ParameterDef("height",
             "The height of the element."
             , PT_REAL),
             &msHeightCmd);
-        dict->addParameter(ParameterDef("material", 
+        dict->addParameter(ParameterDef("material",
             "The name of the material to use."
             , PT_STRING),
             &msMaterialCmd);
-        dict->addParameter(ParameterDef("caption", 
+        dict->addParameter(ParameterDef("caption",
             "The element caption, if supported."
             , PT_STRING),
             &msCaptionCmd);
-        dict->addParameter(ParameterDef("metrics_mode", 
+        dict->addParameter(ParameterDef("metrics_mode",
             "The type of metrics to use, either 'relative' to the screen, 'pixels' or 'relative_aspect_adjusted'."
             , PT_STRING),
             &msMetricsModeCmd);
-        dict->addParameter(ParameterDef("horz_align", 
+        dict->addParameter(ParameterDef("horz_align",
             "The horizontal alignment, 'left', 'right' or 'center'."
             , PT_STRING),
             &msHorizontalAlignCmd);
-        dict->addParameter(ParameterDef("vert_align", 
+        dict->addParameter(ParameterDef("vert_align",
             "The vertical alignment, 'top', 'bottom' or 'center'."
             , PT_STRING),
             &msVerticalAlignCmd);
-        dict->addParameter(ParameterDef("visible", 
+        dict->addParameter(ParameterDef("visible",
             "Initial visibility of element, either 'true' or 'false' (default true)."
             , PT_STRING),
             &msVisibleCmd);
@@ -681,7 +681,7 @@ namespace Ogre {
         _positionsOutOfDate();
     }
     //-----------------------------------------------------------------------
-	const DisplayString& OverlayElement::getCaption() const
+    const DisplayString& OverlayElement::getCaption() const
     {
         return mCaption;
     }
@@ -707,9 +707,9 @@ namespace Ogre {
                 vpWidth = (Real) (oMgr.getViewportWidth());
                 vpHeight = (Real) (oMgr.getViewportHeight());
 
-				// cope with temporarily zero dimensions, avoid divide by zero
-				vpWidth = vpWidth == 0.0f? 1.0f : vpWidth;
-				vpHeight = vpHeight == 0.0f? 1.0f : vpHeight;
+                // cope with temporarily zero dimensions, avoid divide by zero
+                vpWidth = vpWidth == 0.0f? 1.0f : vpWidth;
+                vpHeight = vpHeight == 0.0f? 1.0f : vpHeight;
 
                 mPixelScaleX = 1.0f / vpWidth;
                 mPixelScaleY = 1.0f / vpHeight;
@@ -794,57 +794,57 @@ namespace Ogre {
 
 
     //-----------------------------------------------------------------------
-	bool OverlayElement::contains(Real x, Real y) const
-	{
+    bool OverlayElement::contains(Real x, Real y) const
+    {
         return mClippingRegion.inside(x, y);
-	}
+    }
 
     //-----------------------------------------------------------------------
-	OverlayElement* OverlayElement::findElementAt(Real x, Real y) 		// relative to parent
-	{
-		OverlayElement* ret = NULL;
-		if (contains(x , y ))
-		{
-			ret = this;
-		}
-		return ret;
-	}
+    OverlayElement* OverlayElement::findElementAt(Real x, Real y)       // relative to parent
+    {
+        OverlayElement* ret = NULL;
+        if (contains(x , y ))
+        {
+            ret = this;
+        }
+        return ret;
+    }
 
     //-----------------------------------------------------------------------
-	OverlayContainer* OverlayElement::getParent() 
-	{ 
-		return mParent;		
-	}
+    OverlayContainer* OverlayElement::getParent()
+    {
+        return mParent;
+    }
 
     void OverlayElement::copyFromTemplate(OverlayElement* templateOverlay)
-	{
-		templateOverlay->copyParametersTo(this);
+    {
+        templateOverlay->copyParametersTo(this);
     mSourceTemplate = templateOverlay ;
-		return;
-	}
+        return;
+    }
 
     OverlayElement* OverlayElement::clone(const String& instanceName)
     {
         OverlayElement* newElement;
 
         newElement = OverlayManager::getSingleton().createOverlayElement(
-			getTypeName(), instanceName + "/" + mName);
+            getTypeName(), instanceName + "/" + mName);
         copyParametersTo(newElement);
 
         return newElement;
     }
 
     //-----------------------------------------------------------------------
-	bool OverlayElement::isEnabled() const
-	{ 
-		return mEnabled;
-	}
+    bool OverlayElement::isEnabled() const
+    {
+        return mEnabled;
+    }
 
     //-----------------------------------------------------------------------
-	void OverlayElement::setEnabled(bool b) 
-	{
-		mEnabled = b;
-	}
+    void OverlayElement::setEnabled(bool b)
+    {
+        mEnabled = b;
+    }
 
 
 }

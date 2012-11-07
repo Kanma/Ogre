@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,7 @@ Enhancements 2003 - 2004 (C) The OGRE Team
 #include <OgreSceneNode.h>
 
 #include "OgreOctreeSceneManager.h"
-#include "OgreTerrainPrerequisites.h"
+#include "OgreOctreePrerequisites.h"
 
 namespace Ogre
 {
@@ -63,15 +63,15 @@ public:
 
     /** Overridden from Node to remove any reference to octants */
     Node * removeChild( unsigned short index );
-    
+
     /** Overridden from Node to remove any reference to octants */
     Node * removeChild( const String & name );
 
     /** Overridden from Node to remove any reference to octants */
     Node * removeChild( Node* child);
 
-	/** Overridden from Node to remove any reference to octants */
-	void removeAllChildren(void);
+    /** Overridden from Node to remove any reference to octants */
+    void removeAllChildren(void);
 
     /** Returns the Octree in which this OctreeNode resides
     */
@@ -93,8 +93,8 @@ public:
 
     /** Adds all the attached scenenodes to the render queue
     */
-    virtual void _addToRenderQueue( Camera* cam, RenderQueue * q, bool onlyShadowCasters, 
-		VisibleObjectsBoundsInfo* visibleBounds);
+    virtual void _addToRenderQueue( Camera* cam, RenderQueue * q, bool onlyShadowCasters,
+        VisibleObjectsBoundsInfo* visibleBounds);
 
     /** Sets up the LegacyRenderOperation for rendering this scene node as geometry.
     @remarks

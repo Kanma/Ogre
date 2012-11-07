@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,15 +34,15 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Effects
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Effects
+    *  @{
+    */
 
-    /** Specialisation of ParticleSystemRenderer to render particles using 
-        a BillboardSet. 
+    /** Specialisation of ParticleSystemRenderer to render particles using
+        a BillboardSet.
     @remarks
         This renderer has a few more options than the standard particle system,
         which will be passed to it automatically when the particle system itself
@@ -99,21 +99,21 @@ namespace Ogre {
             String doGet(const void* target) const;
             void doSet(void* target, const String& val);
         };
-		/** Command object for accurate facing(see ParamCommand).*/
-		class _OgrePrivate CmdAccurateFacing : public ParamCommand
-		{
-		public:
-			String doGet(const void* target) const;
-			void doSet(void* target, const String& val);
-		};
+        /** Command object for accurate facing(see ParamCommand).*/
+        class _OgrePrivate CmdAccurateFacing : public ParamCommand
+        {
+        public:
+            String doGet(const void* target) const;
+            void doSet(void* target, const String& val);
+        };
 
         /** Sets the type of billboard to render.
         @remarks
-            The default sort of billboard (BBT_POINT), always has both x and y axes parallel to 
+            The default sort of billboard (BBT_POINT), always has both x and y axes parallel to
             the camera's local axes. This is fine for 'point' style billboards (e.g. flares,
             smoke, anything which is symmetrical about a central point) but does not look good for
             billboards which have an orientation (e.g. an elongated raindrop). In this case, the
-            oriented billboards are more suitable (BBT_ORIENTED_COMMON or BBT_ORIENTED_SELF) since they retain an independant Y axis
+            oriented billboards are more suitable (BBT_ORIENTED_COMMON or BBT_ORIENTED_SELF) since they retain an independent Y axis
             and only the X axis is generated, perpendicular to both the local Y and the camera Z.
         @param bbt The type of billboard to render
         */
@@ -122,10 +122,10 @@ namespace Ogre {
         /** Returns the billboard type in use. */
         BillboardType getBillboardType(void) const;
 
-		/// @copydoc BillboardSet::setUseAccurateFacing
-		void setUseAccurateFacing(bool acc);
-		/// @copydoc BillboardSet::getUseAccurateFacing
-		bool getUseAccurateFacing(void) const;
+        /// @copydoc BillboardSet::setUseAccurateFacing
+        void setUseAccurateFacing(bool acc);
+        /// @copydoc BillboardSet::getUseAccurateFacing
+        bool getUseAccurateFacing(void) const;
 
         /** Sets the point which acts as the origin point for all billboards in this set.
         @remarks
@@ -141,7 +141,7 @@ namespace Ogre {
         void setBillboardOrigin(BillboardOrigin origin) { mBillboardSet->setBillboardOrigin(origin); }
 
         /** Gets the point which acts as the origin point for all billboards in this set.
-        @returns
+        @return
         A member of the BillboardOrigin enum specifying the origin for all the billboards in this set.
         */
         BillboardOrigin getBillboardOrigin(void) const { return mBillboardSet->getBillboardOrigin(); }
@@ -158,14 +158,14 @@ namespace Ogre {
         void setBillboardRotationType(BillboardRotationType rotationType);
 
         /** Sets billboard rotation type.
-            @returns
+            @return
                 A member of the BillboardRotationType enum specifying the rotation type for all the billboards in this set.
         */
         BillboardRotationType getBillboardRotationType(void) const;
 
         /** Use this to specify the common direction given to billboards of type BBT_ORIENTED_COMMON.
         @remarks
-            Use BBT_ORIENTED_COMMON when you want oriented billboards but you know they are always going to 
+            Use BBT_ORIENTED_COMMON when you want oriented billboards but you know they are always going to
             be oriented the same way (e.g. rain in calm weather). It is faster for the system to calculate
             the billboard vertices if they have a common direction.
         @param vec The direction for all billboards.
@@ -189,22 +189,22 @@ namespace Ogre {
         /** Gets the common up-vector for all billboards (BBT_PERPENDICULAR_SELF) */
         const Vector3& getCommonUpVector(void) const;
 
-		/// @copydoc BillboardSet::setPointRenderingEnabled
-		void setPointRenderingEnabled(bool enabled);
+        /// @copydoc BillboardSet::setPointRenderingEnabled
+        void setPointRenderingEnabled(bool enabled);
 
-		/// @copydoc BillboardSet::isPointRenderingEnabled
-		bool isPointRenderingEnabled(void) const;
+        /// @copydoc BillboardSet::isPointRenderingEnabled
+        bool isPointRenderingEnabled(void) const;
 
 
 
         /// @copydoc ParticleSystemRenderer::getType
         const String& getType(void) const;
         /// @copydoc ParticleSystemRenderer::_updateRenderQueue
-        void _updateRenderQueue(RenderQueue* queue, 
+        void _updateRenderQueue(RenderQueue* queue,
             list<Particle*>::type& currentParticles, bool cullIndividually);
-		/// @copydoc ParticleSystemRenderer::visitRenderables
-		void visitRenderables(Renderable::Visitor* visitor, 
-			bool debugRenderables = false);
+        /// @copydoc ParticleSystemRenderer::visitRenderables
+        void visitRenderables(Renderable::Visitor* visitor,
+            bool debugRenderables = false);
         /// @copydoc ParticleSystemRenderer::_setMaterial
         void _setMaterial(MaterialPtr& mat);
         /// @copydoc ParticleSystemRenderer::_notifyCurrentCamera
@@ -219,15 +219,17 @@ namespace Ogre {
         void _notifyAttached(Node* parent, bool isTagPoint = false);
         /// @copydoc ParticleSystemRenderer::_notifyDefaultDimensions
         void _notifyDefaultDimensions(Real width, Real height);
-		/// @copydoc ParticleSystemRenderer::setRenderQueueGroup
-		void setRenderQueueGroup(uint8 queueID);
-		/// @copydoc ParticleSystemRenderer::setKeepParticlesInLocalSpace
-		void setKeepParticlesInLocalSpace(bool keepLocal);
+        /// @copydoc ParticleSystemRenderer::setRenderQueueGroup
+        void setRenderQueueGroup(uint8 queueID);
+        /// @copydoc MovableObject::setRenderQueueGroupAndPriority
+        void setRenderQueueGroupAndPriority(uint8 queueID, ushort priority);
+        /// @copydoc ParticleSystemRenderer::setKeepParticlesInLocalSpace
+        void setKeepParticlesInLocalSpace(bool keepLocal);
         /// @copydoc ParticleSystemRenderer::_getSortMode
         SortMode _getSortMode(void) const;
 
-		/// Access BillboardSet in use
-		BillboardSet* getBillboardSet(void) const { return mBillboardSet; }
+        /// Access BillboardSet in use
+        BillboardSet* getBillboardSet(void) const { return mBillboardSet; }
 
     protected:
         static CmdBillboardType msBillboardTypeCmd;
@@ -236,7 +238,7 @@ namespace Ogre {
         static CmdCommonDirection msCommonDirectionCmd;
         static CmdCommonUpVector msCommonUpVectorCmd;
         static CmdPointRendering msPointRenderingCmd;
-		static CmdAccurateFacing msAccurateFacingCmd;
+        static CmdAccurateFacing msAccurateFacingCmd;
 
 
     };
@@ -248,12 +250,12 @@ namespace Ogre {
         /// @copydoc FactoryObj::getType
         const String& getType() const;
         /// @copydoc FactoryObj::createInstance
-        ParticleSystemRenderer* createInstance( const String& name );    
+        ParticleSystemRenderer* createInstance( const String& name );
         /// @copydoc FactoryObj::destroyInstance
-        void destroyInstance( ParticleSystemRenderer* inst);    
+        void destroyInstance( ParticleSystemRenderer* inst);
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

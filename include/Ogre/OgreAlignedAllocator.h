@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,15 +34,15 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
 
-	/** \addtogroup Memory
-	*  @{
-	*/
+    /** \addtogroup Memory
+    *  @{
+    */
 
-	/** Class to provide aligned memory allocate functionality.
+    /** Class to provide aligned memory allocate functionality.
     @remarks
         All SIMD processing are friendly with aligned memory, and some SIMD routines
         are designed for working with aligned memory only. If the data are intended to
@@ -60,16 +60,16 @@ namespace Ogre {
     @note
         This class intended to use by advanced user only.
     */
-	class _OgreExport AlignedMemory
-	{
-	public:
+    class _OgreExport AlignedMemory
+    {
+    public:
         /** Allocate memory with given alignment.
             @param
                 size The size of memory need to allocate.
             @param
                 alignment The alignment of result pointer, must be power of two
                 and in range [1, 128].
-            @returns
+            @return
                 The allocated memory pointer.
             @par
                 On failure, exception will be throw.
@@ -83,7 +83,7 @@ namespace Ogre {
                 cache boundary friendly.
             @param
                 size The size of memory need to allocate.
-            @returns
+            @return
                 The allocated memory pointer.
             @par
                 On failure, exception will be throw.
@@ -97,10 +97,10 @@ namespace Ogre {
                 On <b>NULL</b> pointer, nothing happen.
         */
         static void deallocate(void* p);
-	};
+    };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

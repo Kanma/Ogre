@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -43,7 +43,7 @@ namespace Ogre
     ConfigDialog::ConfigDialog()
     {
 #ifdef OGRE_STATIC_LIB
-		mHInstance = GetModuleHandle( NULL );
+        mHInstance = GetModuleHandle( NULL );
 #else
 #  if OGRE_DEBUG_MODE == 1
         mHInstance = GetModuleHandle("OgreMain_d.dll");
@@ -54,9 +54,9 @@ namespace Ogre
         mSelectedRenderSystem = 0;
     }
 
-	ConfigDialog::~ConfigDialog()
+    ConfigDialog::~ConfigDialog()
     {
-	}
+    }
 
 #if OGRE_ARCHITECTURE_64 == OGRE_ARCH_TYPE
     INT_PTR ConfigDialog::DlgProc(HWND hDlg, UINT iMsg, WPARAM wParam, LPARAM lParam)
@@ -80,7 +80,7 @@ namespace Ogre
             dlg->mSelectedRenderSystem = Root::getSingleton().getRenderSystem();
             // Get all render systems
             lstRend = &Root::getSingleton().getAvailableRenderers();
-            pRend = lstRend->begin();            
+            pRend = lstRend->begin();
             i = 0;
             while (pRend != lstRend->end())
             {
@@ -162,7 +162,7 @@ namespace Ogre
                             SendMessage(hwndDlgItem, LB_ADDSTRING, 0, (LPARAM)strLine.c_str());
                             ++pOpt;
                         }
-                    }                    
+                    }
                 }
 
                 return TRUE;
@@ -297,7 +297,7 @@ namespace Ogre
         // Don't return to caller until dialog dismissed
         int i;
         dlg = this;
-        
+
         i = DialogBox(mHInstance, MAKEINTRESOURCE(IDD_DLG_CONFIG), NULL, DlgProc);
 
         if (i == -1)

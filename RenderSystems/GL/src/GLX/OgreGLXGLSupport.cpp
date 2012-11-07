@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -160,6 +160,9 @@ namespace Ogre
 		ConfigOption optFSAA;
 		ConfigOption optRTTMode;
 		ConfigOption optSRGB;
+#ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
+		ConfigOption optEnableFixedPipeline;
+#endif
 		
 		optFullScreen.name = "Full Screen";
 		optFullScreen.immutable = false;
@@ -181,6 +184,14 @@ namespace Ogre
 		
 		optSRGB.name = "sRGB Gamma Conversion";
 		optSRGB.immutable = false;
+
+#ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
+		optEnableFixedPipeline.name = "Fixed Pipeline Enabled";
+		optEnableFixedPipeline.possibleValues.push_back( "Yes" );
+		optEnableFixedPipeline.possibleValues.push_back( "No" );
+		optEnableFixedPipeline.currentValue = "Yes";
+		optEnableFixedPipeline.immutable = false;
+#endif
 
 		optFullScreen.possibleValues.push_back("No");
 		optFullScreen.possibleValues.push_back("Yes");
@@ -251,6 +262,9 @@ namespace Ogre
 		mOptions[optRTTMode.name] = optRTTMode;
 		mOptions[optFSAA.name] = optFSAA;
 		mOptions[optSRGB.name] = optSRGB;
+#ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
+		mOptions[optEnableFixedPipeline.name] = optEnableFixedPipeline;
+#endif
 		
 		refreshConfig();
 	}
@@ -274,7 +288,7 @@ namespace Ogre
 				
 				if (mode == optVideoMode->second.currentValue)
 				{
-					String frequency = StringConverter::toString(value->second) + " MHz";
+					String frequency = StringConverter::toString(value->second) + " Hz";
 					
 					optDisplayFrequency->second.possibleValues.push_back(frequency);
 				}
@@ -287,7 +301,7 @@ namespace Ogre
 			else
 			{
 				optVideoMode->second.currentValue = StringConverter::toString(mVideoModes[0].first.first,4) + " x " + StringConverter::toString(mVideoModes[0].first.second,4);
-				optDisplayFrequency->second.currentValue = StringConverter::toString(mVideoModes[0].second) + " MHz";
+				optDisplayFrequency->second.currentValue = StringConverter::toString(mVideoModes[0].second) + " Hz";
 			}
 		}
 	}
@@ -365,6 +379,14 @@ namespace Ogre
 			if((opt = mOptions.find("sRGB Gamma Conversion")) != end)
 				miscParams["gamma"] = opt->second.currentValue;
 			
+#ifdef RTSHADER_SYSTEM_BUILD_CORE_SHADERS
+			opt = mOptions.find("Fixed Pipeline Enabled");
+			if (opt == mOptions.end())
+				OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, "Can't find Fixed Pipeline enabled options!", "Win32GLSupport::createWindow");
+			bool enableFixedPipeline = (opt->second.currentValue == "Yes");
+			renderSystem->setFixedPipelineEnabled(enableFixedPipeline);
+#endif
+
 			window = renderSystem->_createRenderWindow(windowTitle, w, h, fullscreen, &miscParams);
 		} 
 		
@@ -688,7 +710,10 @@ namespace Ogre
 		Image image;
 		int width, height;
 		char* imageData;
-		
+                
+                if (! Ogre::ResourceGroupManager::getSingleton().resourceExists(ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, name)) 
+                    return false;
+                
 		try 
 		{
 			// Try to load image
@@ -930,7 +955,7 @@ namespace Ogre
 				
 				mCurrentMode = *newMode;
 				
-				LogManager::getSingleton().logMessage("Entered video mode " + StringConverter::toString(mCurrentMode.first.first) + "x" + StringConverter::toString(mCurrentMode.first.second) + " @ " + StringConverter::toString(mCurrentMode.second) + "MHz");
+				LogManager::getSingleton().logMessage("Entered video mode " + StringConverter::toString(mCurrentMode.first.first) + "x" + StringConverter::toString(mCurrentMode.first.second) + " @ " + StringConverter::toString(mCurrentMode.second) + "Hz");
 			}
 		}
 	}

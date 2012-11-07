@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,18 +37,6 @@ namespace Ogre
 	class D3D11Mappings
 	{
 	public:
-		/// enum identifying D3D11 tex. types
-		enum eD3DTexType
-		{
-			/// standard texture
-			D3D_TEX_TYPE_NORMAL,
-			/// cube texture
-			D3D_TEX_TYPE_CUBE,
-			/// volume texture
-			D3D_TEX_TYPE_VOLUME,
-			/// just to have it...
-			D3D_TEX_TYPE_NONE
-		};
 
 		/// enum identifying D3D11 filter usage type
 		enum eD3DFilterUsage
@@ -90,10 +78,6 @@ namespace Ogre
 		/// return a D3D11 state type for Ogre FilterType value
 		static DWORD get(FilterType ft);
 		static D3D11_FILTER get(const FilterOptions minification, const FilterOptions magnification, const FilterOptions mips, const bool comparison = false);
-		/// return a D3D11 filter option for Ogre FilterType & FilterOption value
-		//static DWORD get(FilterType ft, FilterOptions fo, const D3DCAPS9& devCaps, eD3DTexType texType);
-		/// return the D3DtexType equivalent of a Ogre tex. type
-		static eD3DTexType get(TextureType ogreTexType);
 		/// return the combination of D3DUSAGE values for Ogre buffer usage
 		static DWORD get(HardwareBuffer::Usage usage);
 		/// Get lock options

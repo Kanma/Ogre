@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,8 +34,8 @@ THE SOFTWARE.
 #include "OgreLogManager.h"
 #include "ATI_FS_GLGpuProgram.h"
 
-using namespace Ogre;
 
+namespace Ogre {
 
 ATI_FS_GLGpuProgram::ATI_FS_GLGpuProgram(ResourceManager* creator, 
         const String& name, ResourceHandle handle, 
@@ -122,7 +122,7 @@ void ATI_FS_GLGpuProgram::loadFromSource(void)
     if(!Error) { 
 		glBindFragmentShaderATI(mProgramID);
 		glBeginFragmentShaderATI();
-			// compile was successfull so send the machine instructions thru GL to GPU
+			// compile was successful so send the machine instructions thru GL to GPU
 			Error = !PS1_4Assembler.bindAllMachineInstToFragmentShader();
         glEndFragmentShaderATI();
 
@@ -136,7 +136,7 @@ void ATI_FS_GLGpuProgram::loadFromSource(void)
     }
     else
 	{
-		// an error occured when compiling the ps_1_4 source code
+		// an error occurred when compiling the ps_1_4 source code
 		char buff[50];
         sprintf(buff,"error on line %d in pixel shader source\n", PS1_4Assembler.mCurrentLine);
 
@@ -150,3 +150,4 @@ void ATI_FS_GLGpuProgram::loadFromSource(void)
 
 }
 
+}

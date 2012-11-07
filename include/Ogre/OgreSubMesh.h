@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,19 +34,18 @@ THE SOFTWARE.
 #include "OgreMaterial.h"
 #include "OgreRenderOperation.h"
 #include "OgreVertexBoneAssignment.h"
-#include "OgreProgressiveMesh.h"
 #include "OgreAnimationTrack.h"
 #include "OgreResourceGroupManager.h"
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Resources
-	*  @{
-	*/
-	/** Defines a part of a complete mesh.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Resources
+    *  @{
+    */
+    /** Defines a part of a complete mesh.
         @remarks
             Meshes which make up the definition of a discrete 3D object
             are made up of potentially multiple parts. This is because
@@ -59,7 +58,7 @@ namespace Ogre {
             their material differences on a per-object basis if required.
             See the SubEntity class for more information.
     */
-	class _OgreExport SubMesh : public SubMeshAlloc
+    class _OgreExport SubMesh : public SubMeshAlloc
     {
         friend class Mesh;
         friend class MeshSerializerImpl;
@@ -110,7 +109,8 @@ namespace Ogre {
         typedef vector<unsigned short>::type IndexMap;
         IndexMap blendIndexToBoneIndexMap;
 
-        ProgressiveMesh::LODFaceList mLodFaceList;
+        typedef vector<IndexData*>::type LODFaceList;
+        LODFaceList mLodFaceList;
 
         /** A list of extreme points on the submesh (optional).
             @remarks
@@ -145,15 +145,15 @@ namespace Ogre {
         bool isMatInitialised(void) const;
 
         /** Returns a RenderOperation structure required to render this mesh.
-            @param 
+            @param
                 rend Reference to a RenderOperation structure to populate.
             @param
-                lodIndex The index of the LOD to use. 
+                lodIndex The index of the LOD to use.
         */
         void _getRenderOperation(RenderOperation& rend, ushort lodIndex = 0);
 
-        /** Assigns a vertex to a bone with a given weight, for skeletal animation. 
-        @remarks    
+        /** Assigns a vertex to a bone with a given weight, for skeletal animation.
+        @remarks
             This method is only valid after calling setSkeletonName.
             Since this is a one-off process there exists only 'addBoneAssignment' and
             'clearBoneAssignments' methods, no 'editBoneAssignment'. You should not need
@@ -166,7 +166,7 @@ namespace Ogre {
         */
         void addBoneAssignment(const VertexBoneAssignment& vertBoneAssign);
 
-        /** Removes all bone assignments for this mesh. 
+        /** Removes all bone assignments for this mesh.
         @par
             This method is for assigning weights to the dedicated geometry of the SubMesh. To assign
             weights to the shared Mesh geometry, see the equivalent methods on Mesh.
@@ -177,22 +177,22 @@ namespace Ogre {
         typedef multimap<size_t, VertexBoneAssignment>::type VertexBoneAssignmentList;
         typedef MapIterator<VertexBoneAssignmentList> BoneAssignmentIterator;
 
-        /** Gets an iterator for access all bone assignments. 
+        /** Gets an iterator for access all bone assignments.
         @remarks
             Only valid if this SubMesh has dedicated geometry.
         */
         BoneAssignmentIterator getBoneAssignmentIterator(void);
 
-		/** Gets a const reference to the list of bone assignments
-		*/
-		const VertexBoneAssignmentList& getBoneAssignments() { return mBoneAssignments; }
+        /** Gets a const reference to the list of bone assignments
+        */
+        const VertexBoneAssignmentList& getBoneAssignments() { return mBoneAssignments; }
 
 
         /** Must be called once to compile bone assignments into geometry buffer. */
         void _compileBoneAssignments(void);
 
         typedef ConstMapIterator<AliasTextureNamePairList> AliasTextureIterator;
-        /** Gets an constant iterator to access all texture alias names assigned to this submesh. 
+        /** Gets an constant iterator to access all texture alias names assigned to this submesh.
 
         */
         AliasTextureIterator getAliasTextureIterator(void) const;
@@ -209,7 +209,7 @@ namespace Ogre {
         void addTextureAlias(const String& aliasName, const String& textureName);
         /** Remove a specific texture alias name from the sub mesh
         @param
-            aliasName is the name of the alias to be removed.  If it is not found 
+            aliasName is the name of the alias to be removed.  If it is not found
             then it is ignored.
         */
         void removeTextureAlias(const String& aliasName);
@@ -230,14 +230,18 @@ namespace Ogre {
             The submesh's texture aliases must be setup prior to calling this method.
             If a new material has to be created, the subMesh autogenerates the new name.
             The new name is the old name + "_" + number.
-        @return 
+        @return
             True if texture aliases were applied and a new material was created.
         */
         bool updateMaterialUsingTextureAliases(void);
 
-		/** Get the type of any vertex animation used by dedicated geometry.
-		*/
-		VertexAnimationType getVertexAnimationType(void) const;
+        /** Get the type of any vertex animation used by dedicated geometry.
+        */
+        VertexAnimationType getVertexAnimationType(void) const;
+
+        /// Returns whether animation on dedicated vertex data includes normals
+        bool getVertexAnimationIncludesNormals() const { return mVertexAnimationIncludesNormals; }
+
 
         /** Generate the submesh extremes (@see extremityPoints).
         @param count
@@ -245,10 +249,10 @@ namespace Ogre {
         */
         void generateExtremes(size_t count);
 
-		/** Returns true(by default) if the submesh should be included in the mesh EdgeList, otherwise returns false.
-        */		
-		bool isBuildEdgesEnabled(void) const { return mBuildEdgesEnabled; }
-		void setBuildEdgesEnabled(bool b);
+        /** Returns true(by default) if the submesh should be included in the mesh EdgeList, otherwise returns false.
+        */
+        bool isBuildEdgesEnabled(void) const { return mBuildEdgesEnabled; }
+        void setBuildEdgesEnabled(bool b);
 
     protected:
 
@@ -266,19 +270,22 @@ namespace Ogre {
         /// Flag indicating that bone assignments need to be recompiled
         bool mBoneAssignmentsOutOfDate;
 
-		/// Type of vertex animation for dedicated vertex data (populated by Mesh)
-		mutable VertexAnimationType mVertexAnimationType;
+        /// Type of vertex animation for dedicated vertex data (populated by Mesh)
+        mutable VertexAnimationType mVertexAnimationType;
 
-		/// Is Build Edges Enabled
-		bool mBuildEdgesEnabled;
+        /// Whether normals are included in vertex animation keyframes
+        mutable bool mVertexAnimationIncludesNormals;
+
+        /// Is Build Edges Enabled
+        bool mBuildEdgesEnabled;
 
         /// Internal method for removing LOD data
         void removeLodLevels(void);
 
 
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 } // namespace
 

@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -59,6 +59,24 @@ namespace Ogre
 		
 		/** @copydoc see RenderWindow::setVisible */
 		void setVisible(bool visible);
+
+		/** @copydoc see RenderWindow::isHidden */
+		bool isHidden(void) const { return mHidden; }
+
+		/** @copydoc see RenderWindow::setHidden */
+		void setHidden(bool hidden);
+
+		/** @copydoc see RenderWindow::setVSyncEnabled */
+		void setVSyncEnabled(bool vsync);
+
+		/** @copydoc see RenderWindow::isVSyncEnabled */
+		bool isVSyncEnabled() const;
+
+		/** @copydoc see RenderWindow::setVSyncInterval */
+		void setVSyncInterval(unsigned int interval);
+
+		/** @copydoc see RenderWindow::getVSyncInterval */
+		unsigned int getVSyncInterval() const;
 		
 		/** @copydoc see RenderWindow::reposition */
 		void reposition(int left, int top);
@@ -91,9 +109,12 @@ namespace Ogre
 	private:
 		bool mClosed;
 		bool mVisible;
+		bool mHidden;
 		bool mIsTopLevel;
 		bool mIsExternal;
 		bool mIsExternalGLControl;
+		bool mVSync;
+		int mVSyncInterval;
 		
 		GLXGLSupport* mGLSupport;
 		::Window	  mWindow;

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,13 +37,13 @@ THE SOFTWARE.
 #include "OgrePlane.h"
 namespace Ogre
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-	/** Class encapsulating a standard 4x4 homogeneous matrix.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Math
+    *  @{
+    */
+    /** Class encapsulating a standard 4x4 homogeneous matrix.
         @remarks
             OGRE uses column vectors when applying matrix multiplications,
             This means a vector is represented as a single column, 4-row
@@ -66,7 +66,7 @@ namespace Ogre
             right-to-left matrix multiplication, (OGRE transposes matrices it
             passes to D3D to compensate).
         @par
-            The generic form M * V which shows the layout of the matrix 
+            The generic form M * V which shows the layout of the matrix
             entries is shown below:
             <pre>
                 [ m[0][0]  m[0][1]  m[0][2]  m[0][3] ]   {x}
@@ -127,7 +127,7 @@ namespace Ogre
 
         /** Creates a standard 4x4 transformation matrix with a zero translation part from a rotation/scaling Quaternion.
          */
-        
+
         inline Matrix4(const Quaternion& rot)
         {
           Matrix3 m3x3;
@@ -135,31 +135,31 @@ namespace Ogre
           operator=(IDENTITY);
           operator=(m3x3);
         }
-        
 
-		/** Exchange the contents of this matrix with another. 
-		*/
-		inline void swap(Matrix4& other)
-		{
-			std::swap(m[0][0], other.m[0][0]);
-			std::swap(m[0][1], other.m[0][1]);
-			std::swap(m[0][2], other.m[0][2]);
-			std::swap(m[0][3], other.m[0][3]);
-			std::swap(m[1][0], other.m[1][0]);
-			std::swap(m[1][1], other.m[1][1]);
-			std::swap(m[1][2], other.m[1][2]);
-			std::swap(m[1][3], other.m[1][3]);
-			std::swap(m[2][0], other.m[2][0]);
-			std::swap(m[2][1], other.m[2][1]);
-			std::swap(m[2][2], other.m[2][2]);
-			std::swap(m[2][3], other.m[2][3]);
-			std::swap(m[3][0], other.m[3][0]);
-			std::swap(m[3][1], other.m[3][1]);
-			std::swap(m[3][2], other.m[3][2]);
-			std::swap(m[3][3], other.m[3][3]);
-		}
 
-		inline Real* operator [] ( size_t iRow )
+        /** Exchange the contents of this matrix with another.
+        */
+        inline void swap(Matrix4& other)
+        {
+            std::swap(m[0][0], other.m[0][0]);
+            std::swap(m[0][1], other.m[0][1]);
+            std::swap(m[0][2], other.m[0][2]);
+            std::swap(m[0][3], other.m[0][3]);
+            std::swap(m[1][0], other.m[1][0]);
+            std::swap(m[1][1], other.m[1][1]);
+            std::swap(m[1][2], other.m[1][2]);
+            std::swap(m[1][3], other.m[1][3]);
+            std::swap(m[2][0], other.m[2][0]);
+            std::swap(m[2][1], other.m[2][1]);
+            std::swap(m[2][2], other.m[2][2]);
+            std::swap(m[2][3], other.m[2][3]);
+            std::swap(m[3][0], other.m[3][0]);
+            std::swap(m[3][1], other.m[3][1]);
+            std::swap(m[3][2], other.m[3][2]);
+            std::swap(m[3][3], other.m[3][3]);
+        }
+
+        inline Real* operator [] ( size_t iRow )
         {
             assert( iRow < 4 );
             return m[iRow];
@@ -206,7 +206,7 @@ namespace Ogre
 
         /** Vector transformation using '*'.
             @remarks
-                Transforms the given 3-D vector by the matrix, projecting the 
+                Transforms the given 3-D vector by the matrix, projecting the
                 result back into <i>w</i> = 1.
             @note
                 This means that the initial <i>w</i> is considered to be 1.0,
@@ -228,7 +228,7 @@ namespace Ogre
         inline Vector4 operator * (const Vector4& v) const
         {
             return Vector4(
-                m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w, 
+                m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w,
                 m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3] * v.w,
                 m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3] * v.w,
                 m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] * v.w
@@ -237,13 +237,13 @@ namespace Ogre
         inline Plane operator * (const Plane& p) const
         {
             Plane ret;
-			Matrix4 invTrans = inverse().transpose();
-			Vector4 v4( p.normal.x, p.normal.y, p.normal.z, p.d );
-			v4 = invTrans * v4;
-			ret.normal.x = v4.x; 
-			ret.normal.y = v4.y; 
-			ret.normal.z = v4.z;
-			ret.d = v4.w / ret.normal.normalise();
+            Matrix4 invTrans = inverse().transpose();
+            Vector4 v4( p.normal.x, p.normal.y, p.normal.z, p.d );
+            v4 = invTrans * v4;
+            ret.normal.x = v4.x;
+            ret.normal.y = v4.y;
+            ret.normal.z = v4.z;
+            ret.d = v4.w / ret.normal.normalise();
 
             return ret;
         }
@@ -310,7 +310,7 @@ namespace Ogre
         */
         inline bool operator == ( const Matrix4& m2 ) const
         {
-            if( 
+            if(
                 m[0][0] != m2.m[0][0] || m[0][1] != m2.m[0][1] || m[0][2] != m2.m[0][2] || m[0][3] != m2.m[0][3] ||
                 m[1][0] != m2.m[1][0] || m[1][1] != m2.m[1][1] || m[1][2] != m2.m[1][2] || m[1][3] != m2.m[1][3] ||
                 m[2][0] != m2.m[2][0] || m[2][1] != m2.m[2][1] || m[2][2] != m2.m[2][2] || m[2][3] != m2.m[2][3] ||
@@ -323,7 +323,7 @@ namespace Ogre
         */
         inline bool operator != ( const Matrix4& m2 ) const
         {
-            if( 
+            if(
                 m[0][0] != m2.m[0][0] || m[0][1] != m2.m[0][1] || m[0][2] != m2.m[0][2] || m[0][3] != m2.m[0][3] ||
                 m[1][0] != m2.m[1][0] || m[1][1] != m2.m[1][1] || m[1][2] != m2.m[1][2] || m[1][3] != m2.m[1][3] ||
                 m[2][0] != m2.m[2][0] || m[2][1] != m2.m[2][1] || m[2][2] != m2.m[2][2] || m[2][3] != m2.m[2][3] ||
@@ -369,7 +369,7 @@ namespace Ogre
         {
           return Vector3(m[0][3], m[1][3], m[2][3]);
         }
-        
+
 
         /** Builds a translation matrix
         */
@@ -457,7 +457,7 @@ namespace Ogre
             return r;
         }
 
-        /** Extracts the rotation / scaling part of the Matrix as a 3x3 matrix. 
+        /** Extracts the rotation / scaling part of the Matrix as a 3x3 matrix.
         @param m3x3 Destination Matrix3
         */
         inline void extract3x3Matrix(Matrix3& m3x3) const
@@ -474,30 +474,30 @@ namespace Ogre
 
         }
 
-		/** Determines if this matrix involves a scaling. */
-		inline bool hasScale() const
-		{
-			// check magnitude of column vectors (==local axes)
-			Real t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
-				return true;
-			t = m[0][1] * m[0][1] + m[1][1] * m[1][1] + m[2][1] * m[2][1];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
-				return true;
-			t = m[0][2] * m[0][2] + m[1][2] * m[1][2] + m[2][2] * m[2][2];
-			if (!Math::RealEqual(t, 1.0, (Real)1e-04))
-				return true;
+        /** Determines if this matrix involves a scaling. */
+        inline bool hasScale() const
+        {
+            // check magnitude of column vectors (==local axes)
+            Real t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
+            if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+                return true;
+            t = m[0][1] * m[0][1] + m[1][1] * m[1][1] + m[2][1] * m[2][1];
+            if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+                return true;
+            t = m[0][2] * m[0][2] + m[1][2] * m[1][2] + m[2][2] * m[2][2];
+            if (!Math::RealEqual(t, 1.0, (Real)1e-04))
+                return true;
 
-			return false;
-		}
+            return false;
+        }
 
-		/** Determines if this matrix involves a negative scaling. */
-		inline bool hasNegativeScale() const
-		{
-			return determinant() < 0;
-		}
+        /** Determines if this matrix involves a negative scaling. */
+        inline bool hasNegativeScale() const
+        {
+            return determinant() < 0;
+        }
 
-		/** Extracts the rotation / scaling part as a quaternion from the Matrix.
+        /** Extracts the rotation / scaling part as a quaternion from the Matrix.
          */
         inline Quaternion extractQuaternion() const
         {
@@ -506,8 +506,9 @@ namespace Ogre
           return Quaternion(m3x3);
         }
 
-        static const Matrix4 ZERO;
-        static const Matrix4 IDENTITY;
+    static const Matrix4 ZERO;
+    static const Matrix4 ZEROAFFINE;
+    static const Matrix4 IDENTITY;
         /** Useful little matrix which takes 2D clipspace {-1, 1} to {0,1}
             and inverts the Y. */
         static const Matrix4 CLIPSPACE2DTOIMAGESPACE;
@@ -527,7 +528,7 @@ namespace Ogre
             ( std::ostream& o, const Matrix4& mat )
         {
             o << "Matrix4(";
-			for (size_t i = 0; i < 4; ++i)
+            for (size_t i = 0; i < 4; ++i)
             {
                 o << " row" << (unsigned)i << "{";
                 for(size_t j = 0; j < 4; ++j)
@@ -539,10 +540,10 @@ namespace Ogre
             o << ")";
             return o;
         }
-		
-		Matrix4 adjoint() const;
-		Real determinant() const;
-		Matrix4 inverse() const;
+
+        Matrix4 adjoint() const;
+        Real determinant() const;
+        Matrix4 inverse() const;
 
         /** Building a Matrix4 from orientation / scale / position.
         @remarks
@@ -608,7 +609,7 @@ namespace Ogre
 
         /** 3-D Vector transformation specially for an affine matrix.
             @remarks
-                Transforms the given 3-D vector by the matrix, projecting the 
+                Transforms the given 3-D vector by the matrix, projecting the
                 result back into <i>w</i> = 1.
             @note
                 The matrix must be an affine matrix. @see Matrix4::isAffine.
@@ -618,7 +619,7 @@ namespace Ogre
             assert(isAffine());
 
             return Vector3(
-                    m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3], 
+                    m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3],
                     m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3],
                     m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3]);
         }
@@ -632,7 +633,7 @@ namespace Ogre
             assert(isAffine());
 
             return Vector4(
-                m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w, 
+                m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w,
                 m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3] * v.w,
                 m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3] * v.w,
                 v.w);
@@ -640,7 +641,7 @@ namespace Ogre
     };
 
     /* Removed from Vector4 and made a non-member here because otherwise
-       OgreMatrix4.h and OgreVector4.h have to try to include and inline each 
+       OgreMatrix4.h and OgreVector4.h have to try to include and inline each
        other, which frankly doesn't work ;)
    */
     inline Vector4 operator * (const Vector4& v, const Matrix4& mat)
@@ -652,8 +653,8 @@ namespace Ogre
             v.x*mat[0][3] + v.y*mat[1][3] + v.z*mat[2][3] + v.w*mat[3][3]
             );
     }
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 #endif

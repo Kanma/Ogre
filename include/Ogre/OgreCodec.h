@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,12 +36,12 @@ THE SOFTWARE.
 #include "OgreException.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup General
+    *  @{
+    */
 
     /** Abstract class that defines a 'codec'.
         @remarks
@@ -52,13 +52,13 @@ namespace Ogre {
             The codec concept is a pretty generic one - you can easily understand
             how it can be used for images, sounds, archives, even compressed data.
     */
-	class _OgreExport Codec : public CodecAlloc
+    class _OgreExport Codec : public CodecAlloc
     {
     protected:
-        typedef map< String, Codec* >::type CodecList; 
+        typedef map< String, Codec* >::type CodecList;
         /** A map that contains all the registered codecs.
         */
-        static CodecList ms_mapCodecs;
+        static CodecList msMapCodecs;
 
     public:
         class _OgrePrivate CodecData : public CodecAlloc
@@ -75,38 +75,38 @@ namespace Ogre {
         typedef ConstMapIterator<CodecList> CodecIterator;
 
     public:
-    	virtual ~Codec();
-    	
+        virtual ~Codec();
+
         /** Registers a new codec in the database.
         */
         static void registerCodec( Codec *pCodec )
         {
-			CodecList::iterator i = ms_mapCodecs.find(pCodec->getType());
-			if (i != ms_mapCodecs.end())
-				OGRE_EXCEPT(Exception::ERR_DUPLICATE_ITEM, 
-					pCodec->getType() + " already has a registered codec. ", __FUNCTION__);
+            CodecList::iterator i = msMapCodecs.find(pCodec->getType());
+            if (i != msMapCodecs.end())
+                OGRE_EXCEPT(Exception::ERR_DUPLICATE_ITEM,
+                    pCodec->getType() + " already has a registered codec. ", __FUNCTION__);
 
-            ms_mapCodecs[pCodec->getType()] = pCodec;
+            msMapCodecs[pCodec->getType()] = pCodec;
         }
 
-		/** Return whether a codec is registered already. 
-		*/
-		static bool isCodecRegistered( const String& codecType )
-		{
-			return ms_mapCodecs.find(codecType) != ms_mapCodecs.end();
-		}
+        /** Return whether a codec is registered already.
+        */
+        static bool isCodecRegistered( const String& codecType )
+        {
+            return msMapCodecs.find(codecType) != msMapCodecs.end();
+        }
 
-		/** Unregisters a codec from the database.
+        /** Unregisters a codec from the database.
         */
         static void unRegisterCodec( Codec *pCodec )
         {
-            ms_mapCodecs.erase(pCodec->getType());
+            msMapCodecs.erase(pCodec->getType());
         }
 
         /** Gets the iterator for the registered codecs. */
         static CodecIterator getCodecIterator(void)
         {
-            return CodecIterator(ms_mapCodecs.begin(), ms_mapCodecs.end());
+            return CodecIterator(msMapCodecs.begin(), msMapCodecs.end());
         }
 
         /** Gets the file extension list for the registered codecs. */
@@ -115,13 +115,13 @@ namespace Ogre {
         /** Gets the codec registered for the passed in file extension. */
         static Codec* getCodec(const String& extension);
 
-		/** Gets the codec that can handle the given 'magic' identifier. 
-		@param magicNumberPtr Pointer to a stream of bytes which should identify the file.
-			Note that this may be more than needed - each codec may be looking for 
-			a different size magic number.
-		@param maxbytes The number of bytes passed
-		*/
-		static Codec* getCodec(char *magicNumberPtr, size_t maxbytes);
+        /** Gets the codec that can handle the given 'magic' identifier.
+        @param magicNumberPtr Pointer to a stream of bytes which should identify the file.
+            Note that this may be more than needed - each codec may be looking for
+            a different size magic number.
+        @param maxbytes The number of bytes passed
+        */
+        static Codec* getCodec(char *magicNumberPtr, size_t maxbytes);
 
         /** Codes the data in the input stream and saves the result in the output
             stream.
@@ -153,25 +153,25 @@ namespace Ogre {
         */
         virtual String getDataType() const = 0;
 
-		/** Returns whether a magic number header matches this codec.
-		@param magicNumberPtr Pointer to a stream of bytes which should identify the file.
-			Note that this may be more than needed - each codec may be looking for 
-			a different size magic number.
-		@param maxbytes The number of bytes passed
-		*/
-		virtual bool magicNumberMatch(const char *magicNumberPtr, size_t maxbytes) const 
-		{ return !magicNumberToFileExt(magicNumberPtr, maxbytes).empty(); }
-		/** Maps a magic number header to a file extension, if this codec recognises it.
-		@param magicNumberPtr Pointer to a stream of bytes which should identify the file.
-			Note that this may be more than needed - each codec may be looking for 
-			a different size magic number.
-		@param maxbytes The number of bytes passed
-		@returns A blank string if the magic number was unknown, or a file extension.
-		*/
-		virtual String magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const = 0;
+        /** Returns whether a magic number header matches this codec.
+        @param magicNumberPtr Pointer to a stream of bytes which should identify the file.
+            Note that this may be more than needed - each codec may be looking for
+            a different size magic number.
+        @param maxbytes The number of bytes passed
+        */
+        virtual bool magicNumberMatch(const char *magicNumberPtr, size_t maxbytes) const
+        { return !magicNumberToFileExt(magicNumberPtr, maxbytes).empty(); }
+        /** Maps a magic number header to a file extension, if this codec recognises it.
+        @param magicNumberPtr Pointer to a stream of bytes which should identify the file.
+            Note that this may be more than needed - each codec may be looking for
+            a different size magic number.
+        @param maxbytes The number of bytes passed
+        @return A blank string if the magic number was unknown, or a file extension.
+        */
+        virtual String magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const = 0;
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 } // namespace
 

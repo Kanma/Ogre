@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,13 +35,25 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Animation
-	*  @{
-	*/
-	/** Class for serialising skeleton data to/from an OGRE .skeleton file.
+    /// Skeleton compatibility versions
+    enum SkeletonVersion
+    {
+        /// OGRE version v1.0+
+        SKELETON_VERSION_1_0,
+        /// OGRE version v1.8+
+        SKELETON_VERSION_1_8,
+
+        /// Latest version available
+        SKELETON_VERSION_LATEST = 100
+    };
+
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Animation
+    *  @{
+    */
+    /** Class for serialising skeleton data to/from an OGRE .skeleton file.
     @remarks
         This class allows exporters to write OGRE .skeleton files easily, and allows the
         OGRE engine to import .skeleton files into instantiated OGRE Skeleton objects.
@@ -55,26 +67,37 @@ namespace Ogre {
     */
     class _OgreExport SkeletonSerializer : public Serializer
     {
+
     public:
         SkeletonSerializer();
         virtual ~SkeletonSerializer();
 
 
-        /** Exports a skeleton to the file specified. 
+        /** Exports a skeleton to the file specified.
         @remarks
             This method takes an externally created Skeleton object, and exports both it
             and animations it uses to a .skeleton file.
         @param pSkeleton Weak reference to the Skeleton to export
         @param filename The destination filename
-		@param endianMode The endian mode to write in
+        @param endianMode The endian mode to write in
         */
         void exportSkeleton(const Skeleton* pSkeleton, const String& filename,
-			Endian endianMode = ENDIAN_NATIVE);
+            SkeletonVersion ver = SKELETON_VERSION_LATEST, Endian endianMode = ENDIAN_NATIVE);
 
+        /** Exports a skeleton to the stream specified.
+        @remarks
+            This method takes an externally created Skeleton object, and exports both it
+            and animations it uses to a .skeleton file.
+        @param pSkeleton Weak reference to the Skeleton to export
+        @param stream The destination stream
+        @param endianMode The endian mode to write in
+        */
+        void exportSkeleton(const Skeleton* pSkeleton, DataStreamPtr stream,
+            SkeletonVersion ver = SKELETON_VERSION_LATEST, Endian endianMode = ENDIAN_NATIVE);
         /** Imports Skeleton and animation data from a .skeleton file DataStream.
         @remarks
             This method imports data from a DataStream opened from a .skeleton file and places it's
-            contents into the Skeleton object which is passed in. 
+            contents into the Skeleton object which is passed in.
         @param stream The DataStream holding the .skeleton data. Must be initialised (pos at the start of the buffer).
         @param pDest Weak reference to the Skeleton object which will receive the data. Should be blank already.
         */
@@ -83,23 +106,27 @@ namespace Ogre {
         // TODO: provide Cal3D importer?
 
     protected:
+
+        void setWorkingVersion(SkeletonVersion ver);
+
         // Internal export methods
-        void writeSkeleton(const Skeleton* pSkel);
+        void writeSkeleton(const Skeleton* pSkel, SkeletonVersion ver);
         void writeBone(const Skeleton* pSkel, const Bone* pBone);
         void writeBoneParent(const Skeleton* pSkel, unsigned short boneId, unsigned short parentId);
-        void writeAnimation(const Skeleton* pSkel, const Animation* anim);
+        void writeAnimation(const Skeleton* pSkel, const Animation* anim, SkeletonVersion ver);
         void writeAnimationTrack(const Skeleton* pSkel, const NodeAnimationTrack* track);
         void writeKeyFrame(const Skeleton* pSkel, const TransformKeyFrame* key);
-		void writeSkeletonAnimationLink(const Skeleton* pSkel, 
-			const LinkedSkeletonAnimationSource& link);
+        void writeSkeletonAnimationLink(const Skeleton* pSkel,
+            const LinkedSkeletonAnimationSource& link);
 
         // Internal import methods
+        void readFileHeader(DataStreamPtr& stream);
         void readBone(DataStreamPtr& stream, Skeleton* pSkel);
         void readBoneParent(DataStreamPtr& stream, Skeleton* pSkel);
         void readAnimation(DataStreamPtr& stream, Skeleton* pSkel);
         void readAnimationTrack(DataStreamPtr& stream, Animation* anim, Skeleton* pSkel);
         void readKeyFrame(DataStreamPtr& stream, NodeAnimationTrack* track, Skeleton* pSkel);
-		void readSkeletonAnimationLink(DataStreamPtr& stream, Skeleton* pSkel);
+        void readSkeletonAnimationLink(DataStreamPtr& stream, Skeleton* pSkel);
 
         size_t calcBoneSize(const Skeleton* pSkel, const Bone* pBone);
         size_t calcBoneSizeWithoutScale(const Skeleton* pSkel, const Bone* pBone);
@@ -108,15 +135,15 @@ namespace Ogre {
         size_t calcAnimationTrackSize(const Skeleton* pSkel, const NodeAnimationTrack* pTrack);
         size_t calcKeyFrameSize(const Skeleton* pSkel, const TransformKeyFrame* pKey);
         size_t calcKeyFrameSizeWithoutScale(const Skeleton* pSkel, const TransformKeyFrame* pKey);
-		size_t calcSkeletonAnimationLinkSize(const Skeleton* pSkel, 
-			const LinkedSkeletonAnimationSource& link);
+        size_t calcSkeletonAnimationLinkSize(const Skeleton* pSkel,
+            const LinkedSkeletonAnimationSource& link);
 
 
 
 
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 

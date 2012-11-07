@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,10 +38,7 @@ THE SOFTWARE.
 #include "OgreException.h"
 #include "OgreRoot.h"
 #include "OgreRenderSystem.h"
-
-#if OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
-#include "macUtils.h"
-#endif
+#include "OgreProfiler.h"
 
 namespace Ogre {
 
@@ -49,20 +46,22 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     Camera::Camera( const String& name, SceneManager* sm)
         : Frustum(name),
-		mSceneMgr(sm),
-		mOrientation(Quaternion::IDENTITY),
-		mPosition(Vector3::ZERO),
-		mSceneDetail(PM_SOLID),
-		mAutoTrackTarget(0),
-		mAutoTrackOffset(Vector3::ZERO),
-		mSceneLodFactor(1.0f),
-		mSceneLodFactorInv(1.0f),
-		mWindowSet(false),
-		mLastViewport(0),
-		mAutoAspectRatio(false),
-		mCullFrustum(0),
-		mUseRenderingDistance(true),
-		mLodCamera(0)
+        mSceneMgr(sm),
+        mOrientation(Quaternion::IDENTITY),
+        mPosition(Vector3::ZERO),
+        mSceneDetail(PM_SOLID),
+        mAutoTrackTarget(0),
+        mAutoTrackOffset(Vector3::ZERO),
+        mSceneLodFactor(1.0f),
+        mSceneLodFactorInv(1.0f),
+        mWindowSet(false),
+        mLastViewport(0),
+        mAutoAspectRatio(false),
+        mCullFrustum(0),
+        mUseRenderingDistance(true),
+        mLodCamera(0),
+        mUseMinPixelSize(false),
+        mPixelDisplayRatio(0)
     {
 
         // Reasonable defaults to camera params
@@ -92,10 +91,11 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     Camera::~Camera()
     {
-		for (ListenerList::iterator i = mListeners.begin(); i != mListeners.end(); ++i)
-		{
-			(*i)->cameraDestroyed(this);
-		}
+        ListenerList listenersCopy = mListeners;
+        for (ListenerList::iterator i = listenersCopy.begin(); i != listenersCopy.end(); ++i)
+        {
+            (*i)->cameraDestroyed(this);
+        }
     }
     //-----------------------------------------------------------------------
     SceneManager* Camera::getSceneManager(void) const
@@ -174,7 +174,7 @@ namespace Ogre {
         Vector3 zAdjustVec = -vec;
         zAdjustVec.normalise();
 
-		Quaternion targetWorldOrientation;
+        Quaternion targetWorldOrientation;
 
 
         if( mYawFixed )
@@ -195,7 +195,7 @@ namespace Ogre {
             updateView();
             mRealOrientation.ToAxes(axes);
             Quaternion rotQuat;
-            if ( (axes[2]+zAdjustVec).squaredLength() <  0.00005f) 
+            if ( (axes[2]+zAdjustVec).squaredLength() <  0.00005f)
             {
                 // Oops, a 180 degree turn (infinite possible rotation axes)
                 // Default to yaw i.e. use current UP
@@ -216,10 +216,10 @@ namespace Ogre {
             mOrientation =
                 mParentNode->_getDerivedOrientation().Inverse() * targetWorldOrientation;
         }
-		else
-		{
-			mOrientation = targetWorldOrientation;
-		}
+        else
+        {
+            mOrientation = targetWorldOrientation;
+        }
 
         // TODO If we have a fixed yaw axis, we mustn't break it by using the
         // shortest arc because this will sometimes cause a relative yaw
@@ -317,9 +317,9 @@ namespace Ogre {
     {
         // Note the order of the mult, i.e. q comes after
 
-		// Normalise the quat to avoid cumulative problems with precision
-		Quaternion qnorm = q;
-		qnorm.normalise();
+        // Normalise the quat to avoid cumulative problems with precision
+        Quaternion qnorm = q;
+        qnorm.normalise();
         mOrientation = qnorm * mOrientation;
 
         invalidateView();
@@ -354,7 +354,7 @@ namespace Ogre {
         }
 
         // Deriving reflection from linked plane?
-        if (mReflect && mLinkedReflectPlane && 
+        if (mReflect && mLinkedReflectPlane &&
             !(mLastLinkedReflectionPlane == mLinkedReflectPlane->_getDerivedPlane()))
         {
             mReflectPlane = mLinkedReflectPlane->_getDerivedPlane();
@@ -370,10 +370,10 @@ namespace Ogre {
             if (mReflect)
             {
                 // Calculate reflected orientation, use up-vector as fallback axis.
-				Vector3 dir = mRealOrientation * Vector3::NEGATIVE_UNIT_Z;
-				Vector3 rdir = dir.reflect(mReflectPlane.normal);
+                Vector3 dir = mRealOrientation * Vector3::NEGATIVE_UNIT_Z;
+                Vector3 rdir = dir.reflect(mReflectPlane.normal);
                 Vector3 up = mRealOrientation * Vector3::UNIT_Y;
-				mDerivedOrientation = dir.getRotationTo(rdir, up) * mRealOrientation;
+                mDerivedOrientation = dir.getRotationTo(rdir, up) * mRealOrientation;
 
                 // Calculate reflected position.
                 mDerivedPosition = mReflectMatrix.transformAffine(mRealPosition);
@@ -404,31 +404,51 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     void Camera::_renderScene(Viewport *vp, bool includeOverlays)
     {
-		for (ListenerList::iterator i = mListeners.begin(); i != mListeners.end(); ++i)
-		{
-			(*i)->cameraPreRenderScene(this);
-		}
+        OgreProfileBeginGPUEvent("Camera: " + getName());
 
+        //update the pixel display ratio
+        if (mProjType == Ogre::PT_PERSPECTIVE)
+        {
+            mPixelDisplayRatio = (2 * Ogre::Math::Tan(mFOVy * 0.5f)) / vp->getActualHeight();
+        }
+        else
+        {
+            mPixelDisplayRatio = (mTop - mBottom) / vp->getActualHeight();
+        }
+
+        //notify prerender scene
+        ListenerList listenersCopy = mListeners;
+        for (ListenerList::iterator i = listenersCopy.begin(); i != listenersCopy.end(); ++i)
+        {
+            (*i)->cameraPreRenderScene(this);
+        }
+
+        //render scene
         mSceneMgr->_renderScene(this, vp, includeOverlays);
 
-		for (ListenerList::iterator i = mListeners.begin(); i != mListeners.end(); ++i)
-		{
-			(*i)->cameraPostRenderScene(this);
-		}
-	}
-	//---------------------------------------------------------------------
-	void Camera::addListener(Listener* l)
-	{
-		if (std::find(mListeners.begin(), mListeners.end(), l) == mListeners.end())
-			mListeners.push_back(l);
-	}
-	//---------------------------------------------------------------------
-	void Camera::removeListener(Listener* l)
-	{
-		ListenerList::iterator i = std::find(mListeners.begin(), mListeners.end(), l);
-		if (i != mListeners.end())
-			mListeners.erase(i);
-	}
+        // Listener list may have change
+        listenersCopy = mListeners;
+
+        //notify postrender scene
+        for (ListenerList::iterator i = listenersCopy.begin(); i != listenersCopy.end(); ++i)
+        {
+            (*i)->cameraPostRenderScene(this);
+        }
+        OgreProfileEndGPUEvent("Camera: " + getName());
+    }
+    //---------------------------------------------------------------------
+    void Camera::addListener(Listener* l)
+    {
+        if (std::find(mListeners.begin(), mListeners.end(), l) == mListeners.end())
+            mListeners.push_back(l);
+    }
+    //---------------------------------------------------------------------
+    void Camera::removeListener(Listener* l)
+    {
+        ListenerList::iterator i = std::find(mListeners.begin(), mListeners.end(), l);
+        if (i != mListeners.end())
+            mListeners.erase(i);
+    }
     //-----------------------------------------------------------------------
     std::ostream& operator<<( std::ostream& o, const Camera& c )
     {
@@ -489,7 +509,7 @@ namespace Ogre {
     void Camera::setOrientation(const Quaternion& q)
     {
         mOrientation = q;
-		mOrientation.normalise();
+        mOrientation.normalise();
         invalidateView();
     }
     //-----------------------------------------------------------------------
@@ -555,12 +575,26 @@ namespace Ogre {
         return mRealOrientation * Vector3::UNIT_X;
     }
     //-----------------------------------------------------------------------
+    void Camera::getWorldTransforms(Matrix4* mat) const
+    {
+        updateView();
+
+        Vector3 scale(1.0, 1.0, 1.0);
+        if (mParentNode)
+          scale = mParentNode->_getDerivedScale();
+
+        mat->makeTransform(
+                mDerivedPosition,
+                scale,
+                mDerivedOrientation);
+    }
+    //-----------------------------------------------------------------------
     const String& Camera::getMovableType(void) const
     {
         return msMovableType;
     }
     //-----------------------------------------------------------------------
-    void Camera::setAutoTracking(bool enabled, SceneNode* target, 
+    void Camera::setAutoTracking(bool enabled, SceneNode* const target,
         const Vector3& offset)
     {
         if (enabled)
@@ -584,46 +618,46 @@ namespace Ogre {
         }
     }
     //-----------------------------------------------------------------------
-	void Camera::setLodBias(Real factor)
-	{
-		assert(factor > 0.0f && "Bias factor must be > 0!");
-		mSceneLodFactor = factor;
-		mSceneLodFactorInv = 1.0f / factor;
-	}
+    void Camera::setLodBias(Real factor)
+    {
+        assert(factor > 0.0f && "Bias factor must be > 0!");
+        mSceneLodFactor = factor;
+        mSceneLodFactorInv = 1.0f / factor;
+    }
     //-----------------------------------------------------------------------
-	Real Camera::getLodBias(void) const
-	{
-		return mSceneLodFactor;
-	}
+    Real Camera::getLodBias(void) const
+    {
+        return mSceneLodFactor;
+    }
     //-----------------------------------------------------------------------
-	Real Camera::_getLodBiasInverse(void) const
-	{
-		return mSceneLodFactorInv;
-	}
-	//-----------------------------------------------------------------------
-	void Camera::setLodCamera(const Camera* lodCam)
-	{
-		if (lodCam == this)
-			mLodCamera = 0;
-		else
-			mLodCamera = lodCam;
-	}
-	//---------------------------------------------------------------------
-	const Camera* Camera::getLodCamera() const
-	{
-		return mLodCamera? mLodCamera : this;
-	}
+    Real Camera::_getLodBiasInverse(void) const
+    {
+        return mSceneLodFactorInv;
+    }
     //-----------------------------------------------------------------------
-	Ray Camera::getCameraToViewportRay(Real screenX, Real screenY) const
-	{
-		Ray ret;
-		getCameraToViewportRay(screenX, screenY, &ret);
-		return ret;
-	}
-	//---------------------------------------------------------------------
+    void Camera::setLodCamera(const Camera* lodCam)
+    {
+        if (lodCam == this)
+            mLodCamera = 0;
+        else
+            mLodCamera = lodCam;
+    }
+    //---------------------------------------------------------------------
+    const Camera* Camera::getLodCamera() const
+    {
+        return mLodCamera? mLodCamera : this;
+    }
+    //-----------------------------------------------------------------------
+    Ray Camera::getCameraToViewportRay(Real screenX, Real screenY) const
+    {
+        Ray ret;
+        getCameraToViewportRay(screenX, screenY, &ret);
+        return ret;
+    }
+    //---------------------------------------------------------------------
     void Camera::getCameraToViewportRay(Real screenX, Real screenY, Ray* outRay) const
     {
-		Matrix4 inverseVP = (getProjectionMatrix() * getViewMatrix(true)).inverse();
+        Matrix4 inverseVP = (getProjectionMatrix() * getViewMatrix(true)).inverse();
 
 #if OGRE_NO_VIEWPORT_ORIENTATIONMODE == 0
         // We need to convert screen point to our oriented viewport (temp solution)
@@ -633,102 +667,102 @@ namespace Ogre {
         if ((int)getOrientationMode()&1) screenY = 1.f - screenY;
 #endif
 
-		Real nx = (2.0f * screenX) - 1.0f;
-		Real ny = 1.0f - (2.0f * screenY);
-		Vector3 nearPoint(nx, ny, -1.f);
-		// Use midPoint rather than far point to avoid issues with infinite projection
-		Vector3 midPoint (nx, ny,  0.0f);
+        Real nx = (2.0f * screenX) - 1.0f;
+        Real ny = 1.0f - (2.0f * screenY);
+        Vector3 nearPoint(nx, ny, -1.f);
+        // Use midPoint rather than far point to avoid issues with infinite projection
+        Vector3 midPoint (nx, ny,  0.0f);
 
-		// Get ray origin and ray target on near plane in world space
-		Vector3 rayOrigin, rayTarget;
-		
-		rayOrigin = inverseVP * nearPoint;
-		rayTarget = inverseVP * midPoint;
+        // Get ray origin and ray target on near plane in world space
+        Vector3 rayOrigin, rayTarget;
 
-		Vector3 rayDirection = rayTarget - rayOrigin;
-		rayDirection.normalise();
+        rayOrigin = inverseVP * nearPoint;
+        rayTarget = inverseVP * midPoint;
 
-		outRay->setOrigin(rayOrigin);
-		outRay->setDirection(rayDirection);
-    } 
-	//---------------------------------------------------------------------
-	PlaneBoundedVolume Camera::getCameraToViewportBoxVolume(Real screenLeft, 
-		Real screenTop, Real screenRight, Real screenBottom, bool includeFarPlane)
-	{
-		PlaneBoundedVolume vol;
-		getCameraToViewportBoxVolume(screenLeft, screenTop, screenRight, screenBottom, 
-			&vol, includeFarPlane);
-		return vol;
+        Vector3 rayDirection = rayTarget - rayOrigin;
+        rayDirection.normalise();
 
-	}
-	//---------------------------------------------------------------------()
-	void Camera::getCameraToViewportBoxVolume(Real screenLeft, 
-		Real screenTop, Real screenRight, Real screenBottom, 
-		PlaneBoundedVolume* outVolume, bool includeFarPlane)
-	{
-		outVolume->planes.clear();
+        outRay->setOrigin(rayOrigin);
+        outRay->setDirection(rayDirection);
+    }
+    //---------------------------------------------------------------------
+    PlaneBoundedVolume Camera::getCameraToViewportBoxVolume(Real screenLeft,
+        Real screenTop, Real screenRight, Real screenBottom, bool includeFarPlane)
+    {
+        PlaneBoundedVolume vol;
+        getCameraToViewportBoxVolume(screenLeft, screenTop, screenRight, screenBottom,
+            &vol, includeFarPlane);
+        return vol;
 
-		if (mProjType == PT_PERSPECTIVE)
-		{
+    }
+    //---------------------------------------------------------------------()
+    void Camera::getCameraToViewportBoxVolume(Real screenLeft,
+        Real screenTop, Real screenRight, Real screenBottom,
+        PlaneBoundedVolume* outVolume, bool includeFarPlane)
+    {
+        outVolume->planes.clear();
 
-			// Use the corner rays to generate planes
-			Ray ul = getCameraToViewportRay(screenLeft, screenTop);
-			Ray ur = getCameraToViewportRay(screenRight, screenTop);
-			Ray bl = getCameraToViewportRay(screenLeft, screenBottom);
-			Ray br = getCameraToViewportRay(screenRight, screenBottom);
+        if (mProjType == PT_PERSPECTIVE)
+        {
+
+            // Use the corner rays to generate planes
+            Ray ul = getCameraToViewportRay(screenLeft, screenTop);
+            Ray ur = getCameraToViewportRay(screenRight, screenTop);
+            Ray bl = getCameraToViewportRay(screenLeft, screenBottom);
+            Ray br = getCameraToViewportRay(screenRight, screenBottom);
 
 
-			Vector3 normal;
-			// top plane
-			normal = ul.getDirection().crossProduct(ur.getDirection());
-			normal.normalise();
-			outVolume->planes.push_back(
-				Plane(normal, getDerivedPosition()));
+            Vector3 normal;
+            // top plane
+            normal = ul.getDirection().crossProduct(ur.getDirection());
+            normal.normalise();
+            outVolume->planes.push_back(
+                Plane(normal, getDerivedPosition()));
 
-			// right plane
-			normal = ur.getDirection().crossProduct(br.getDirection());
-			normal.normalise();
-			outVolume->planes.push_back(
-				Plane(normal, getDerivedPosition()));
+            // right plane
+            normal = ur.getDirection().crossProduct(br.getDirection());
+            normal.normalise();
+            outVolume->planes.push_back(
+                Plane(normal, getDerivedPosition()));
 
-			// bottom plane
-			normal = br.getDirection().crossProduct(bl.getDirection());
-			normal.normalise();
-			outVolume->planes.push_back(
-				Plane(normal, getDerivedPosition()));
+            // bottom plane
+            normal = br.getDirection().crossProduct(bl.getDirection());
+            normal.normalise();
+            outVolume->planes.push_back(
+                Plane(normal, getDerivedPosition()));
 
-			// left plane
-			normal = bl.getDirection().crossProduct(ul.getDirection());
-			normal.normalise();
-			outVolume->planes.push_back(
-				Plane(normal, getDerivedPosition()));
+            // left plane
+            normal = bl.getDirection().crossProduct(ul.getDirection());
+            normal.normalise();
+            outVolume->planes.push_back(
+                Plane(normal, getDerivedPosition()));
 
-		}
-		else
-		{
-			// ortho planes are parallel to frustum planes
+        }
+        else
+        {
+            // ortho planes are parallel to frustum planes
 
-			Ray ul = getCameraToViewportRay(screenLeft, screenTop);
-			Ray br = getCameraToViewportRay(screenRight, screenBottom);
+            Ray ul = getCameraToViewportRay(screenLeft, screenTop);
+            Ray br = getCameraToViewportRay(screenRight, screenBottom);
 
-			updateFrustumPlanes();
-			outVolume->planes.push_back(
-				Plane(mFrustumPlanes[FRUSTUM_PLANE_TOP].normal, ul.getOrigin()));
-			outVolume->planes.push_back(
-				Plane(mFrustumPlanes[FRUSTUM_PLANE_RIGHT].normal, br.getOrigin()));
-			outVolume->planes.push_back(
-				Plane(mFrustumPlanes[FRUSTUM_PLANE_BOTTOM].normal, br.getOrigin()));
-			outVolume->planes.push_back(
-				Plane(mFrustumPlanes[FRUSTUM_PLANE_LEFT].normal, ul.getOrigin()));
-			
+            updateFrustumPlanes();
+            outVolume->planes.push_back(
+                Plane(mFrustumPlanes[FRUSTUM_PLANE_TOP].normal, ul.getOrigin()));
+            outVolume->planes.push_back(
+                Plane(mFrustumPlanes[FRUSTUM_PLANE_RIGHT].normal, br.getOrigin()));
+            outVolume->planes.push_back(
+                Plane(mFrustumPlanes[FRUSTUM_PLANE_BOTTOM].normal, br.getOrigin()));
+            outVolume->planes.push_back(
+                Plane(mFrustumPlanes[FRUSTUM_PLANE_LEFT].normal, ul.getOrigin()));
 
-		}
 
-		// near & far plane applicable to both projection types
-		outVolume->planes.push_back(getFrustumPlane(FRUSTUM_PLANE_NEAR));
-		if (includeFarPlane)
-			outVolume->planes.push_back(getFrustumPlane(FRUSTUM_PLANE_FAR));
-	}
+        }
+
+        // near & far plane applicable to both projection types
+        outVolume->planes.push_back(getFrustumPlane(FRUSTUM_PLANE_NEAR));
+        if (includeFarPlane)
+            outVolume->planes.push_back(getFrustumPlane(FRUSTUM_PLANE_FAR));
+    }
     // -------------------------------------------------------------------
     void Camera::setWindow (Real Left, Real Top, Real Right, Real Bottom)
     {
@@ -775,7 +809,7 @@ namespace Ogre {
         Vector3 vw_bl = inv.transformAffine(vp_bl);
         Vector3 vw_br = inv.transformAffine(vp_br);
 
-		mWindowClipPlanes.clear();
+        mWindowClipPlanes.clear();
         if (mProjType == PT_PERSPECTIVE)
         {
             Vector3 position = getPositionForViewUpdate();
@@ -835,283 +869,283 @@ namespace Ogre {
     {
         mAutoAspectRatio = autoratio;
     }
-	//-----------------------------------------------------------------------
-	bool Camera::isVisible(const AxisAlignedBox& bound, FrustumPlane* culledBy) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->isVisible(bound, culledBy);
-		}
-		else
-		{
-			return Frustum::isVisible(bound, culledBy);
-		}
-	}
-	//-----------------------------------------------------------------------
-	bool Camera::isVisible(const Sphere& bound, FrustumPlane* culledBy) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->isVisible(bound, culledBy);
-		}
-		else
-		{
-			return Frustum::isVisible(bound, culledBy);
-		}
-	}
-	//-----------------------------------------------------------------------
-	bool Camera::isVisible(const Vector3& vert, FrustumPlane* culledBy) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->isVisible(vert, culledBy);
-		}
-		else
-		{
-			return Frustum::isVisible(vert, culledBy);
-		}
-	}
-	//-----------------------------------------------------------------------
-	const Vector3* Camera::getWorldSpaceCorners(void) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->getWorldSpaceCorners();
-		}
-		else
-		{
-			return Frustum::getWorldSpaceCorners();
-		}
-	}
-	//-----------------------------------------------------------------------
-	const Plane& Camera::getFrustumPlane( unsigned short plane ) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->getFrustumPlane(plane);
-		}
-		else
-		{
-			return Frustum::getFrustumPlane(plane);
-		}
-	}
-	//-----------------------------------------------------------------------
-	bool Camera::projectSphere(const Sphere& sphere, 
-		Real* left, Real* top, Real* right, Real* bottom) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->projectSphere(sphere, left, top, right, bottom);
-		}
-		else
-		{
-			return Frustum::projectSphere(sphere, left, top, right, bottom);
-		}
-	}
-	//-----------------------------------------------------------------------
-	Real Camera::getNearClipDistance(void) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->getNearClipDistance();
-		}
-		else
-		{
-			return Frustum::getNearClipDistance();
-		}
-	}
-	//-----------------------------------------------------------------------
-	Real Camera::getFarClipDistance(void) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->getFarClipDistance();
-		}
-		else
-		{
-			return Frustum::getFarClipDistance();
-		}
-	}
-	//-----------------------------------------------------------------------
-	const Matrix4& Camera::getViewMatrix(void) const
-	{
-		if (mCullFrustum)
-		{
-			return mCullFrustum->getViewMatrix();
-		}
-		else
-		{
-			return Frustum::getViewMatrix();
-		}
-	}
-	//-----------------------------------------------------------------------
-	const Matrix4& Camera::getViewMatrix(bool ownFrustumOnly) const
-	{
-		if (ownFrustumOnly)
-		{
-			return Frustum::getViewMatrix();
-		}
-		else
-		{
-			return getViewMatrix();
-		}
-	}
-	//-----------------------------------------------------------------------
-	//_______________________________________________________
-	//|														|
-	//|	getRayForwardIntersect								|
-	//|	-----------------------------						|
-	//|	get the intersections of frustum rays with a plane	|
-	//| of interest.  The plane is assumed to have constant	|
-	//| z.  If this is not the case, rays					|
-	//| should be rotated beforehand to work in a			|
-	//| coordinate system in which this is true.			|
-	//|_____________________________________________________|
-	//
-	vector<Vector4>::type Camera::getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, Real planeOffset) const
-	{
-		vector<Vector4>::type res;
+    //-----------------------------------------------------------------------
+    bool Camera::isVisible(const AxisAlignedBox& bound, FrustumPlane* culledBy) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->isVisible(bound, culledBy);
+        }
+        else
+        {
+            return Frustum::isVisible(bound, culledBy);
+        }
+    }
+    //-----------------------------------------------------------------------
+    bool Camera::isVisible(const Sphere& bound, FrustumPlane* culledBy) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->isVisible(bound, culledBy);
+        }
+        else
+        {
+            return Frustum::isVisible(bound, culledBy);
+        }
+    }
+    //-----------------------------------------------------------------------
+    bool Camera::isVisible(const Vector3& vert, FrustumPlane* culledBy) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->isVisible(vert, culledBy);
+        }
+        else
+        {
+            return Frustum::isVisible(vert, culledBy);
+        }
+    }
+    //-----------------------------------------------------------------------
+    const Vector3* Camera::getWorldSpaceCorners(void) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->getWorldSpaceCorners();
+        }
+        else
+        {
+            return Frustum::getWorldSpaceCorners();
+        }
+    }
+    //-----------------------------------------------------------------------
+    const Plane& Camera::getFrustumPlane( unsigned short plane ) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->getFrustumPlane(plane);
+        }
+        else
+        {
+            return Frustum::getFrustumPlane(plane);
+        }
+    }
+    //-----------------------------------------------------------------------
+    bool Camera::projectSphere(const Sphere& sphere,
+        Real* left, Real* top, Real* right, Real* bottom) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->projectSphere(sphere, left, top, right, bottom);
+        }
+        else
+        {
+            return Frustum::projectSphere(sphere, left, top, right, bottom);
+        }
+    }
+    //-----------------------------------------------------------------------
+    Real Camera::getNearClipDistance(void) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->getNearClipDistance();
+        }
+        else
+        {
+            return Frustum::getNearClipDistance();
+        }
+    }
+    //-----------------------------------------------------------------------
+    Real Camera::getFarClipDistance(void) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->getFarClipDistance();
+        }
+        else
+        {
+            return Frustum::getFarClipDistance();
+        }
+    }
+    //-----------------------------------------------------------------------
+    const Matrix4& Camera::getViewMatrix(void) const
+    {
+        if (mCullFrustum)
+        {
+            return mCullFrustum->getViewMatrix();
+        }
+        else
+        {
+            return Frustum::getViewMatrix();
+        }
+    }
+    //-----------------------------------------------------------------------
+    const Matrix4& Camera::getViewMatrix(bool ownFrustumOnly) const
+    {
+        if (ownFrustumOnly)
+        {
+            return Frustum::getViewMatrix();
+        }
+        else
+        {
+            return getViewMatrix();
+        }
+    }
+    //-----------------------------------------------------------------------
+    //_______________________________________________________
+    //|                                                     |
+    //| getRayForwardIntersect                              |
+    //| -----------------------------                       |
+    //| get the intersections of frustum rays with a plane  |
+    //| of interest.  The plane is assumed to have constant |
+    //| z.  If this is not the case, rays                   |
+    //| should be rotated beforehand to work in a           |
+    //| coordinate system in which this is true.            |
+    //|_____________________________________________________|
+    //
+    vector<Vector4>::type Camera::getRayForwardIntersect(const Vector3& anchor, const Vector3 *dir, Real planeOffset) const
+    {
+        vector<Vector4>::type res;
 
-		if(!dir)
-			return res;
+        if(!dir)
+            return res;
 
-		int infpt[4] = {0, 0, 0, 0}; // 0=finite, 1=infinite, 2=straddles infinity
-		Vector3 vec[4];
+        int infpt[4] = {0, 0, 0, 0}; // 0=finite, 1=infinite, 2=straddles infinity
+        Vector3 vec[4];
 
-		// find how much the anchor point must be displaced in the plane's
-		// constant variable
-		Real delta = planeOffset - anchor.z;
+        // find how much the anchor point must be displaced in the plane's
+        // constant variable
+        Real delta = planeOffset - anchor.z;
 
-		// now set the intersection point and note whether it is a 
-		// point at infinity or straddles infinity
-		unsigned int i;
-		for (i=0; i<4; i++)
-		{
-			Real test = dir[i].z * delta;
-			if (test == 0.0) {
-				vec[i] = dir[i];
-				infpt[i] = 1;
-			}
-			else {
-				Real lambda = delta / dir[i].z;
-				vec[i] = anchor + (lambda * dir[i]);
-				if(test < 0.0)
-					infpt[i] = 2;
-			}
-		}
+        // now set the intersection point and note whether it is a
+        // point at infinity or straddles infinity
+        unsigned int i;
+        for (i=0; i<4; i++)
+        {
+            Real test = dir[i].z * delta;
+            if (test == 0.0) {
+                vec[i] = dir[i];
+                infpt[i] = 1;
+            }
+            else {
+                Real lambda = delta / dir[i].z;
+                vec[i] = anchor + (lambda * dir[i]);
+                if(test < 0.0)
+                    infpt[i] = 2;
+            }
+        }
 
-		for (i=0; i<4; i++)
-		{
-			// store the finite intersection points
-			if (infpt[i] == 0)
-				res.push_back(Vector4(vec[i].x, vec[i].y, vec[i].z, 1.0));
-			else
-			{
-				// handle the infinite points of intersection;
-				// cases split up into the possible frustum planes 
-				// pieces which may contain a finite intersection point
-				int nextind = (i+1) % 4;
-				int prevind = (i+3) % 4;
-				if ((infpt[prevind] == 0) || (infpt[nextind] == 0))
-				{
-					if (infpt[i] == 1)
-						res.push_back(Vector4(vec[i].x, vec[i].y, vec[i].z, 0.0));
-					else
-					{
-						// handle the intersection points that straddle infinity (back-project)
-						if(infpt[prevind] == 0) 
-						{
-							Vector3 temp = vec[prevind] - vec[i];
-							res.push_back(Vector4(temp.x, temp.y, temp.z, 0.0));
-						}
-						if(infpt[nextind] == 0)
-						{
-							Vector3 temp = vec[nextind] - vec[i];
-							res.push_back(Vector4(temp.x, temp.y, temp.z, 0.0));
-						}
-					}
-				} // end if we need to add an intersection point to the list
-			} // end if infinite point needs to be considered
-		} // end loop over frustun corners
+        for (i=0; i<4; i++)
+        {
+            // store the finite intersection points
+            if (infpt[i] == 0)
+                res.push_back(Vector4(vec[i].x, vec[i].y, vec[i].z, 1.0));
+            else
+            {
+                // handle the infinite points of intersection;
+                // cases split up into the possible frustum planes
+                // pieces which may contain a finite intersection point
+                int nextind = (i+1) % 4;
+                int prevind = (i+3) % 4;
+                if ((infpt[prevind] == 0) || (infpt[nextind] == 0))
+                {
+                    if (infpt[i] == 1)
+                        res.push_back(Vector4(vec[i].x, vec[i].y, vec[i].z, 0.0));
+                    else
+                    {
+                        // handle the intersection points that straddle infinity (back-project)
+                        if(infpt[prevind] == 0)
+                        {
+                            Vector3 temp = vec[prevind] - vec[i];
+                            res.push_back(Vector4(temp.x, temp.y, temp.z, 0.0));
+                        }
+                        if(infpt[nextind] == 0)
+                        {
+                            Vector3 temp = vec[nextind] - vec[i];
+                            res.push_back(Vector4(temp.x, temp.y, temp.z, 0.0));
+                        }
+                    }
+                } // end if we need to add an intersection point to the list
+            } // end if infinite point needs to be considered
+        } // end loop over frustun corners
 
-		// we end up with either 0, 3, 4, or 5 intersection points
+        // we end up with either 0, 3, 4, or 5 intersection points
 
-		return res;
-	}
+        return res;
+    }
 
-	//_______________________________________________________
-	//|														|
-	//|	forwardIntersect									|
-	//|	-----------------------------						|
-	//|	Forward intersect the camera's frustum rays with	|
-	//| a specified plane of interest.						|
-	//| Note that if the frustum rays shoot out and would	|
-	//| back project onto the plane, this means the forward	|
-	//| intersection of the frustum would occur at the		|
-	//| line at infinity.									|
-	//|_____________________________________________________|
-	//
-	void Camera::forwardIntersect(const Plane& worldPlane, vector<Vector4>::type* intersect3d) const
-	{
-		if(!intersect3d)
-			return;
+    //_______________________________________________________
+    //|                                                     |
+    //| forwardIntersect                                    |
+    //| -----------------------------                       |
+    //| Forward intersect the camera's frustum rays with    |
+    //| a specified plane of interest.                      |
+    //| Note that if the frustum rays shoot out and would   |
+    //| back project onto the plane, this means the forward |
+    //| intersection of the frustum would occur at the      |
+    //| line at infinity.                                   |
+    //|_____________________________________________________|
+    //
+    void Camera::forwardIntersect(const Plane& worldPlane, vector<Vector4>::type* intersect3d) const
+    {
+        if(!intersect3d)
+            return;
 
-		Vector3 trCorner = getWorldSpaceCorners()[0];
-		Vector3 tlCorner = getWorldSpaceCorners()[1];
-		Vector3 blCorner = getWorldSpaceCorners()[2];
-		Vector3 brCorner = getWorldSpaceCorners()[3];
+        Vector3 trCorner = getWorldSpaceCorners()[0];
+        Vector3 tlCorner = getWorldSpaceCorners()[1];
+        Vector3 blCorner = getWorldSpaceCorners()[2];
+        Vector3 brCorner = getWorldSpaceCorners()[3];
 
-		// need some sort of rotation that will bring the plane normal to the z axis
-		Plane pval = worldPlane;
-		if(pval.normal.z < 0.0)
-		{
-			pval.normal *= -1.0;
-			pval.d *= -1.0;
-		}
-		Quaternion invPlaneRot = pval.normal.getRotationTo(Vector3::UNIT_Z);
+        // need some sort of rotation that will bring the plane normal to the z axis
+        Plane pval = worldPlane;
+        if(pval.normal.z < 0.0)
+        {
+            pval.normal *= -1.0;
+            pval.d *= -1.0;
+        }
+        Quaternion invPlaneRot = pval.normal.getRotationTo(Vector3::UNIT_Z);
 
-		// get rotated light
-		Vector3 lPos = invPlaneRot * getDerivedPosition();
-		Vector3 vec[4];
-		vec[0] = invPlaneRot * trCorner - lPos;
-		vec[1] = invPlaneRot * tlCorner - lPos; 
-		vec[2] = invPlaneRot * blCorner - lPos; 
-		vec[3] = invPlaneRot * brCorner - lPos; 
+        // get rotated light
+        Vector3 lPos = invPlaneRot * getDerivedPosition();
+        Vector3 vec[4];
+        vec[0] = invPlaneRot * trCorner - lPos;
+        vec[1] = invPlaneRot * tlCorner - lPos;
+        vec[2] = invPlaneRot * blCorner - lPos;
+        vec[3] = invPlaneRot * brCorner - lPos;
 
-		// compute intersection points on plane
-		vector<Vector4>::type iPnt = getRayForwardIntersect(lPos, vec, -pval.d);
+        // compute intersection points on plane
+        vector<Vector4>::type iPnt = getRayForwardIntersect(lPos, vec, -pval.d);
 
 
-		// return wanted data
-		if(intersect3d) 
-		{
-			Quaternion planeRot = invPlaneRot.Inverse();
-			(*intersect3d).clear();
-			for(unsigned int i=0; i<iPnt.size(); i++)
-			{
-				Vector3 intersection = planeRot * Vector3(iPnt[i].x, iPnt[i].y, iPnt[i].z);
-				(*intersect3d).push_back(Vector4(intersection.x, intersection.y, intersection.z, iPnt[i].w));
-			}
-		}
-	}
-	//-----------------------------------------------------------------------
-	void Camera::synchroniseBaseSettingsWith(const Camera* cam)
-	{
-		this->setPosition(cam->getPosition());
-		this->setProjectionType(cam->getProjectionType());
-		this->setOrientation(cam->getOrientation());
-		this->setAspectRatio(cam->getAspectRatio());
-		this->setNearClipDistance(cam->getNearClipDistance());
-		this->setFarClipDistance(cam->getFarClipDistance());
-		this->setUseRenderingDistance(cam->getUseRenderingDistance());
-		this->setFOVy(cam->getFOVy());
-		this->setFocalLength(cam->getFocalLength());
+        // return wanted data
+        if(intersect3d)
+        {
+            Quaternion planeRot = invPlaneRot.Inverse();
+            (*intersect3d).clear();
+            for(unsigned int i=0; i<iPnt.size(); i++)
+            {
+                Vector3 intersection = planeRot * Vector3(iPnt[i].x, iPnt[i].y, iPnt[i].z);
+                (*intersect3d).push_back(Vector4(intersection.x, intersection.y, intersection.z, iPnt[i].w));
+            }
+        }
+    }
+    //-----------------------------------------------------------------------
+    void Camera::synchroniseBaseSettingsWith(const Camera* cam)
+    {
+        this->setPosition(cam->getPosition());
+        this->setProjectionType(cam->getProjectionType());
+        this->setOrientation(cam->getOrientation());
+        this->setAspectRatio(cam->getAspectRatio());
+        this->setNearClipDistance(cam->getNearClipDistance());
+        this->setFarClipDistance(cam->getFarClipDistance());
+        this->setUseRenderingDistance(cam->getUseRenderingDistance());
+        this->setFOVy(cam->getFOVy());
+        this->setFocalLength(cam->getFocalLength());
 
-		// Don't do these, they're not base settings and can cause referencing issues
-		//this->setLodCamera(cam->getLodCamera());
-		//this->setCullingFrustum(cam->getCullingFrustum());
+        // Don't do these, they're not base settings and can cause referencing issues
+        //this->setLodCamera(cam->getLodCamera());
+        //this->setCullingFrustum(cam->getCullingFrustum());
 
-	}
+    }
 
 
 } // namespace Ogre

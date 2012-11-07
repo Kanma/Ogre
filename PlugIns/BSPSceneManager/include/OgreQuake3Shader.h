@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -47,7 +47,7 @@ namespace Ogre {
         temporarily since their instantiations as Materials would use precious resources
         because of the automatic loading of textures etc.
     */
-	class Quake3Shader : public ResourceAlloc
+    class Quake3Shader : public ResourceAlloc
     {
     protected:
         String getAlternateName(const String& texName);
@@ -60,7 +60,7 @@ namespace Ogre {
         ~Quake3Shader();
 
         /** Creates this shader as an OGRE material.
-            Creates a new material based on this shaders settings. 
+            Creates a new material based on this shaders settings.
             Material name shader#lightmap.
         */
         MaterialPtr createAsMaterial(int lightmapNumber);
@@ -99,7 +99,7 @@ namespace Ogre {
 
         unsigned int flags;
         int numPasses;
-		typedef vector<Pass>::type PassList;
+        typedef vector<Pass>::type PassList;
         PassList pass;
         bool farbox;            // Skybox
         String farboxName;

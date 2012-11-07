@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,21 +32,21 @@ THE SOFTWARE.
 #include "OgreIteratorWrappers.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Effects
-	*  @{
-	*/
-	/** Object representing one render to a RenderTarget or Viewport in the Ogre Composition
-		framework.
-	 */
-	class _OgreExport CompositionTargetPass : public CompositorInstAlloc
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Effects
+    *  @{
+    */
+    /** Object representing one render to a RenderTarget or Viewport in the Ogre Composition
+        framework.
+     */
+    class _OgreExport CompositionTargetPass : public CompositorInstAlloc
     {
     public:
         CompositionTargetPass(CompositionTechnique *parent);
         ~CompositionTargetPass();
-        
+
         /** Input mode of a TargetPass
         */
         enum InputMode
@@ -56,68 +56,68 @@ namespace Ogre {
         };
         typedef vector<CompositionPass *>::type Passes;
         typedef VectorIterator<Passes> PassIterator;
-        
+
         /** Set input mode of this TargetPass
         */
         void setInputMode(InputMode mode);
         /** Get input mode */
         InputMode getInputMode() const;
-        
+
         /** Set output local texture name */
         void setOutputName(const String &out);
         /** Get output local texture name */
         const String &getOutputName() const;
-        
-        /** Set "only initial" flag. This makes that this target pass is only executed initially 
+
+        /** Set "only initial" flag. This makes that this target pass is only executed initially
             after the effect has been enabled.
         */
         void setOnlyInitial(bool value);
         /** Get "only initial" flag.
         */
         bool getOnlyInitial();
-        
-        /** Set the scene visibility mask used by this pass 
+
+        /** Set the scene visibility mask used by this pass
         */
         void setVisibilityMask(uint32 mask);
-        /** Get the scene visibility mask used by this pass 
+        /** Get the scene visibility mask used by this pass
         */
         uint32 getVisibilityMask();
 
-		/** Set the material scheme used by this target pass.
-		@remarks
-			Only applicable to targets that render the scene as
-			one of their passes.
-			@see Technique::setScheme.
-		*/
-		void setMaterialScheme(const String& schemeName);
-		/** Get the material scheme used by this target pass.
-		@remarks
-			Only applicable to targets that render the scene as
-			one of their passes.
-			@see Technique::setScheme.
-		*/
-		const String& getMaterialScheme(void) const;
-        
-		/** Set whether shadows are enabled in this target pass.
-		@remarks
-			Only applicable to targets that render the scene as
-			one of their passes.
-		*/
-		void setShadowsEnabled(bool enabled);
-		/** Get whether shadows are enabled in this target pass.
-		@remarks
-			Only applicable to targets that render the scene as
-			one of their passes.
-		*/
-		bool getShadowsEnabled(void) const;
+        /** Set the material scheme used by this target pass.
+        @remarks
+            Only applicable to targets that render the scene as
+            one of their passes.
+            @see Technique::setScheme.
+        */
+        void setMaterialScheme(const String& schemeName);
+        /** Get the material scheme used by this target pass.
+        @remarks
+            Only applicable to targets that render the scene as
+            one of their passes.
+            @see Technique::setScheme.
+        */
+        const String& getMaterialScheme(void) const;
+
+        /** Set whether shadows are enabled in this target pass.
+        @remarks
+            Only applicable to targets that render the scene as
+            one of their passes.
+        */
+        void setShadowsEnabled(bool enabled);
+        /** Get whether shadows are enabled in this target pass.
+        @remarks
+            Only applicable to targets that render the scene as
+            one of their passes.
+        */
+        bool getShadowsEnabled(void) const;
         /** Set the scene LOD bias used by this pass. The default is 1.0,
             everything below that means lower quality, higher means higher quality.
         */
         void setLodBias(float bias);
-        /** Get the scene LOD bias used by this pass 
+        /** Get the scene LOD bias used by this pass
         */
         float getLodBias();
-        
+
         /** Create a new pass, and return a pointer to it.
         */
         CompositionPass *createPass();
@@ -130,18 +130,18 @@ namespace Ogre {
         /** Get the number of passes.
         */
         size_t getNumPasses();
-        
+
         /** Remove all passes
         */
         void removeAllPasses();
-    
+
         /** Get an iterator over the Passes in this TargetPass. */
         PassIterator getPassIterator(void);
-        
+
         /** Get parent object */
         CompositionTechnique *getParent();
 
-        /** Determine if this target pass is supported on the current rendering device. 
+        /** Determine if this target pass is supported on the current rendering device.
          */
         bool _isSupported(void);
 
@@ -161,14 +161,14 @@ namespace Ogre {
         uint32 mVisibilityMask;
         /// LOD bias of this render
         float mLodBias;
-		/// Material scheme name
-		String mMaterialScheme;
-		/// Shadows option
-		bool mShadowsEnabled;
+        /// Material scheme name
+        String mMaterialScheme;
+        /// Shadows option
+        bool mShadowsEnabled;
     };
 
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 }
 
 #endif

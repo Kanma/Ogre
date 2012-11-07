@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -84,6 +84,16 @@ namespace Ogre {
         void CmdDirection::doSet(void* target, const String& val)
         {
             static_cast<ParticleEmitter*>(target)->setDirection(StringConverter::parseVector3(val));
+        }
+        //-----------------------------------------------------------------------
+        String CmdUp::doGet(const void* target) const
+        {
+            return StringConverter::toString(
+                static_cast<const ParticleEmitter*>(target)->getUp() );
+        }
+        void CmdUp::doSet(void* target, const String& val)
+        {
+            static_cast<ParticleEmitter*>(target)->setUp(StringConverter::parseVector3(val));
         }
         //-----------------------------------------------------------------------
         String CmdEmissionRate::doGet(const void* target) const
@@ -228,7 +238,7 @@ namespace Ogre {
         //-----------------------------------------------------------------------
         String CmdName::doGet(const void* target) const
         {
-            return 
+            return
                 static_cast<const ParticleEmitter*>(target)->getName();
         }
         void CmdName::doSet(void* target, const String& val)
@@ -238,16 +248,16 @@ namespace Ogre {
         //-----------------------------------------------------------------------
         String CmdEmittedEmitter::doGet(const void* target) const
         {
-            return 
+            return
                 static_cast<const ParticleEmitter*>(target)->getEmittedEmitter();
         }
         void CmdEmittedEmitter::doSet(void* target, const String& val)
         {
             static_cast<ParticleEmitter*>(target)->setEmittedEmitter(val);
         }
- 
 
-    
+
+
     }
 }
 

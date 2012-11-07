@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,7 +38,7 @@ namespace Ogre {
     {
         mCgContext = cgCreateContext();
         // Check for errors
-        checkForCgError("CgProgramFactory::CgProgramFactory", 
+        checkForCgError("CgProgramFactory::CgProgramFactory",
             "Unable to create initial Cg context: ", mCgContext);
     }
     //-----------------------------------------------------------------------
@@ -46,7 +46,7 @@ namespace Ogre {
     {
         cgDestroyContext(mCgContext);
         // Check for errors
-        checkForCgError("CgProgramFactory::~CgProgramFactory", 
+        checkForCgError("CgProgramFactory::~CgProgramFactory",
             "Unable to destroy Cg context: ", mCgContext);
     }
     //-----------------------------------------------------------------------
@@ -55,14 +55,14 @@ namespace Ogre {
         return sLanguageName;
     }
     //-----------------------------------------------------------------------
-    HighLevelGpuProgram* CgProgramFactory::create(ResourceManager* creator, 
+    HighLevelGpuProgram* CgProgramFactory::create(ResourceManager* creator,
         const String& name, ResourceHandle handle,
         const String& group, bool isManual, ManualResourceLoader* loader)
     {
         return OGRE_NEW CgProgram(creator, name, handle, group, isManual, loader, mCgContext);
     }
     //-----------------------------------------------------------------------
-	void CgProgramFactory::destroy(HighLevelGpuProgram* prog)
+    void CgProgramFactory::destroy(HighLevelGpuProgram* prog)
     {
         OGRE_DELETE prog;
     }

@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -38,26 +38,26 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	// Forward declaration
-	class MaterialPtr;
+    // Forward declaration
+    class MaterialPtr;
     class LodStrategy;
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Materials
-	*  @{
-	*/
-	/** Class encapsulates rendering properties of an object.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Materials
+    *  @{
+    */
+    /** Class encapsulates rendering properties of an object.
     @remarks
     Ogre's material class encapsulates ALL aspects of the visual appearance,
-    of an object. It also includes other flags which 
-    might not be traditionally thought of as material properties such as 
-    culling modes and depth buffer settings, but these affect the 
-    appearance of the rendered object and are convenient to attach to the 
-    material since it keeps all the settings in one place. This is 
-    different to Direct3D which treats a material as just the colour 
-    components (diffuse, specular) and not texture maps etc. An Ogre 
+    of an object. It also includes other flags which
+    might not be traditionally thought of as material properties such as
+    culling modes and depth buffer settings, but these affect the
+    appearance of the rendered object and are convenient to attach to the
+    material since it keeps all the settings in one place. This is
+    different to Direct3D which treats a material as just the colour
+    components (diffuse, specular) and not texture maps etc. An Ogre
     Material can be thought of as equivalent to a 'Shader'.
     @par
     A Material can be rendered in multiple different ways depending on the
@@ -69,20 +69,20 @@ namespace Ogre {
     for distant geometry.
     @par
     Each technique can be made up of multiple passes. A fixed-function pass
-    may combine multiple texture layers using multitexrtuing, but Ogre can 
+    may combine multiple texture layers using multitexrtuing, but Ogre can
     break that into multiple passes automatically if the active card cannot
     handle that many simultaneous textures. Programmable passes, however, cannot
     be split down automatically, so if the active graphics card cannot handle the
     technique which contains these passes, OGRE will try to find another technique
     which the card can do. If, at the end of the day, the card cannot handle any of the
-    techniques which are listed for the material, the engine will render the 
+    techniques which are listed for the material, the engine will render the
     geometry plain white, which should alert you to the problem.
     @par
-    Ogre comes configured with a number of default settings for a newly 
-    created material. These can be changed if you wish by retrieving the 
-    default material settings through 
-    SceneManager::getDefaultMaterialSettings. Any changes you make to the 
-    Material returned from this method will apply to any materials created 
+    Ogre comes configured with a number of default settings for a newly
+    created material. These can be changed if you wish by retrieving the
+    default material settings through
+    SceneManager::getDefaultMaterialSettings. Any changes you make to the
+    Material returned from this method will apply to any materials created
     from this point onward.
     */
     class _OgreExport Material : public Resource
@@ -92,7 +92,7 @@ namespace Ogre {
 
     public:
         /// distance list used to specify LOD
-		typedef vector<Real>::type LodValueList;
+        typedef vector<Real>::type LodValueList;
         typedef ConstVectorIterator<LodValueList> LodValueIterator;
     protected:
 
@@ -102,67 +102,67 @@ namespace Ogre {
         void applyDefaults(void);
 
         typedef vector<Technique*>::type Techniques;
-		/// All techniques, supported and unsupported
+        /// All techniques, supported and unsupported
         Techniques mTechniques;
-		/// Supported techniques of any sort
+        /// Supported techniques of any sort
         Techniques mSupportedTechniques;
-		typedef map<unsigned short, Technique*>::type LodTechniques;
+        typedef map<unsigned short, Technique*>::type LodTechniques;
         typedef map<unsigned short, LodTechniques*>::type BestTechniquesBySchemeList;
-		/** Map of scheme -> list of LOD techniques. 
-			Current scheme is set on MaterialManager,
-			and can be set per Viewport for auto activation.
-		*/
+        /** Map of scheme -> list of LOD techniques.
+            Current scheme is set on MaterialManager,
+            and can be set per Viewport for auto activation.
+        */
         BestTechniquesBySchemeList mBestTechniquesBySchemeList;
 
         LodValueList mUserLodValues;
         LodValueList mLodValues;
         const LodStrategy *mLodStrategy;
         bool mReceiveShadows;
-		bool mTransparencyCastsShadows;
+        bool mTransparencyCastsShadows;
         /// Does this material require compilation?
         bool mCompilationRequired;
-		/// Text description of why any techniques are not supported
-		String mUnsupportedReasons;
+        /// Text description of why any techniques are not supported
+        String mUnsupportedReasons;
 
-		/** Insert a supported technique into the local collections. */
-		void insertSupportedTechnique(Technique* t);
+        /** Insert a supported technique into the local collections. */
+        void insertSupportedTechnique(Technique* t);
 
-		/** Clear the best technique list.
-		*/
-		void clearBestTechniqueList(void);
+        /** Clear the best technique list.
+        */
+        void clearBestTechniqueList(void);
 
-		/** Overridden from Resource.
-		*/
-		void prepareImpl(void);
+        /** Overridden from Resource.
+        */
+        void prepareImpl(void);
 
-		/** Overridden from Resource.
-		*/
-		void unprepareImpl(void);
+        /** Overridden from Resource.
+        */
+        void unprepareImpl(void);
 
-		/** Overridden from Resource.
-		*/
-		void loadImpl(void);
+        /** Overridden from Resource.
+        */
+        void loadImpl(void);
 
-		/** Unloads the material, frees resources etc.
-		@see
-		Resource
-		*/
-		void unloadImpl(void);
-		/// @copydoc Resource::calculateSize
-		size_t calculateSize(void) const { return 0; } // TODO 
+        /** Unloads the material, frees resources etc.
+        @see
+        Resource
+        */
+        void unloadImpl(void);
+        /// @copydoc Resource::calculateSize
+        size_t calculateSize(void) const { return 0; } // TODO
     public:
 
         /** Constructor - use resource manager's create method rather than this.
         */
-		Material(ResourceManager* creator, const String& name, ResourceHandle handle,
-			const String& group, bool isManual = false, ManualResourceLoader* loader = 0);
+        Material(ResourceManager* creator, const String& name, ResourceHandle handle,
+            const String& group, bool isManual = false, ManualResourceLoader* loader = 0);
 
         ~Material();
         /** Assignment operator to allow easy copying between materials.
         */
         Material& operator=( const Material& rhs );
 
-        /** Determines if the material has any transparency with the rest of the scene (derived from 
+        /** Determines if the material has any transparency with the rest of the scene (derived from
             whether any Techniques say they involve transparency).
         */
         bool isTransparent(void) const;
@@ -171,41 +171,41 @@ namespace Ogre {
         @remarks
             This method allows a material to opt out of receiving shadows, if
             it would otherwise do so. Shadows will not be cast on any objects
-            unless the scene is set up to support shadows 
+            unless the scene is set up to support shadows
             (@see SceneManager::setShadowTechnique), and not all techniques cast
             shadows on all objects. In any case, if you have a need to prevent
             shadows being received by material, this is the method you call to
             do it.
-        @note 
-            Transparent materials never receive shadows despite this setting. 
+        @note
+            Transparent materials never receive shadows despite this setting.
             The default is to receive shadows.
         */
         void setReceiveShadows(bool enabled) { mReceiveShadows = enabled; }
         /** Returns whether or not objects using this material will receive shadows. */
         bool getReceiveShadows(void) const { return mReceiveShadows; }
 
-		/** Sets whether objects using this material be classified as opaque to	the shadow caster system.
-		@remarks
-		This method allows a material to cast a shadow, even if it is transparent.
-		By default, transparent materials neither cast nor receive shadows. Shadows
-		will not be cast on any objects unless the scene is set up to support shadows 
-		(@see SceneManager::setShadowTechnique), and not all techniques cast
-		shadows on all objects.
-		*/
-		void setTransparencyCastsShadows(bool enabled) { mTransparencyCastsShadows = enabled; }
-		/** Returns whether or not objects using this material be classified as opaque to the shadow caster system. */
-		bool getTransparencyCastsShadows(void) const { return mTransparencyCastsShadows; }
+        /** Sets whether objects using this material be classified as opaque to the shadow caster system.
+        @remarks
+        This method allows a material to cast a shadow, even if it is transparent.
+        By default, transparent materials neither cast nor receive shadows. Shadows
+        will not be cast on any objects unless the scene is set up to support shadows
+        (@see SceneManager::setShadowTechnique), and not all techniques cast
+        shadows on all objects.
+        */
+        void setTransparencyCastsShadows(bool enabled) { mTransparencyCastsShadows = enabled; }
+        /** Returns whether or not objects using this material be classified as opaque to the shadow caster system. */
+        bool getTransparencyCastsShadows(void) const { return mTransparencyCastsShadows; }
 
         /** Creates a new Technique for this Material.
         @remarks
             A Technique is a single way of rendering geometry in order to achieve the effect
             you are intending in a material. There are many reason why you would want more than
             one - the main one being to handle variable graphics card abilities; you might have
-            one technique which is impressive but only runs on 4th-generation graphics cards, 
+            one technique which is impressive but only runs on 4th-generation graphics cards,
             for example. In this case you will want to create at least one fallback Technique.
             OGRE will work out which Techniques a card can support and pick the best one.
         @par
-            If multiple Techniques are available, the order in which they are created is 
+            If multiple Techniques are available, the order in which they are created is
             important - the engine will consider lower-indexed Techniques to be preferable
             to higher-indexed Techniques, ie when asked for the 'best' technique it will
             return the first one in the technique list which is supported by the hardware.
@@ -217,44 +217,44 @@ namespace Ogre {
             Return 0 if technique with name is not found
         */
         Technique* getTechnique(const String& name);
-		/** Retrieves the number of techniques. */
+        /** Retrieves the number of techniques. */
         unsigned short getNumTechniques(void) const;
-        /** Removes the technique at the given index. */		
-        void removeTechnique(unsigned short index);		
+        /** Removes the technique at the given index. */
+        void removeTechnique(unsigned short index);
         /** Removes all the techniques in this Material. */
         void removeAllTechniques(void);
         typedef VectorIterator<Techniques> TechniqueIterator;
         /** Get an iterator over the Techniques in this Material. */
         TechniqueIterator getTechniqueIterator(void);
-        /** Gets an iterator over all the Techniques which are supported by the current card. 
+        /** Gets an iterator over all the Techniques which are supported by the current card.
         @remarks
             The supported technique list is only available after this material has been compiled,
             which typically happens on loading the material. Therefore, if this method returns
             an empty list, try calling Material::load.
         */
         TechniqueIterator getSupportedTechniqueIterator(void);
-		
-		/** Gets the indexed supported technique. */
-        Technique* getSupportedTechnique(unsigned short index);
-		/** Retrieves the number of supported techniques. */
-        unsigned short getNumSupportedTechniques(void) const;
-		/** Gets a string explaining why any techniques are not supported. */
-		const String& getUnsupportedTechniquesExplanation() const { return mUnsupportedReasons; }
 
-        /** Gets the number of levels-of-detail this material has in the 
-			given scheme, based on Technique::setLodIndex. 
+        /** Gets the indexed supported technique. */
+        Technique* getSupportedTechnique(unsigned short index);
+        /** Retrieves the number of supported techniques. */
+        unsigned short getNumSupportedTechniques(void) const;
+        /** Gets a string explaining why any techniques are not supported. */
+        const String& getUnsupportedTechniquesExplanation() const { return mUnsupportedReasons; }
+
+        /** Gets the number of levels-of-detail this material has in the
+            given scheme, based on Technique::setLodIndex.
         @remarks
             Note that this will not be up to date until the material has been compiled.
         */
         unsigned short getNumLodLevels(unsigned short schemeIndex) const;
-        /** Gets the number of levels-of-detail this material has in the 
-			given scheme, based on Technique::setLodIndex. 
+        /** Gets the number of levels-of-detail this material has in the
+            given scheme, based on Technique::setLodIndex.
         @remarks
             Note that this will not be up to date until the material has been compiled.
         */
         unsigned short getNumLodLevels(const String& schemeName) const;
 
-        /** Gets the best supported technique. 
+        /** Gets the best supported technique.
         @remarks
             This method returns the lowest-index supported Technique in this material
             (since lower-indexed Techniques are considered to be better than higher-indexed
@@ -263,22 +263,22 @@ namespace Ogre {
             The best supported technique is only available after this material has been compiled,
             which typically happens on loading the material. Therefore, if this method returns
             NULL, try calling Material::load.
-		@param lodIndex The material lod index to use
-		@param rend Optional parameter specifying the Renderable that is requesting
-			this technique. Only used if no valid technique for the active material 
-			scheme is found, at which point it is passed to 
-			MaterialManager::Listener::handleSchemeNotFound as information.
+        @param lodIndex The material lod index to use
+        @param rend Optional parameter specifying the Renderable that is requesting
+            this technique. Only used if no valid technique for the active material
+            scheme is found, at which point it is passed to
+            MaterialManager::Listener::handleSchemeNotFound as information.
         */
         Technique* getBestTechnique(unsigned short lodIndex = 0, const Renderable* rend = 0);
 
 
         /** Creates a new copy of this material with the same settings but a new name.
-		@param newName The name for the cloned material
-		@param changeGroup If true, the resource group of the clone is changed
-		@param newGroup Only required if changeGroup is true; the new group to assign
+        @param newName The name for the cloned material
+        @param changeGroup If true, the resource group of the clone is changed
+        @param newGroup Only required if changeGroup is true; the new group to assign
         */
-        MaterialPtr clone(const String& newName, bool changeGroup = false, 
-			const String& newGroup = StringUtil::BLANK) const;
+        MaterialPtr clone(const String& newName, bool changeGroup = false,
+            const String& newGroup = StringUtil::BLANK) const;
 
         /** Copies the details of this material into another, preserving the target's handle and name
         (unlike operator=) but copying everything else.
@@ -290,7 +290,7 @@ namespace Ogre {
         @remarks
             Compiling a material involves determining which Techniques are supported on the
             card on which OGRE is currently running, and for fixed-function Passes within those
-            Techniques, splitting the passes down where they contain more TextureUnitState 
+            Techniques, splitting the passes down where they contain more TextureUnitState
             instances than the current card has texture units.
         @par
             This process is automatically done when the Material is loaded, but may be
@@ -310,9 +310,9 @@ namespace Ogre {
 
         /** Sets the point size properties for every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setPointSize
@@ -321,9 +321,9 @@ namespace Ogre {
 
         /** Sets the ambient colour reflectance properties for every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setAmbient
@@ -332,9 +332,9 @@ namespace Ogre {
 
         /** Sets the ambient colour reflectance properties for every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setAmbient
@@ -343,9 +343,9 @@ namespace Ogre {
 
         /** Sets the diffuse colour reflectance properties of every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setDiffuse
@@ -354,9 +354,9 @@ namespace Ogre {
 
         /** Sets the diffuse colour reflectance properties of every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setDiffuse
@@ -365,9 +365,9 @@ namespace Ogre {
 
         /** Sets the specular colour reflectance properties of every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setSpecular
@@ -376,9 +376,9 @@ namespace Ogre {
 
         /** Sets the specular colour reflectance properties of every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setSpecular
@@ -387,9 +387,9 @@ namespace Ogre {
 
         /** Sets the shininess properties of every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setShininess
@@ -398,9 +398,9 @@ namespace Ogre {
 
         /** Sets the amount of self-illumination of every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setSelfIllumination
@@ -409,20 +409,20 @@ namespace Ogre {
 
         /** Sets the amount of self-illumination of every Pass in every Technique.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setSelfIllumination
         */
         void setSelfIllumination(const ColourValue& selfIllum);
 
-		/** Sets whether or not each Pass renders with depth-buffer checking on or not.
+        /** Sets whether or not each Pass renders with depth-buffer checking on or not.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setDepthCheckEnabled
@@ -431,9 +431,9 @@ namespace Ogre {
 
         /** Sets whether or not each Pass renders with depth-buffer writing on or not.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setDepthWriteEnabled
@@ -442,31 +442,31 @@ namespace Ogre {
 
         /** Sets the function used to compare depth values when depth checking is on.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setDepthFunction
         */
         void setDepthFunction( CompareFunction func );
 
-		/** Sets whether or not colour buffer writing is enabled for each Pass.
+        /** Sets whether or not colour buffer writing is enabled for each Pass.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setColourWriteEnabled
-		*/
-		void setColourWriteEnabled(bool enabled);
+        */
+        void setColourWriteEnabled(bool enabled);
 
         /** Sets the culling mode for each pass  based on the 'vertex winding'.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setCullingMode
@@ -475,9 +475,9 @@ namespace Ogre {
 
         /** Sets the manual culling mode, performed by CPU rather than hardware.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setManualCullingMode
@@ -486,9 +486,9 @@ namespace Ogre {
 
         /** Sets whether or not dynamic lighting is enabled for every Pass.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setLightingEnabled
@@ -497,9 +497,9 @@ namespace Ogre {
 
         /** Sets the type of light shading required
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setShadingMode
@@ -508,9 +508,9 @@ namespace Ogre {
 
         /** Sets the fogging mode applied to each pass.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setFog
@@ -523,9 +523,9 @@ namespace Ogre {
 
         /** Sets the depth bias to be used for each Pass.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setDepthBias
@@ -534,18 +534,18 @@ namespace Ogre {
 
         /** Set texture filtering for every texture unit in every Technique and Pass
         @note
-            This property has been moved to the TextureUnitState class, which is accessible via the 
-            Technique and Pass. For simplicity, this method allows you to set these properties for 
-            every current TeextureUnitState, If you need more precision, retrieve the Technique, 
+            This property has been moved to the TextureUnitState class, which is accessible via the
+            Technique and Pass. For simplicity, this method allows you to set these properties for
+            every current TeextureUnitState, If you need more precision, retrieve the Technique,
             Pass and TextureUnitState instances and set the property there.
         @see TextureUnitState::setTextureFiltering
         */
         void setTextureFiltering(TextureFilterOptions filterType);
         /** Sets the anisotropy level to be used for all textures.
         @note
-            This property has been moved to the TextureUnitState class, which is accessible via the 
-            Technique and Pass. For simplicity, this method allows you to set these properties for 
-            every current TeextureUnitState, If you need more precision, retrieve the Technique, 
+            This property has been moved to the TextureUnitState class, which is accessible via the
+            Technique and Pass. For simplicity, this method allows you to set these properties for
+            every current TeextureUnitState, If you need more precision, retrieve the Technique,
             Pass and TextureUnitState instances and set the property there.
         @see TextureUnitState::setTextureAnisotropy
         */
@@ -553,9 +553,9 @@ namespace Ogre {
 
         /** Sets the kind of blending every pass has with the existing contents of the scene.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setSceneBlending
@@ -564,9 +564,9 @@ namespace Ogre {
 
         /** Sets the kind of blending every pass has with the existing contents of the scene, using individual factors for color and alpha channels
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setSeparateSceneBlending
@@ -575,9 +575,9 @@ namespace Ogre {
 
         /** Allows very fine control of blending every Pass with the existing contents of the scene.
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setSceneBlending
@@ -586,9 +586,9 @@ namespace Ogre {
 
         /** Allows very fine control of blending every Pass with the existing contents of the scene, using individual factors for color and alpha channels
         @note
-            This property has been moved to the Pass class, which is accessible via the 
-            Technique. For simplicity, this method allows you to set these properties for 
-            every current Technique, and for every current Pass within those Techniques. If 
+            This property has been moved to the Pass class, which is accessible via the
+            Technique. For simplicity, this method allows you to set these properties for
+            every current Technique, and for every current Pass within those Techniques. If
             you need more precision, retrieve the Technique and Pass instances and set the
             property there.
         @see Pass::setSeparateSceneBlending
@@ -605,28 +605,38 @@ namespace Ogre {
             method to determine the distance at which the lowe levels of detail kick in.
             The decision about what distance is actually used is a combination of this
             and the LOD bias applied to both the current Camera and the current Entity.
-        @param lodValues A vector of Reals which indicate the lod value at which to 
+        @param lodValues A vector of Reals which indicate the lod value at which to
             switch to lower details. They are listed in LOD index order, starting at index
             1 (ie the first level down from the highest level 0, which automatically applies
-            from a value of 0). These are 'user values', before being potentially 
-			transformed by the strategy, so for the distance strategy this is an
-			unsquared distance for example.
+            from a value of 0). These are 'user values', before being potentially
+            transformed by the strategy, so for the distance strategy this is an
+            unsquared distance for example.
         */
         void setLodLevels(const LodValueList& lodValues);
-        /** Gets an iterator over the list of values at which each LOD comes into effect. 
+
+        /** Gets an iterator over the list of values transformed by the LodStrategy at which each LOD comes into effect.
         @remarks
-            Note that the iterator returned from this method is not totally analogous to 
+            Note that the iterator returned from this method is not totally analogous to
             the one passed in by calling setLodLevels - the list includes a zero
             entry at the start (since the highest LOD starts at value 0). Also, the
-			values returned are after being transformed by LodStrategy::transformUserValue.
+            values returned are after being transformed by LodStrategy::transformUserValue.
         */
         LodValueIterator getLodValueIterator(void) const;
 
-        /** Gets the LOD index to use at the given value. 
-		@note The value passed in is the 'transformed' value. If you are dealing with
-		an original source value (e.g. distance), use LodStrategy::transformUserValue
-		to turn this into a lookup value.
-		*/
+        /** Gets an iterator over the user-defined list of values which are internally transfomed by the LodStrategy.
+        @remarks
+            Note that the iterator returned from this method is not totally analogous to
+            the one passed in by calling setLodLevels - the list includes a zero
+            entry at the start (since the highest LOD starts at value 0). Also, the
+            values returned are after being transformed by LodStrategy::transformUserValue.
+        */
+        LodValueIterator getUserLodValueIterator(void) const;
+
+        /** Gets the LOD index to use at the given value.
+        @note The value passed in is the 'transformed' value. If you are dealing with
+        an original source value (e.g. distance), use LodStrategy::transformUserValue
+        to turn this into a lookup value.
+        */
         ushort getLodIndex(Real value) const;
 
         /** Get lod strategy used by this material. */
@@ -636,14 +646,14 @@ namespace Ogre {
 
         /** @copydoc Resource::touch
         */
-        void touch(void) 
-        { 
-            if (mCompilationRequired) 
+        void touch(void)
+        {
+            if (mCompilationRequired)
                 compile();
             // call superclass
             Resource::touch();
         }
-        
+
         /** Applies texture names to Texture Unit State with matching texture name aliases.
             All techniques, passes, and Texture Unit States within the material are checked.
             If matching texture aliases are found then true is returned.
@@ -657,75 +667,75 @@ namespace Ogre {
         */
         bool applyTextureAliases(const AliasTextureNamePairList& aliasList, const bool apply = true) const;
 
-	    /** Gets the compilation status of the material.
+        /** Gets the compilation status of the material.
         @return True if the material needs recompilation.
         */
-	    bool getCompilationRequired() const
-	    {
-		    return mCompilationRequired;
-	    }
+        bool getCompilationRequired() const
+        {
+            return mCompilationRequired;
+        }
 
 
     };
 
-	/** Specialisation of SharedPtr to allow SharedPtr to be assigned to MaterialPtr 
-	@note Has to be a subclass since we need operator=.
-	We could templatise this instead of repeating per Resource subclass, 
-	except to do so requires a form VC6 does not support i.e.
-	ResourceSubclassPtr<T> : public SharedPtr<T>
-	*/
-	class _OgreExport MaterialPtr : public SharedPtr<Material> 
-	{
-	public:
-		MaterialPtr() : SharedPtr<Material>() {}
-		explicit MaterialPtr(Material* rep) : SharedPtr<Material>(rep) {}
-		MaterialPtr(const MaterialPtr& r) : SharedPtr<Material>(r) {} 
-		MaterialPtr(const ResourcePtr& r) : SharedPtr<Material>()
-		{
-			// lock & copy other mutex pointer
+    /** Specialisation of SharedPtr to allow SharedPtr to be assigned to MaterialPtr
+    @note Has to be a subclass since we need operator=.
+    We could templatise this instead of repeating per Resource subclass,
+    except to do so requires a form VC6 does not support i.e.
+    ResourceSubclassPtr<T> : public SharedPtr<T>
+    */
+    class _OgreExport MaterialPtr : public SharedPtr<Material>
+    {
+    public:
+        MaterialPtr() : SharedPtr<Material>() {}
+        explicit MaterialPtr(Material* rep) : SharedPtr<Material>(rep) {}
+        MaterialPtr(const MaterialPtr& r) : SharedPtr<Material>(r) {}
+        MaterialPtr(const ResourcePtr& r) : SharedPtr<Material>()
+        {
+            // lock & copy other mutex pointer
             OGRE_MUTEX_CONDITIONAL(r.OGRE_AUTO_MUTEX_NAME)
             {
-			    OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
-			    OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
-			    pRep = static_cast<Material*>(r.getPointer());
-			    pUseCount = r.useCountPointer();
-			    if (pUseCount)
-			    {
-				    ++(*pUseCount);
-			    }
+                OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
+                OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
+                pRep = static_cast<Material*>(r.getPointer());
+                pUseCount = r.useCountPointer();
+                if (pUseCount)
+                {
+                    ++(*pUseCount);
+                }
             }
-		}
+        }
 
-		/// Operator used to convert a ResourcePtr to a MaterialPtr
-		MaterialPtr& operator=(const ResourcePtr& r)
-		{
-			if (pRep == static_cast<Material*>(r.getPointer()))
-				return *this;
-			release();
-			// lock & copy other mutex pointer
+        /// Operator used to convert a ResourcePtr to a MaterialPtr
+        MaterialPtr& operator=(const ResourcePtr& r)
+        {
+            if (pRep == static_cast<Material*>(r.getPointer()))
+                return *this;
+            release();
+            // lock & copy other mutex pointer
             OGRE_MUTEX_CONDITIONAL(r.OGRE_AUTO_MUTEX_NAME)
             {
-			    OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
-			    OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
-			    pRep = static_cast<Material*>(r.getPointer());
-			    pUseCount = r.useCountPointer();
-			    if (pUseCount)
-			    {
-				    ++(*pUseCount);
-			    }
+                OGRE_LOCK_MUTEX(*r.OGRE_AUTO_MUTEX_NAME)
+                OGRE_COPY_AUTO_SHARED_MUTEX(r.OGRE_AUTO_MUTEX_NAME)
+                pRep = static_cast<Material*>(r.getPointer());
+                pUseCount = r.useCountPointer();
+                if (pUseCount)
+                {
+                    ++(*pUseCount);
+                }
             }
-			else
-			{
-				// RHS must be a null pointer
-				assert(r.isNull() && "RHS must be null if it has no mutex!");
-				setNull();
-			}
-			return *this;
-		}
-	};
-	/** @} */
-	/** @} */
+            else
+            {
+                // RHS must be a null pointer
+                assert(r.isNull() && "RHS must be null if it has no mutex!");
+                setNull();
+            }
+            return *this;
+        }
+    };
+    /** @} */
+    /** @} */
 
-} //namespace 
+} //namespace
 
 #endif

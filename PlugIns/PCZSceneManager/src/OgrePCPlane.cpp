@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,31 +42,31 @@ namespace Ogre
     {
         mPortal = 0;
     }
-	PCPlane::PCPlane(const Plane & plane) 
-			: Plane(plane)
-	{
-		mPortal = 0;
-	}
-    PCPlane::PCPlane(const Vector3& rkNormal, const Vector3& rkPoint) 
+    PCPlane::PCPlane(const Plane & plane)
+            : Plane(plane)
+    {
+        mPortal = 0;
+    }
+    PCPlane::PCPlane(const Vector3& rkNormal, const Vector3& rkPoint)
             : Plane(rkNormal, rkPoint)
     {
         mPortal = 0;
     }
-    PCPlane::PCPlane(const Vector3& rkPoint0, const Vector3& rkPoint1,const Vector3& rkPoint2) 
+    PCPlane::PCPlane(const Vector3& rkPoint0, const Vector3& rkPoint1,const Vector3& rkPoint2)
             : Plane(rkPoint0, rkPoint1, rkPoint2)
     {
         mPortal = 0;
     }
-	void PCPlane::setFromOgrePlane(Plane & ogrePlane)
-	{
-		d = ogrePlane.d;
-		normal = ogrePlane.normal;
-		mPortal = 0;
-	}
+    void PCPlane::setFromOgrePlane(Plane & ogrePlane)
+    {
+        d = ogrePlane.d;
+        normal = ogrePlane.normal;
+        mPortal = 0;
+    }
 
     PCPlane::~PCPlane()
     {
-		mPortal = 0;
+        mPortal = 0;
     }
 
 }

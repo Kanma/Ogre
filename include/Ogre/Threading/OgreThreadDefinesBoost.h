@@ -4,7 +4,7 @@ This source file is a part of OGRE
 
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -43,10 +43,10 @@ THE SOFTWARE
 #define OGRE_MUTEX_CONDITIONAL(mutex) if (mutex)
 #define OGRE_THREAD_SYNCHRONISER(sync) boost::condition sync;
 #define OGRE_THREAD_WAIT(sync, mutex, lock) sync.wait(lock);
-#define OGRE_THREAD_NOTIFY_ONE(sync) sync.notify_one(); 
-#define OGRE_THREAD_NOTIFY_ALL(sync) sync.notify_all(); 
+#define OGRE_THREAD_NOTIFY_ONE(sync) sync.notify_one();
+#define OGRE_THREAD_NOTIFY_ALL(sync) sync.notify_all();
 // Read-write mutex
-#define OGRE_RW_MUTEX(name) mutable boost::shared_mutex name
+#define OGRE_RW_MUTEX(name) mutable boost::shared_mutex name;
 #define OGRE_LOCK_RW_MUTEX_READ(name) boost::shared_lock<boost::shared_mutex> ogrenameLock(name)
 #define OGRE_LOCK_RW_MUTEX_WRITE(name) boost::unique_lock<boost::shared_mutex> ogrenameLock(name)
 // Thread-local pointer

@@ -1,21 +1,13 @@
 set (HEADER_FILES
-  include/OgreHeightmapTerrainPageSource.h
   include/OgreOctree.h
   include/OgreOctreeCamera.h
   include/OgreOctreeNode.h
   include/OgreOctreePlugin.h
   include/OgreOctreeSceneManager.h
   include/OgreOctreeSceneQuery.h
-  include/OgreTerrainPage.h
-  include/OgreTerrainPageSource.h
-  include/OgreTerrainPrerequisites.h
-  include/OgreTerrainRenderable.h
-  include/OgreTerrainSceneManager.h
-  include/OgreTerrainVertexProgram.h
 )
 
 set (SOURCE_FILES
-  src/OgreHeightmapTerrainPageSource.cpp
   src/OgreOctree.cpp
   src/OgreOctreeCamera.cpp
   src/OgreOctreeNode.cpp
@@ -23,11 +15,6 @@ set (SOURCE_FILES
   src/OgreOctreeSceneManager.cpp
   src/OgreOctreeSceneManagerDll.cpp
   src/OgreOctreeSceneQuery.cpp
-  src/OgreTerrainPage.cpp
-  src/OgreTerrainPageSource.cpp
-  src/OgreTerrainRenderable.cpp
-  src/OgreTerrainSceneManager.cpp
-  src/OgreTerrainVertexProgram.cpp
 )
 
 include_directories(

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -35,13 +35,15 @@ THE SOFTWARE.
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
 #  define WIN32_LEAN_AND_MEAN
 #  if !defined(NOMINMAX) && defined(_MSC_VER)
-#	define NOMINMAX // required to stop windows.h messing up std::min
+#   define NOMINMAX // required to stop windows.h messing up std::min
 #  endif
 #  include <windows.h>
 #endif
 
-#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_IPHONE
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS
 #   include "macUtils.h"
+#endif
+#if OGRE_PLATFORM == OGRE_PLATFORM_APPLE || OGRE_PLATFORM == OGRE_PLATFORM_APPLE_IOS || OGRE_PLATFORM == OGRE_PLATFORM_NACL
 #   include <dlfcn.h>
 #endif
 
@@ -52,7 +54,7 @@ namespace Ogre {
     DynLib::DynLib( const String& name )
     {
         mName = name;
-        m_hInst = NULL;
+        mInst = NULL;
     }
 
     //-----------------------------------------------------------------------
@@ -66,27 +68,27 @@ namespace Ogre {
         // Log library load
         LogManager::getSingleton().logMessage("Loading library " + mName);
 
-		String name = mName;
-#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX
+        String name = mName;
+#if OGRE_PLATFORM == OGRE_PLATFORM_LINUX || OGRE_PLATFORM == OGRE_PLATFORM_NACL
         // dlopen() does not add .so to the filename, like windows does for .dll
-        if (name.substr(name.length() - 3, 3) != ".so")
+    if (name.find(".so") == String::npos)
            name += ".so";
 #elif OGRE_PLATFORM == OGRE_PLATFORM_APPLE
         // dlopen() does not add .dylib to the filename, like windows does for .dll
         if (name.substr(name.length() - 6, 6) != ".dylib")
-			name += ".dylib";
+            name += ".dylib";
 #elif OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-		// Although LoadLibraryEx will add .dll itself when you only specify the library name,
-		// if you include a relative path then it does not. So, add it to be sure.
-		if (name.substr(name.length() - 4, 4) != ".dll")
-			name += ".dll";
+        // Although LoadLibraryEx will add .dll itself when you only specify the library name,
+        // if you include a relative path then it does not. So, add it to be sure.
+        if (name.substr(name.length() - 4, 4) != ".dll")
+            name += ".dll";
 #endif
-        m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD( name.c_str() );
+        mInst = (DYNLIB_HANDLE)DYNLIB_LOAD( name.c_str() );
 
-        if( !m_hInst )
+        if( !mInst )
             OGRE_EXCEPT(
-                Exception::ERR_INTERNAL_ERROR, 
-                "Could not load dynamic library " + mName + 
+                Exception::ERR_INTERNAL_ERROR,
+                "Could not load dynamic library " + mName +
                 ".  System Error: " + dynlibError(),
                 "DynLib::load" );
     }
@@ -97,38 +99,38 @@ namespace Ogre {
         // Log library unload
         LogManager::getSingleton().logMessage("Unloading library " + mName);
 
-        if( DYNLIB_UNLOAD( m_hInst ) )
-		{
+        if( DYNLIB_UNLOAD( mInst ) )
+        {
             OGRE_EXCEPT(
-                Exception::ERR_INTERNAL_ERROR, 
+                Exception::ERR_INTERNAL_ERROR,
                 "Could not unload dynamic library " + mName +
                 ".  System Error: " + dynlibError(),
                 "DynLib::unload");
-		}
+        }
 
     }
 
     //-----------------------------------------------------------------------
     void* DynLib::getSymbol( const String& strName ) const throw()
     {
-        return (void*)DYNLIB_GETSYM( m_hInst, strName.c_str() );
+        return (void*)DYNLIB_GETSYM( mInst, strName.c_str() );
     }
     //-----------------------------------------------------------------------
-    String DynLib::dynlibError( void ) 
+    String DynLib::dynlibError( void )
     {
 #if OGRE_PLATFORM == OGRE_PLATFORM_WIN32
-        LPVOID lpMsgBuf; 
-        FormatMessage( 
-            FORMAT_MESSAGE_ALLOCATE_BUFFER | 
-            FORMAT_MESSAGE_FROM_SYSTEM | 
-            FORMAT_MESSAGE_IGNORE_INSERTS, 
-            NULL, 
-            GetLastError(), 
-            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
-            (LPTSTR) &lpMsgBuf, 
-            0, 
-            NULL 
-            ); 
+        LPVOID lpMsgBuf;
+        FormatMessage(
+            FORMAT_MESSAGE_ALLOCATE_BUFFER |
+            FORMAT_MESSAGE_FROM_SYSTEM |
+            FORMAT_MESSAGE_IGNORE_INSERTS,
+            NULL,
+            GetLastError(),
+            MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+            (LPTSTR) &lpMsgBuf,
+            0,
+            NULL
+            );
         String ret = (char*)lpMsgBuf;
         // Free the buffer.
         LocalFree( lpMsgBuf );

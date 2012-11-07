@@ -3,7 +3,7 @@
 //
 // This file must be identical in the quake and utils directories
 
-// contents flags are seperate bits
+// contents flags are separate bits
 // a given brush can contribute multiple content bits
 
 // these definitions also need to be in q_shared.h!
@@ -234,8 +234,8 @@ struct bsp_header_t {
 // Brushes sides in BSP tree
 //
 struct bsp_brushside_t {
-	int planenum;
-	int content;			// ??shader??
+    int planenum;
+    int content;            // ??shader??
 };
 
 
@@ -243,8 +243,8 @@ struct bsp_brushside_t {
 // Brushes in BSP tree
 //
 struct bsp_brush_t {
-	int firstside;
-	int numsides;
-	int shaderIndex;
+    int firstside;
+    int numsides;
+    int shaderIndex;
 };
 #endif

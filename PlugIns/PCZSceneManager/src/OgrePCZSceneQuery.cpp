@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -60,70 +60,70 @@ namespace Ogre
 
         MovableSet set;
 
-	    // Iterate over all movable types
-	    Root::MovableObjectFactoryIterator factIt = 
-		    Root::getSingleton().getMovableObjectFactoryIterator();
-	    while(factIt.hasMoreElements())
-	    {
-		    SceneManager::MovableObjectIterator it = 
-			    mParentSceneMgr->getMovableObjectIterator(
-			    factIt.getNext()->getType());
-		    while( it.hasMoreElements() )
-		    {
+        // Iterate over all movable types
+        Root::MovableObjectFactoryIterator factIt =
+            Root::getSingleton().getMovableObjectFactoryIterator();
+        while(factIt.hasMoreElements())
+        {
+            SceneManager::MovableObjectIterator it =
+                mParentSceneMgr->getMovableObjectIterator(
+                factIt.getNext()->getType());
+            while( it.hasMoreElements() )
+            {
 
-			    MovableObject * e = it.getNext();
+                MovableObject * e = it.getNext();
                 PCZone * zone = ((PCZSceneNode*)(e->getParentSceneNode()))->getHomeZone();
-			    PCZSceneNodeList list;
-			    //find the nodes that intersect the AAB
-			    static_cast<PCZSceneManager*>( mParentSceneMgr ) -> findNodesIn( e->getWorldBoundingBox(), list, zone, 0 );
-			    //grab all moveables from the node that intersect...
-			    PCZSceneNodeList::iterator nit = list.begin();
-			    while( nit != list.end() )
-			    {
-				    SceneNode::ObjectIterator oit = (*nit) -> getAttachedObjectIterator();
-				    while( oit.hasMoreElements() )
-				    {
-					    MovableObject * m = oit.getNext();
+                PCZSceneNodeList list;
+                //find the nodes that intersect the AAB
+                static_cast<PCZSceneManager*>( mParentSceneMgr ) -> findNodesIn( e->getWorldBoundingBox(), list, zone, 0 );
+                //grab all moveables from the node that intersect...
+                PCZSceneNodeList::iterator nit = list.begin();
+                while( nit != list.end() )
+                {
+                    SceneNode::ObjectIterator oit = (*nit) -> getAttachedObjectIterator();
+                    while( oit.hasMoreElements() )
+                    {
+                        MovableObject * m = oit.getNext();
 
-					    if( m != e &&
-							set.find( MovablePair(e,m)) == set.end() &&
-							set.find( MovablePair(m,e)) == set.end() &&
-							(m->getQueryFlags() & mQueryMask) &&
-							(m->getTypeFlags() & mQueryTypeMask) &&
-							m->isInScene() && 
-							e->getWorldBoundingBox().intersects( m->getWorldBoundingBox() ) )
-					    {
-						    listener -> queryResult( e, m );
-						    // deal with attached objects, since they are not directly attached to nodes
-						    if (m->getMovableType() == "Entity")
-						    {
-							    Entity* e2 = static_cast<Entity*>(m);
-							    Entity::ChildObjectListIterator childIt = e2->getAttachedObjectIterator();
-							    while(childIt.hasMoreElements())
-							    {
-								    MovableObject* c = childIt.getNext();
-								    if (c->getQueryFlags() & mQueryMask && 
-									    e->getWorldBoundingBox().intersects( c->getWorldBoundingBox() ))
-								    {
-									    listener->queryResult(e, c);
-								    }
-							    }
-						    }
-					    }
-					    set.insert( MovablePair(e,m) );
+                        if( m != e &&
+                            set.find( MovablePair(e,m)) == set.end() &&
+                            set.find( MovablePair(m,e)) == set.end() &&
+                            (m->getQueryFlags() & mQueryMask) &&
+                            (m->getTypeFlags() & mQueryTypeMask) &&
+                            m->isInScene() &&
+                            e->getWorldBoundingBox().intersects( m->getWorldBoundingBox() ) )
+                        {
+                            listener -> queryResult( e, m );
+                            // deal with attached objects, since they are not directly attached to nodes
+                            if (m->getMovableType() == "Entity")
+                            {
+                                Entity* e2 = static_cast<Entity*>(m);
+                                Entity::ChildObjectListIterator childIt = e2->getAttachedObjectIterator();
+                                while(childIt.hasMoreElements())
+                                {
+                                    MovableObject* c = childIt.getNext();
+                                    if (c->getQueryFlags() & mQueryMask &&
+                                        e->getWorldBoundingBox().intersects( c->getWorldBoundingBox() ))
+                                    {
+                                        listener->queryResult(e, c);
+                                    }
+                                }
+                            }
+                        }
+                        set.insert( MovablePair(e,m) );
 
-				    }
-				    ++nit;
-			    }
+                    }
+                    ++nit;
+                }
 
-		    }
-	    }
+            }
+        }
     }
     /** Creates a custom PCZ AAB query */
     PCZAxisAlignedBoxSceneQuery::PCZAxisAlignedBoxSceneQuery(SceneManager* creator)
             : DefaultAxisAlignedBoxSceneQuery(creator)
     {
-		mStartZone = 0;
+        mStartZone = 0;
         mExcludeNode = 0;
     }
     /** Deletes the custom PCZ query */
@@ -145,26 +145,26 @@ namespace Ogre
             while( oit.hasMoreElements() )
             {
                 MovableObject * m = oit.getNext();
-                if( (m->getQueryFlags() & mQueryMask) && 
-				    (m->getTypeFlags() & mQueryTypeMask) && 
-				    m->isInScene() &&
-				    mAABB.intersects( m->getWorldBoundingBox() ) )
+                if( (m->getQueryFlags() & mQueryMask) &&
+                    (m->getTypeFlags() & mQueryTypeMask) &&
+                    m->isInScene() &&
+                    mAABB.intersects( m->getWorldBoundingBox() ) )
                 {
                     listener -> queryResult( m );
-				    // deal with attached objects, since they are not directly attached to nodes
-				    if (m->getMovableType() == "Entity")
-				    {
-					    Entity* e = static_cast<Entity*>(m);
-					    Entity::ChildObjectListIterator childIt = e->getAttachedObjectIterator();
-					    while(childIt.hasMoreElements())
-					    {
-						    MovableObject* c = childIt.getNext();
-						    if (c->getQueryFlags() & mQueryMask)
-						    {
-							    listener->queryResult(c);
-						    }
-					    }
-				    }
+                    // deal with attached objects, since they are not directly attached to nodes
+                    if (m->getMovableType() == "Entity")
+                    {
+                        Entity* e = static_cast<Entity*>(m);
+                        Entity::ChildObjectListIterator childIt = e->getAttachedObjectIterator();
+                        while(childIt.hasMoreElements())
+                        {
+                            MovableObject* c = childIt.getNext();
+                            if (c->getQueryFlags() & mQueryMask)
+                            {
+                                listener->queryResult(c);
+                            }
+                        }
+                    }
                 }
 
             }
@@ -178,7 +178,7 @@ namespace Ogre
     PCZRaySceneQuery::
     PCZRaySceneQuery(SceneManager* creator) : DefaultRaySceneQuery(creator)
     {
-		mStartZone = 0;
+        mStartZone = 0;
         mExcludeNode = 0;
     }
     //---------------------------------------------------------------------
@@ -199,32 +199,32 @@ namespace Ogre
             while( oit.hasMoreElements() )
             {
                 MovableObject * m = oit.getNext();
-                if( (m->getQueryFlags() & mQueryMask) && 
-				    (m->getTypeFlags() & mQueryTypeMask) && m->isInScene() )
+                if( (m->getQueryFlags() & mQueryMask) &&
+                    (m->getTypeFlags() & mQueryTypeMask) && m->isInScene() )
                 {
                     std::pair<bool, Real> result = mRay.intersects(m->getWorldBoundingBox());
 
                     if( result.first )
                     {
                         listener -> queryResult( m, result.second );
-					    // deal with attached objects, since they are not directly attached to nodes
-					    if (m->getMovableType() == "Entity")
-					    {
-						    Entity* e = static_cast<Entity*>(m);
-						    Entity::ChildObjectListIterator childIt = e->getAttachedObjectIterator();
-						    while(childIt.hasMoreElements())
-						    {
-							    MovableObject* c = childIt.getNext();
-							    if (c->getQueryFlags() & mQueryMask)
-							    {
-								    result = mRay.intersects(c->getWorldBoundingBox());
-								    if (result.first)
-								    {
-									    listener->queryResult(c, result.second);
-								    }
-							    }
-						    }
-					    }
+                        // deal with attached objects, since they are not directly attached to nodes
+                        if (m->getMovableType() == "Entity")
+                        {
+                            Entity* e = static_cast<Entity*>(m);
+                            Entity::ChildObjectListIterator childIt = e->getAttachedObjectIterator();
+                            while(childIt.hasMoreElements())
+                            {
+                                MovableObject* c = childIt.getNext();
+                                if (c->getQueryFlags() & mQueryMask)
+                                {
+                                    result = mRay.intersects(c->getWorldBoundingBox());
+                                    if (result.first)
+                                    {
+                                        listener->queryResult(c, result.second);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -240,7 +240,7 @@ namespace Ogre
     PCZSphereSceneQuery::
     PCZSphereSceneQuery(SceneManager* creator) : DefaultSphereSceneQuery(creator)
     {
-		mStartZone = 0;
+        mStartZone = 0;
         mExcludeNode = 0;
     }
     //---------------------------------------------------------------------
@@ -261,27 +261,27 @@ namespace Ogre
             while( oit.hasMoreElements() )
             {
                 MovableObject * m = oit.getNext();
-                if( (m->getQueryFlags() & mQueryMask) && 
-				    (m->getTypeFlags() & mQueryTypeMask) && 
-				    m->isInScene() && 
-				    mSphere.intersects( m->getWorldBoundingBox() ) )
+                if( (m->getQueryFlags() & mQueryMask) &&
+                    (m->getTypeFlags() & mQueryTypeMask) &&
+                    m->isInScene() &&
+                    mSphere.intersects( m->getWorldBoundingBox() ) )
                 {
                     listener -> queryResult( m );
-				    // deal with attached objects, since they are not directly attached to nodes
-				    if (m->getMovableType() == "Entity")
-				    {
-					    Entity* e = static_cast<Entity*>(m);
-					    Entity::ChildObjectListIterator childIt = e->getAttachedObjectIterator();
-					    while(childIt.hasMoreElements())
-					    {
-						    MovableObject* c = childIt.getNext();
-						    if (c->getQueryFlags() & mQueryMask &&
-							    mSphere.intersects( c->getWorldBoundingBox()))
-						    {
-							    listener->queryResult(c);
-						    }
-					    }
-				    }
+                    // deal with attached objects, since they are not directly attached to nodes
+                    if (m->getMovableType() == "Entity")
+                    {
+                        Entity* e = static_cast<Entity*>(m);
+                        Entity::ChildObjectListIterator childIt = e->getAttachedObjectIterator();
+                        while(childIt.hasMoreElements())
+                        {
+                            MovableObject* c = childIt.getNext();
+                            if (c->getQueryFlags() & mQueryMask &&
+                                mSphere.intersects( c->getWorldBoundingBox()))
+                            {
+                                listener->queryResult(c);
+                            }
+                        }
+                    }
                 }
             }
             ++it;
@@ -295,7 +295,7 @@ namespace Ogre
     PCZPlaneBoundedVolumeListSceneQuery(SceneManager* creator)
             : DefaultPlaneBoundedVolumeListSceneQuery(creator)
     {
-		mStartZone = 0;
+        mStartZone = 0;
         mExcludeNode = 0;
     }
     //---------------------------------------------------------------------
@@ -326,27 +326,27 @@ namespace Ogre
                 while( oit.hasMoreElements() )
                 {
                     MovableObject * m = oit.getNext();
-                    if( (m->getQueryFlags() & mQueryMask) && 
-					    (m->getTypeFlags() & mQueryTypeMask) && 
-					    m->isInScene() &&
-					    (*pi).intersects( m->getWorldBoundingBox() ) )
+                    if( (m->getQueryFlags() & mQueryMask) &&
+                        (m->getTypeFlags() & mQueryTypeMask) &&
+                        m->isInScene() &&
+                        (*pi).intersects( m->getWorldBoundingBox() ) )
                     {
                         listener -> queryResult( m );
-					    // deal with attached objects, since they are not directly attached to nodes
-					    if (m->getMovableType() == "Entity")
-					    {
-						    Entity* e = static_cast<Entity*>(m);
-						    Entity::ChildObjectListIterator childIt = e->getAttachedObjectIterator();
-						    while(childIt.hasMoreElements())
-						    {
-							    MovableObject* c = childIt.getNext();
-							    if (c->getQueryFlags() & mQueryMask &&
-								    (*pi).intersects( c->getWorldBoundingBox()))
-							    {
-								    listener->queryResult(c);
-							    }
-						    }
-					    }
+                        // deal with attached objects, since they are not directly attached to nodes
+                        if (m->getMovableType() == "Entity")
+                        {
+                            Entity* e = static_cast<Entity*>(m);
+                            Entity::ChildObjectListIterator childIt = e->getAttachedObjectIterator();
+                            while(childIt.hasMoreElements())
+                            {
+                                MovableObject* c = childIt.getNext();
+                                if (c->getQueryFlags() & mQueryMask &&
+                                    (*pi).intersects( c->getWorldBoundingBox()))
+                                {
+                                    listener->queryResult(c);
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -41,15 +41,15 @@ namespace Ogre {
     BillboardParticleRenderer::CmdCommonDirection BillboardParticleRenderer::msCommonDirectionCmd;
     BillboardParticleRenderer::CmdCommonUpVector BillboardParticleRenderer::msCommonUpVectorCmd;
     BillboardParticleRenderer::CmdPointRendering BillboardParticleRenderer::msPointRenderingCmd;
-	BillboardParticleRenderer::CmdAccurateFacing BillboardParticleRenderer::msAccurateFacingCmd;
+    BillboardParticleRenderer::CmdAccurateFacing BillboardParticleRenderer::msAccurateFacingCmd;
     //-----------------------------------------------------------------------
     BillboardParticleRenderer::BillboardParticleRenderer()
     {
         if (createParamDictionary("BillboardParticleRenderer"))
         {
             ParamDictionary* dict = getParamDictionary();
-            dict->addParameter(ParameterDef("billboard_type", 
-                "The type of billboard to use. 'point' means a simulated spherical particle, " 
+            dict->addParameter(ParameterDef("billboard_type",
+                "The type of billboard to use. 'point' means a simulated spherical particle, "
                 "'oriented_common' means all particles in the set are oriented around common_direction, "
                 "'oriented_self' means particles are oriented around their own direction, "
                 "'perpendicular_common' means all particles are perpendicular to common_direction, "
@@ -57,50 +57,50 @@ namespace Ogre {
                 PT_STRING),
                 &msBillboardTypeCmd);
 
-            dict->addParameter(ParameterDef("billboard_origin", 
+            dict->addParameter(ParameterDef("billboard_origin",
                 "This setting controls the fine tuning of where a billboard appears in relation to it's position. "
                 "Possible value are: 'top_left', 'top_center', 'top_right', 'center_left', 'center', 'center_right', "
                 "'bottom_left', 'bottom_center' and 'bottom_right'. Default value is 'center'.",
                 PT_STRING),
                 &msBillboardOriginCmd);
 
-            dict->addParameter(ParameterDef("billboard_rotation_type", 
+            dict->addParameter(ParameterDef("billboard_rotation_type",
                 "This setting controls the billboard rotation type. "
-				"'vertex' means rotate the billboard's vertices around their facing direction."
+                "'vertex' means rotate the billboard's vertices around their facing direction."
                 "'texcoord' means rotate the billboard's texture coordinates. Default value is 'texcoord'.",
                 PT_STRING),
                 &msBillboardRotationTypeCmd);
 
-            dict->addParameter(ParameterDef("common_direction", 
+            dict->addParameter(ParameterDef("common_direction",
                 "Only useful when billboard_type is oriented_common or perpendicular_common. "
-				"When billboard_type is oriented_common, this parameter sets the common orientation for "
-				"all particles in the set (e.g. raindrops may all be oriented downwards). "
-				"When billboard_type is perpendicular_common, this parameter sets the perpendicular vector for "
-				"all particles in the set (e.g. an aureola around the player and parallel to the ground).",
+                "When billboard_type is oriented_common, this parameter sets the common orientation for "
+                "all particles in the set (e.g. raindrops may all be oriented downwards). "
+                "When billboard_type is perpendicular_common, this parameter sets the perpendicular vector for "
+                "all particles in the set (e.g. an aureola around the player and parallel to the ground).",
                 PT_VECTOR3),
                 &msCommonDirectionCmd);
 
             dict->addParameter(ParameterDef("common_up_vector",
                 "Only useful when billboard_type is perpendicular_self or perpendicular_common. This "
-				"parameter sets the common up-vector for all particles in the set (e.g. an aureola around "
-				"the player and parallel to the ground).",
+                "parameter sets the common up-vector for all particles in the set (e.g. an aureola around "
+                "the player and parallel to the ground).",
                 PT_VECTOR3),
                 &msCommonUpVectorCmd);
             dict->addParameter(ParameterDef("point_rendering",
                 "Set whether or not particles will use point rendering "
-				"rather than manually generated quads. This allows for faster "
-				"rendering of point-oriented particles although introduces some "
-				"limitations too such as requiring a common particle size."
-				"Possible values are 'true' or 'false'.",
+                "rather than manually generated quads. This allows for faster "
+                "rendering of point-oriented particles although introduces some "
+                "limitations too such as requiring a common particle size."
+                "Possible values are 'true' or 'false'.",
                 PT_BOOL),
                 &msPointRenderingCmd);
-			dict->addParameter(ParameterDef("accurate_facing",
-				"Set whether or not particles will be oriented to the camera "
-				"based on the relative position to the camera rather than just "
-				"the camera direction. This is more accurate but less optimal. "
-				"Cannot be combined with point rendering.",
-				PT_BOOL),
-				&msAccurateFacingCmd);
+            dict->addParameter(ParameterDef("accurate_facing",
+                "Set whether or not particles will be oriented to the camera "
+                "based on the relative position to the camera rather than just "
+                "the camera direction. This is more accurate but less optimal. "
+                "Cannot be combined with point rendering.",
+                PT_BOOL),
+                &msAccurateFacingCmd);
         }
 
         // Create billboard set
@@ -111,10 +111,10 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     BillboardParticleRenderer::~BillboardParticleRenderer()
     {
-		// mBillboardSet is never actually attached to a node, we just passthrough
-		// based on the particle system's attachment. So manually notify that it's
-		// no longer attached.
-		mBillboardSet->_notifyAttached(0);
+        // mBillboardSet is never actually attached to a node, we just passthrough
+        // based on the particle system's attachment. So manually notify that it's
+        // no longer attached.
+        mBillboardSet->_notifyAttached(0);
         OGRE_DELETE  mBillboardSet;
     }
     //-----------------------------------------------------------------------
@@ -123,7 +123,7 @@ namespace Ogre {
         return rendererTypeName;
     }
     //-----------------------------------------------------------------------
-    void BillboardParticleRenderer::_updateRenderQueue(RenderQueue* queue, 
+    void BillboardParticleRenderer::_updateRenderQueue(RenderQueue* queue,
         list<Particle*>::type& currentParticles, bool cullIndividually)
     {
         mBillboardSet->setCullIndividually(cullIndividually);
@@ -136,13 +136,13 @@ namespace Ogre {
         {
             Particle* p = *i;
             bb.mPosition = p->position;
-			if (mBillboardSet->getBillboardType() == BBT_ORIENTED_SELF ||
-				mBillboardSet->getBillboardType() == BBT_PERPENDICULAR_SELF)
-			{
-				// Normalise direction vector
-				bb.mDirection = p->direction;
-				bb.mDirection.normalise();
-			}
+            if (mBillboardSet->getBillboardType() == BBT_ORIENTED_SELF ||
+                mBillboardSet->getBillboardType() == BBT_PERPENDICULAR_SELF)
+            {
+                // Normalise direction vector
+                bb.mDirection = p->direction;
+                bb.mDirection.normalise();
+            }
             bb.mColour = p->colour;
             bb.mRotation = p->rotation;
             // Assign and compare at the same time
@@ -154,18 +154,18 @@ namespace Ogre {
             mBillboardSet->injectBillboard(bb);
 
         }
-        
+
         mBillboardSet->endBillboards();
 
         // Update the queue
         mBillboardSet->_updateRenderQueue(queue);
     }
-	//---------------------------------------------------------------------
-	void BillboardParticleRenderer::visitRenderables(Renderable::Visitor* visitor, 
-		bool debugRenderables)
-	{
-		mBillboardSet->visitRenderables(visitor, debugRenderables);
-	}
+    //---------------------------------------------------------------------
+    void BillboardParticleRenderer::visitRenderables(Renderable::Visitor* visitor,
+        bool debugRenderables)
+    {
+        mBillboardSet->visitRenderables(visitor, debugRenderables);
+    }
     //-----------------------------------------------------------------------
     void BillboardParticleRenderer::_setMaterial(MaterialPtr& mat)
     {
@@ -176,16 +176,16 @@ namespace Ogre {
     {
         mBillboardSet->setBillboardType(bbt);
     }
-	//-----------------------------------------------------------------------
-	void BillboardParticleRenderer::setUseAccurateFacing(bool acc)
-	{
-		mBillboardSet->setUseAccurateFacing(acc);
-	}
-	//-----------------------------------------------------------------------
-	bool BillboardParticleRenderer::getUseAccurateFacing(void) const
-	{
-		return mBillboardSet->getUseAccurateFacing();
-	}
+    //-----------------------------------------------------------------------
+    void BillboardParticleRenderer::setUseAccurateFacing(bool acc)
+    {
+        mBillboardSet->setUseAccurateFacing(acc);
+    }
+    //-----------------------------------------------------------------------
+    bool BillboardParticleRenderer::getUseAccurateFacing(void) const
+    {
+        return mBillboardSet->getUseAccurateFacing();
+    }
     //-----------------------------------------------------------------------
     BillboardType BillboardParticleRenderer::getBillboardType(void) const
     {
@@ -251,32 +251,38 @@ namespace Ogre {
     {
         mBillboardSet->_notifyAttached(parent, isTagPoint);
     }
-	//-----------------------------------------------------------------------
-	void BillboardParticleRenderer::setRenderQueueGroup(uint8 queueID)
-	{
-		assert(queueID <= RENDER_QUEUE_MAX && "Render queue out of range!");
-		mBillboardSet->setRenderQueueGroup(queueID);
-	}
-	//-----------------------------------------------------------------------
-	void BillboardParticleRenderer::setKeepParticlesInLocalSpace(bool keepLocal)
-	{
-		mBillboardSet->setBillboardsInWorldSpace(!keepLocal);
-	}
+    //-----------------------------------------------------------------------
+    void BillboardParticleRenderer::setRenderQueueGroup(uint8 queueID)
+    {
+        assert(queueID <= RENDER_QUEUE_MAX && "Render queue out of range!");
+        mBillboardSet->setRenderQueueGroup(queueID);
+    }
+    //-----------------------------------------------------------------------
+    void BillboardParticleRenderer::setRenderQueueGroupAndPriority(uint8 queueID, ushort priority)
+    {
+        assert(queueID <= RENDER_QUEUE_MAX && "Render queue out of range!");
+        mBillboardSet->setRenderQueueGroupAndPriority(queueID, priority);
+    }
+    //-----------------------------------------------------------------------
+    void BillboardParticleRenderer::setKeepParticlesInLocalSpace(bool keepLocal)
+    {
+        mBillboardSet->setBillboardsInWorldSpace(!keepLocal);
+    }
     //-----------------------------------------------------------------------
     SortMode BillboardParticleRenderer::_getSortMode(void) const
     {
         return mBillboardSet->_getSortMode();
     }
-	//-----------------------------------------------------------------------
-	void BillboardParticleRenderer::setPointRenderingEnabled(bool enabled)
-	{
-		mBillboardSet->setPointRenderingEnabled(enabled);
-	}
-	//-----------------------------------------------------------------------
-	bool BillboardParticleRenderer::isPointRenderingEnabled(void) const
-	{
-		return mBillboardSet->isPointRenderingEnabled();
-	}
+    //-----------------------------------------------------------------------
+    void BillboardParticleRenderer::setPointRenderingEnabled(bool enabled)
+    {
+        mBillboardSet->setPointRenderingEnabled(enabled);
+    }
+    //-----------------------------------------------------------------------
+    bool BillboardParticleRenderer::isPointRenderingEnabled(void) const
+    {
+        return mBillboardSet->isPointRenderingEnabled();
+    }
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
     //-----------------------------------------------------------------------
@@ -285,13 +291,13 @@ namespace Ogre {
         return rendererTypeName;
     }
     //-----------------------------------------------------------------------
-    ParticleSystemRenderer* BillboardParticleRendererFactory::createInstance( 
+    ParticleSystemRenderer* BillboardParticleRendererFactory::createInstance(
         const String& name )
     {
         return OGRE_NEW BillboardParticleRenderer();
     }
     //-----------------------------------------------------------------------
-    void BillboardParticleRendererFactory::destroyInstance( 
+    void BillboardParticleRendererFactory::destroyInstance(
         ParticleSystemRenderer* inst)
     {
         OGRE_DELETE  inst;
@@ -345,8 +351,8 @@ namespace Ogre {
         }
         else
         {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-                "Invalid billboard_type '" + val + "'", 
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+                "Invalid billboard_type '" + val + "'",
                 "ParticleSystem::CmdBillboardType::doSet");
         }
 
@@ -403,8 +409,8 @@ namespace Ogre {
             o = BBO_BOTTOM_RIGHT;
         else
         {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-                "Invalid billboard_origin '" + val + "'", 
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+                "Invalid billboard_origin '" + val + "'",
                 "ParticleSystem::CmdBillboardOrigin::doSet");
         }
 
@@ -433,8 +439,8 @@ namespace Ogre {
             r = BBR_TEXCOORD;
         else
         {
-            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS, 
-                "Invalid billboard_rotation_type '" + val + "'", 
+            OGRE_EXCEPT(Exception::ERR_INVALIDPARAMS,
+                "Invalid billboard_rotation_type '" + val + "'",
                 "ParticleSystem::CmdBillboardRotationType::doSet");
         }
 
@@ -473,17 +479,17 @@ namespace Ogre {
         static_cast<BillboardParticleRenderer*>(target)->setPointRenderingEnabled(
             StringConverter::parseBool(val));
     }
-	//-----------------------------------------------------------------------
-	String BillboardParticleRenderer::CmdAccurateFacing::doGet(const void* target) const
-	{
-		return StringConverter::toString(
-			static_cast<const BillboardParticleRenderer*>(target)->getUseAccurateFacing() );
-	}
-	void BillboardParticleRenderer::CmdAccurateFacing::doSet(void* target, const String& val)
-	{
-		static_cast<BillboardParticleRenderer*>(target)->setUseAccurateFacing(
-			StringConverter::parseBool(val));
-	}
+    //-----------------------------------------------------------------------
+    String BillboardParticleRenderer::CmdAccurateFacing::doGet(const void* target) const
+    {
+        return StringConverter::toString(
+            static_cast<const BillboardParticleRenderer*>(target)->getUseAccurateFacing() );
+    }
+    void BillboardParticleRenderer::CmdAccurateFacing::doSet(void* target, const String& val)
+    {
+        static_cast<BillboardParticleRenderer*>(target)->setUseAccurateFacing(
+            StringConverter::parseBool(val));
+    }
 
 }
 

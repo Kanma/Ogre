@@ -1158,11 +1158,8 @@ char *newyyin;
 	MACROTEXT *tMacro;
 	char *macroParmEnd;
 	unsigned int startOffset;
-	bool bFoundEndParen;
 	unsigned int leftParenCount;
 	unsigned int rightParenCount;
-
-	bFoundEndParen = false;
 
 	// sheesh, we gotta count the parenthesis....
 	macroParmEnd = yytext;
@@ -1931,7 +1928,7 @@ char *FindDefineParm(MACROENTRY *srcParms, MACROENTRY *invParms,
 				{
 					// it matched so return replacement text
 					*invString = invText->macroText;
-					// and length that we reconized
+					// and length that we recognized
 					*recognizedLen = checkLen;
 					return checkStr;
 				}
@@ -2189,7 +2186,7 @@ bool ParseBuiltInMacroParms(MACROENTRY *parsedMacro, char *parmStr)
 	}
 
 	prevMT = NULL;
-	// strip out and seperate parameters
+	// strip out and separate parameters
 	while (foundParm < endStr)
 	{
 		// allocate a macro text structure

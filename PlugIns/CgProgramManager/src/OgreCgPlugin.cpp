@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -31,54 +31,56 @@ THE SOFTWARE.
 #include "OgreHighLevelGpuProgramManager.h"
 #include "OgreCgFxScriptLoader.h"
 
-namespace Ogre 
+namespace Ogre
 {
-	const String sPluginName = "Cg Program Manager";
-	//---------------------------------------------------------------------
-	CgPlugin::CgPlugin()
-		:mCgProgramFactory(0)
-	{
+    const String sPluginName = "Cg Program Manager";
+    //---------------------------------------------------------------------
+    CgPlugin::CgPlugin()
+        :mCgProgramFactory(0)
+    {
 
-	}
-	//---------------------------------------------------------------------
-	const String& CgPlugin::getName() const
-	{
-		return sPluginName;
-	}
-	//---------------------------------------------------------------------
-	void CgPlugin::install()
-	{
-		// Create new factory
-		mCgProgramFactory = OGRE_NEW CgProgramFactory();
-		// Register
-		HighLevelGpuProgramManager::getSingleton().addFactory(mCgProgramFactory);
+    }
+    //---------------------------------------------------------------------
+    const String& CgPlugin::getName() const
+    {
+        return sPluginName;
+    }
+    //---------------------------------------------------------------------
+    void CgPlugin::install()
+    {
+    }
+    //---------------------------------------------------------------------
+    void CgPlugin::initialise()
+    {
+        // check for gles2 by the glsles factory (this plugin is not supported on embedded systems for now)
+        if (HighLevelGpuProgramManager::getSingleton().isLanguageSupported("glsles") == false)
+        {
+            // Create new factory
+            mCgProgramFactory = OGRE_NEW CgProgramFactory();
 
-		OGRE_NEW CgFxScriptLoader();
-	}
-	//---------------------------------------------------------------------
-	void CgPlugin::initialise()
-	{
-		// nothing to do
-	}
-	//---------------------------------------------------------------------
-	void CgPlugin::shutdown()
-	{
-		// nothing to do
-	}
-	//---------------------------------------------------------------------
-	void CgPlugin::uninstall()
-	{
+            // Register
+            HighLevelGpuProgramManager::getSingleton().addFactory(mCgProgramFactory);
+
+            OGRE_NEW CgFxScriptLoader();
+        }
+    }
+    //---------------------------------------------------------------------
+    void CgPlugin::shutdown()
+    {
+        // nothing to do
+    }
+    //---------------------------------------------------------------------
+    void CgPlugin::uninstall()
+    {
         if (mCgProgramFactory)
         {
-			OGRE_DELETE CgFxScriptLoader::getSingletonPtr(); 
+            OGRE_DELETE CgFxScriptLoader::getSingletonPtr();
 
             // Remove from manager safely
             if (HighLevelGpuProgramManager::getSingletonPtr())
                 HighLevelGpuProgramManager::getSingleton().removeFactory(mCgProgramFactory);
-		    OGRE_DELETE mCgProgramFactory;
-		    mCgProgramFactory = 0;
+            OGRE_DELETE mCgProgramFactory;
+            mCgProgramFactory = 0;
         }
-	}
-
-
+    }
 }

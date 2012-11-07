@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -61,16 +61,16 @@ namespace Ogre {
     //-----------------------------------------------------------------------
     MaterialPtr Quake3Shader::createAsMaterial(int lightmapNumber)
     {
-		String matName;
-		StringUtil::StrStreamType str;
+        String matName;
+        StringUtil::StrStreamType str;
         String resourceGroup = ResourceGroupManager::getSingleton().getWorldResourceGroupName();
 
         str << mName << "#" << lightmapNumber;
-		matName = str.str();
+        matName = str.str();
 
-        MaterialPtr mat = MaterialManager::getSingleton().create(matName, 
+        MaterialPtr mat = MaterialManager::getSingleton().create(matName,
             resourceGroup);
-		Ogre::Pass* ogrePass = mat->getTechnique(0)->getPass(0);
+        Ogre::Pass* ogrePass = mat->getTechnique(0)->getPass(0);
 
         LogManager::getSingleton().logMessage("Using Q3 shader " + mName, LML_CRITICAL);
         for (int p = 0; p < numPasses; ++p)
@@ -80,7 +80,7 @@ namespace Ogre {
             if (pass[p].textureName == "$lightmap")
             {
                 StringUtil::StrStreamType str2;
-				str2 << "@lightmap" << lightmapNumber;
+                str2 << "@lightmap" << lightmapNumber;
                 t = ogrePass->createTextureUnitState(str2.str());
             }
             // Animated texture support
@@ -102,7 +102,7 @@ namespace Ogre {
                         pass[p].frames[alt] = getAlternateName(pass[p].frames[alt]);
                         if (!ResourceGroupManager::getSingleton().resourceExists(
                             resourceGroup, pass[p].frames[alt]))
-                        { 
+                        {
                             // stuffed - no texture
                             continue;
                         }
@@ -125,7 +125,7 @@ namespace Ogre {
                     pass[p].textureName = getAlternateName(pass[p].textureName);
                     if (!ResourceGroupManager::getSingleton().resourceExists(
                         resourceGroup, pass[p].textureName))
-                    { 
+                    {
                         // stuffed - no texture
                         continue;
                     }
@@ -141,9 +141,9 @@ namespace Ogre {
                     mat->setDepthWriteEnabled(false);
 
                 t->setColourOperation(LBO_REPLACE);
-				// Alpha mode
-				ogrePass->setAlphaRejectSettings(
-					pass[p].alphaFunc, pass[p].alphaVal);
+                // Alpha mode
+                ogrePass->setAlphaRejectSettings(
+                    pass[p].alphaFunc, pass[p].alphaVal);
             }
             else
             {
@@ -157,15 +157,15 @@ namespace Ogre {
                     // simple layer blend
                     t->setColourOperation(pass[p].blend);
                 }
-				// Alpha mode, prefer 'most alphary'
-				CompareFunction currFunc = ogrePass->getAlphaRejectFunction();
-				unsigned char currVal = ogrePass->getAlphaRejectValue();
-				if (pass[p].alphaFunc > currFunc ||
-					(pass[p].alphaFunc == currFunc && pass[p].alphaVal < currVal))
-				{
-					ogrePass->setAlphaRejectSettings(
-						pass[p].alphaFunc, pass[p].alphaVal);
-				}
+                // Alpha mode, prefer 'most alphary'
+                CompareFunction currFunc = ogrePass->getAlphaRejectFunction();
+                unsigned char currVal = ogrePass->getAlphaRejectValue();
+                if (pass[p].alphaFunc > currFunc ||
+                    (pass[p].alphaFunc == currFunc && pass[p].alphaVal < currVal))
+                {
+                    ogrePass->setAlphaRejectSettings(
+                        pass[p].alphaFunc, pass[p].alphaVal);
+                }
             }
             // Tex coords
             if (pass[p].texGen == TEXGEN_BASE)
@@ -269,7 +269,7 @@ namespace Ogre {
 
         pos = texName.find_last_of(".");
         ext = texName.substr(pos, 4);
-		StringUtil::toLowerCase(ext);
+        StringUtil::toLowerCase(ext);
         base = texName.substr(0,pos);
         if (ext == ".jpg")
         {

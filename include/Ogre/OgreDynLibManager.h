@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,13 +32,13 @@ THE SOFTWARE.
 #include "OgreSingleton.h"
 
 namespace Ogre {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
-	/** Manager for Dynamic-loading Libraries.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup General
+    *  @{
+    */
+    /** Manager for Dynamic-loading Libraries.
         @remarks
             This manager keeps a track of all the open dynamic-loading
             libraries, opens them and returns references to already-open
@@ -46,9 +46,9 @@ namespace Ogre {
     */
     class _OgreExport DynLibManager: public Singleton<DynLibManager>, public DynLibAlloc
     {
-	protected:
-		typedef map<String, DynLib*>::type DynLibList;
-		DynLibList mLibList;
+    protected:
+        typedef map<String, DynLib*>::type DynLibList;
+        DynLibList mLibList;
     public:
         /** Default constructor.
             @note
@@ -71,13 +71,13 @@ namespace Ogre {
         */
         DynLib* load(const String& filename);
 
-		/** Unloads the passed library.
-		@param
-		filename The name of the library. The extension can be omitted
-		*/
-		void unload(DynLib* lib);
+        /** Unloads the passed library.
+        @param
+        filename The name of the library. The extension can be omitted
+        */
+        void unload(DynLib* lib);
 
-		/** Override standard Singleton retrieval.
+        /** Override standard Singleton retrieval.
         @remarks
         Why do we do this? Well, it's because the Singleton
         implementation is in a .h file, which means it gets compiled
@@ -110,8 +110,8 @@ namespace Ogre {
         */
         static DynLibManager* getSingletonPtr(void);
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 }
 
 #endif

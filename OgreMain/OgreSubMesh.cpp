@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -42,18 +42,19 @@ namespace Ogre {
         , vertexData(0)
         , mMatInitialised(false)
         , mBoneAssignmentsOutOfDate(false)
-		, mVertexAnimationType(VAT_NONE)
-		, mBuildEdgesEnabled(true)
+        , mVertexAnimationType(VAT_NONE)
+        , mVertexAnimationIncludesNormals(false)
+        , mBuildEdgesEnabled(true)
     {
-		indexData = OGRE_NEW IndexData();
+        indexData = OGRE_NEW IndexData();
     }
     //-----------------------------------------------------------------------
     SubMesh::~SubMesh()
     {
         OGRE_DELETE vertexData;
-		OGRE_DELETE indexData;
+        OGRE_DELETE indexData;
 
-		removeLodLevels();
+        removeLodLevels();
     }
 
     //-----------------------------------------------------------------------
@@ -78,17 +79,17 @@ namespace Ogre {
     {
 
         ro.useIndexes = indexData->indexCount != 0;
-		if (lodIndex > 0 && static_cast< size_t >( lodIndex - 1 ) < mLodFaceList.size())
-		{
-			// lodIndex - 1 because we don't store full detail version in mLodFaceList
-			ro.indexData = mLodFaceList[lodIndex-1];
+        if (lodIndex > 0 && static_cast< size_t >( lodIndex - 1 ) < mLodFaceList.size())
+        {
+            // lodIndex - 1 because we don't store full detail version in mLodFaceList
+            ro.indexData = mLodFaceList[lodIndex-1];
         }
         else
         {
-    		ro.indexData = indexData;
+            ro.indexData = indexData;
         }
-		ro.operationType = operationType;
-		ro.vertexData = useSharedVertices? parent->sharedVertexData : vertexData;
+        ro.operationType = operationType;
+        ro.vertexData = useSharedVertices? parent->sharedVertexData : vertexData;
 
     }
     //-----------------------------------------------------------------------
@@ -118,7 +119,7 @@ namespace Ogre {
 
         if (maxBones != 0)
         {
-            parent->compileBoneAssignments(mBoneAssignments, maxBones, 
+            parent->compileBoneAssignments(mBoneAssignments, maxBones,
                 blendIndexToBoneIndexMap, vertexData);
         }
 
@@ -164,42 +165,42 @@ namespace Ogre {
             // get test result for if change will occur when the texture aliases are applied
             if (material->applyTextureAliases(mTextureAliases, false))
             {
-				Ogre::String newMaterialName;
+                Ogre::String newMaterialName;
 
-				// If this material was already derived from another material
-				// due to aliasing, let's strip off the aliasing suffix and
-				// generate a new one using our current aliasing table.
+                // If this material was already derived from another material
+                // due to aliasing, let's strip off the aliasing suffix and
+                // generate a new one using our current aliasing table.
 
-				Ogre::String::size_type pos = mMaterialName.find("?TexAlias(", 0);
-				if( pos != Ogre::String::npos )
-					newMaterialName = mMaterialName.substr(0, pos);
-				else
-					newMaterialName = mMaterialName;
+                Ogre::String::size_type pos = mMaterialName.find("?TexAlias(", 0);
+                if( pos != Ogre::String::npos )
+                    newMaterialName = mMaterialName.substr(0, pos);
+                else
+                    newMaterialName = mMaterialName;
 
-				newMaterialName += "?TexAlias(";
-				// Iterate deterministically over the aliases (always in the same
-				// order via std::map's sorted iteration nature).
-				AliasTextureIterator aliasIter = getAliasTextureIterator();
-				while( aliasIter.hasMoreElements() )
-				{
-					newMaterialName += aliasIter.peekNextKey();
-					newMaterialName += "=";
-					newMaterialName += aliasIter.getNext();
-					newMaterialName += " ";
-				}
-				newMaterialName += ")";
-					
-				// Reuse the material if it's already been created. This decreases batch
-				// count and keeps material explosion under control.
-				if(!MaterialManager::getSingleton().resourceExists(newMaterialName))
-				{
-					Ogre::MaterialPtr newMaterial = Ogre::MaterialManager::getSingleton().create(
-						newMaterialName, material->getGroup());
-					// copy parent material details to new material
-					material->copyDetailsTo(newMaterial);
-					// apply texture aliases to new material
-					newMaterial->applyTextureAliases(mTextureAliases);
-				}
+                newMaterialName += "?TexAlias(";
+                // Iterate deterministically over the aliases (always in the same
+                // order via std::map's sorted iteration nature).
+                AliasTextureIterator aliasIter = getAliasTextureIterator();
+                while( aliasIter.hasMoreElements() )
+                {
+                    newMaterialName += aliasIter.peekNextKey();
+                    newMaterialName += "=";
+                    newMaterialName += aliasIter.getNext();
+                    newMaterialName += " ";
+                }
+                newMaterialName += ")";
+
+                // Reuse the material if it's already been created. This decreases batch
+                // count and keeps material explosion under control.
+                if(!MaterialManager::getSingleton().resourceExists(newMaterialName))
+                {
+                    Ogre::MaterialPtr newMaterial = Ogre::MaterialManager::getSingleton().create(
+                        newMaterialName, material->getGroup());
+                    // copy parent material details to new material
+                    material->copyDetailsTo(newMaterial);
+                    // apply texture aliases to new material
+                    newMaterial->applyTextureAliases(mTextureAliases);
+                }
                 // place new material name in submesh
                 setMaterialName(newMaterialName);
                 newMaterialCreated = true;
@@ -211,26 +212,26 @@ namespace Ogre {
     //---------------------------------------------------------------------
     void SubMesh::removeLodLevels(void)
     {
-        ProgressiveMesh::LODFaceList::iterator lodi, lodend;
-		lodend = mLodFaceList.end();
-		for (lodi = mLodFaceList.begin(); lodi != lodend; ++lodi)
-		{
-			OGRE_DELETE *lodi;
-		}
+        LODFaceList::iterator lodi, lodend;
+        lodend = mLodFaceList.end();
+        for (lodi = mLodFaceList.begin(); lodi != lodend; ++lodi)
+        {
+            OGRE_DELETE *lodi;
+        }
 
         mLodFaceList.clear();
 
     }
-	//---------------------------------------------------------------------
-	VertexAnimationType SubMesh::getVertexAnimationType(void) const
-	{
-		if(parent->_getAnimationTypesDirty())
-		{
-			parent->_determineAnimationTypes();
-		}
-		return mVertexAnimationType;
-	}
-	//---------------------------------------------------------------------
+    //---------------------------------------------------------------------
+    VertexAnimationType SubMesh::getVertexAnimationType(void) const
+    {
+        if(parent->_getAnimationTypesDirty())
+        {
+            parent->_determineAnimationTypes();
+        }
+        return mVertexAnimationType;
+    }
+    //---------------------------------------------------------------------
     /* To find as many points from different domains as we need,
      * such that those domains are from different parts of the mesh,
      * we implement a simplified Heckbert quantization algorithm.
@@ -335,35 +336,35 @@ namespace Ogre {
         vector<Cluster>::type boxes;
         boxes.reserve (count);
 
-		// First of all, find min and max bounding box of the submesh
-		boxes.push_back (Cluster ());
+        // First of all, find min and max bounding box of the submesh
+        boxes.push_back (Cluster ());
 
-		if (indexData->indexCount > 0)
-		{
+        if (indexData->indexCount > 0)
+        {
 
-			uint elsz = indexData->indexBuffer->getType () == HardwareIndexBuffer::IT_32BIT ?
-				4 : 2;
-			uint8 *idata = (uint8 *)indexData->indexBuffer->lock (
-				indexData->indexStart * elsz, indexData->indexCount * elsz,
-				HardwareIndexBuffer::HBL_READ_ONLY);
+            uint elsz = indexData->indexBuffer->getType () == HardwareIndexBuffer::IT_32BIT ?
+                4 : 2;
+            uint8 *idata = (uint8 *)indexData->indexBuffer->lock (
+                indexData->indexStart * elsz, indexData->indexCount * elsz,
+                HardwareIndexBuffer::HBL_READ_ONLY);
 
-			for (size_t i = 0; i < indexData->indexCount; i++)
-			{
-				int idx = (elsz == 2) ? ((uint16 *)idata) [i] : ((uint32 *)idata) [i];
-				boxes [0].mIndices.insert (idx);
-			}
-			indexData->indexBuffer->unlock ();
+            for (size_t i = 0; i < indexData->indexCount; i++)
+            {
+                int idx = (elsz == 2) ? ((uint16 *)idata) [i] : ((uint32 *)idata) [i];
+                boxes [0].mIndices.insert (idx);
+            }
+            indexData->indexBuffer->unlock ();
 
-		}
-		else
-		{
-			// just insert all indexes
-			for (size_t i = vertexData->vertexStart; i < vertexData->vertexCount; i++)
-			{
-				boxes [0].mIndices.insert (i);
-			}
+        }
+        else
+        {
+            // just insert all indexes
+            for (size_t i = vertexData->vertexStart; i < vertexData->vertexCount; i++)
+            {
+                boxes [0].mIndices.insert (i);
+            }
 
-		}
+        }
 
         boxes [0].computeBBox (poselem, vdata, vsz);
 
@@ -443,16 +444,16 @@ namespace Ogre {
 
         vbuf->unlock ();
     }
-	 //---------------------------------------------------------------------
-	void SubMesh::setBuildEdgesEnabled(bool b)
-	{
-		mBuildEdgesEnabled = b;
-		if(parent)
-		{
-			parent->freeEdgeList();
-			parent->setAutoBuildEdgeLists(true);
-		}
-	}
+     //---------------------------------------------------------------------
+    void SubMesh::setBuildEdgesEnabled(bool b)
+    {
+        mBuildEdgesEnabled = b;
+        if(parent)
+        {
+            parent->freeEdgeList();
+            parent->setAutoBuildEdgeLists(true);
+        }
+    }
 }
 
 

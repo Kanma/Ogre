@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "resource.h"
 
 namespace {
-    Ogre::ErrorDialog* dlg;  // This is a pointer to instance, since this is a static member
+    Ogre::ErrorDialog* errdlg;  // This is a pointer to instance, since this is a static member
 }
 
 namespace Ogre
@@ -38,7 +38,7 @@ namespace Ogre
     ErrorDialog::ErrorDialog()
     {
 #ifdef OGRE_STATIC_LIB
-		mHInstance = GetModuleHandle( NULL );
+        mHInstance = GetModuleHandle( NULL );
 #else
 #  if OGRE_DEBUG_MODE == 1
         mHInstance = GetModuleHandle("OgreMain_d.dll");
@@ -75,7 +75,7 @@ namespace Ogre
 
             // Fill in details of error
             hwndDlgItem = GetDlgItem(hDlg, IDC_ERRMSG);
-            SetWindowText(hwndDlgItem, dlg->mErrorMsg.c_str());
+            SetWindowText(hwndDlgItem, errdlg->mErrorMsg.c_str());
 
             return TRUE;
         case WM_COMMAND:
@@ -97,7 +97,7 @@ namespace Ogre
     {
         // Display dialog
         // Don't return to caller until dialog dismissed
-        dlg = this;
+        errdlg = this;
         mErrorMsg = errorMessage;
         DialogBox(mHInstance, MAKEINTRESOURCE(IDD_DLG_ERROR), NULL, DlgProc);
 

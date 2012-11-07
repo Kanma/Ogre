@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,13 @@ struct FIBITMAP;
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Image
-	*  @{
-	*/
-	/** Codec specialized in images loaded using FreeImage.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Image
+    *  @{
+    */
+    /** Codec specialized in images loaded using FreeImage.
         @remarks
             The users implementing subclasses of ImageCodec are required to return
             a valid pointer to a ImageData class from the decode(...) function.
@@ -51,11 +51,11 @@ namespace Ogre {
         String mType;
         unsigned int mFreeImageType;
 
-		typedef list<ImageCodec*>::type RegisteredCodecList;
-		static RegisteredCodecList msCodecList;
+        typedef list<ImageCodec*>::type RegisteredCodecList;
+        static RegisteredCodecList msCodecList;
 
-		/** Common encoding routine. */
-		FIBITMAP* encode(MemoryDataStreamPtr& input, CodecDataPtr& pData) const;
+        /** Common encoding routine. */
+        FIBITMAP* encode(MemoryDataStreamPtr& input, CodecDataPtr& pData) const;
 
     public:
         FreeImageCodec(const String &type, unsigned int fiType);
@@ -68,19 +68,19 @@ namespace Ogre {
         /// @copydoc Codec::decode
         DecodeResult decode(DataStreamPtr& input) const;
 
-        
-        virtual String getType() const;        
 
-		/// @copydoc Codec::magicNumberToFileExt
-		String magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const;
+        virtual String getType() const;
 
-		/// Static method to startup FreeImage and register the FreeImage codecs
-		static void startup(void);
-		/// Static method to shutdown FreeImage and unregister the FreeImage codecs
-		static void shutdown(void);
+        /// @copydoc Codec::magicNumberToFileExt
+        String magicNumberToFileExt(const char *magicNumberPtr, size_t maxbytes) const;
+
+        /// Static method to startup FreeImage and register the FreeImage codecs
+        static void startup(void);
+        /// Static method to shutdown FreeImage and unregister the FreeImage codecs
+        static void shutdown(void);
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 } // namespace
 

@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -49,28 +49,26 @@ namespace Ogre
     }
 
     //-----------------------------------------------------------------------
-    void RenderSystemCapabilitiesSerializer::writeScript(const RenderSystemCapabilities* caps, String name, String filename)
+    static void write(const RenderSystemCapabilities* caps, String name, std::ostream &file)
     {
         using namespace std;
-
-		ofstream file(filename.c_str());
 
         file << "render_system_capabilities \"" << name << "\"" << endl;
         file << "{" << endl;
 
         file << "\t" << "render_system_name " << caps->getRenderSystemName() << endl;
         file << endl;
-        
 
-		file << "\t" << "device_name " << caps->getDeviceName() << endl;
-		const DriverVersion& driverVer = caps->getDriverVersion();
-		file << "\t" << "driver_version " << driverVer.toString();
-		file << "\t" << "vendor " << caps->vendorToString(caps->getVendor());
 
-		file << endl;
+        file << "\t" << "device_name " << caps->getDeviceName() << endl;
+        const DriverVersion& driverVer = caps->getDriverVersion();
+        file << "\t" << "driver_version " << driverVer.toString() << endl;
+        file << "\t" << "vendor " << caps->vendorToString(caps->getVendor());
 
         file << endl;
-		file << "\t" << "fixed_function " << StringConverter::toString(caps->hasCapability(RSC_FIXED_FUNCTION)) << endl;
+
+        file << endl;
+        file << "\t" << "fixed_function " << StringConverter::toString(caps->hasCapability(RSC_FIXED_FUNCTION)) << endl;
         file << "\t" << "automipmap " << StringConverter::toString(caps->hasCapability(RSC_AUTOMIPMAP)) << endl;
         file << "\t" << "blending " << StringConverter::toString(caps->hasCapability(RSC_BLENDING)) << endl;
         file << "\t" << "anisotropy " << StringConverter::toString(caps->hasCapability(RSC_ANISOTROPY)) << endl;
@@ -106,6 +104,7 @@ namespace Ogre
         file << "\t" << "pbuffer " << StringConverter::toString(caps->hasCapability(RSC_PBUFFER)) << endl;
         file << "\t" << "gl1_5_nohwocclusion " << StringConverter::toString(caps->hasCapability(RSC_GL1_5_NOHWOCCLUSION)) << endl;
         file << "\t" << "perstageconstant " << StringConverter::toString(caps->hasCapability(RSC_PERSTAGECONSTANT)) << endl;
+        file << "\t" << "separate_shader_objects " << StringConverter::toString(caps->hasCapability(RSC_SEPARATE_SHADER_OBJECTS)) << endl;
         file << endl;
 
         RenderSystemCapabilities::ShaderProfiles profiles = caps->getSupportedShaderProfiles();
@@ -121,7 +120,7 @@ namespace Ogre
         file << endl;
         file << "\t" << "non_pow2_textures_limited " << StringConverter::toString(caps->getNonPOW2TexturesLimited()) << endl;
         file << "\t" << "vertex_texture_units_shared " << StringConverter::toString(caps->getVertexTextureUnitsShared())<< endl;
-        
+
         file << endl;
         file << "\t" << "num_world_matrices " << StringConverter::toString(caps->getNumWorldMatrices()) << endl;
         file << "\t" << "num_texture_units " << StringConverter::toString(caps->getNumTextureUnits()) << endl;
@@ -142,8 +141,30 @@ namespace Ogre
         file << endl;
 
         file << "}" << endl;
+    }
+
+    //-----------------------------------------------------------------------
+    void RenderSystemCapabilitiesSerializer::writeScript(const RenderSystemCapabilities* caps, String name, String filename)
+    {
+        using namespace std;
+
+        ofstream file(filename.c_str());
+
+        write(caps, name, file);
 
         file.close();
+    }
+
+    //-----------------------------------------------------------------------
+    String RenderSystemCapabilitiesSerializer::writeString(const RenderSystemCapabilities* caps, String name)
+    {
+        using namespace std;
+
+        stringstream stream;
+
+        write(caps, name, stream);
+
+        return stream.str();
     }
 
     //-----------------------------------------------------------------------
@@ -167,17 +188,17 @@ namespace Ogre
         // comment or empty line) for further processing
         CapabilitiesLinesList capabilitiesLines;
 
-		// for reading data
-		char tmpBuf[OGRE_STREAM_TEMP_SIZE]; 
+        // for reading data
+        char tmpBuf[OGRE_STREAM_TEMP_SIZE];
 
 
         // TODO: build a smarter tokenizer so that "{" and "}"
         // don't need separate lines
         while (!stream->eof())
         {
-			stream->readLine(tmpBuf, OGRE_STREAM_TEMP_SIZE-1);
+            stream->readLine(tmpBuf, OGRE_STREAM_TEMP_SIZE-1);
             line = String(tmpBuf);
-			StringUtil::trim(line);
+            StringUtil::trim(line);
 
             // keep track of parse position
             mCurrentLine = &line;
@@ -287,27 +308,27 @@ namespace Ogre
 
     void RenderSystemCapabilitiesSerializer::initialiaseDispatchTables()
     {
-		// set up driver version parsing
-		addKeywordType("driver_version", SET_STRING_METHOD);
+        // set up driver version parsing
+        addKeywordType("driver_version", SET_STRING_METHOD);
         // set up the setters for driver versions
         addSetStringMethod("driver_version", &RenderSystemCapabilities::parseDriverVersionFromString);
-        
+
         // set up device name parsing
-		addKeywordType("device_name", SET_STRING_METHOD);
+        addKeywordType("device_name", SET_STRING_METHOD);
         // set up the setters for device names
         addSetStringMethod("device_name", &RenderSystemCapabilities::setDeviceName);
-        
-		// set up render system name parsing
-		addKeywordType("render_system_name", SET_STRING_METHOD);
-		// set up the setters 
-		addSetStringMethod("render_system_name", &RenderSystemCapabilities::setRenderSystemName);
 
-		// set up vendor parsing
-		addKeywordType("vendor", SET_STRING_METHOD);
-		// set up the setters for driver versions
-		addSetStringMethod("vendor", &RenderSystemCapabilities::parseVendorFromString);
+        // set up render system name parsing
+        addKeywordType("render_system_name", SET_STRING_METHOD);
+        // set up the setters
+        addSetStringMethod("render_system_name", &RenderSystemCapabilities::setRenderSystemName);
 
-		// initialize int types
+        // set up vendor parsing
+        addKeywordType("vendor", SET_STRING_METHOD);
+        // set up the setters for driver versions
+        addSetStringMethod("vendor", &RenderSystemCapabilities::parseVendorFromString);
+
+        // initialize int types
         addKeywordType("num_world_matrices", SET_INT_METHOD);
         addKeywordType("num_texture_units", SET_INT_METHOD);
         addKeywordType("stencil_buffer_bit_depth", SET_INT_METHOD);
@@ -359,7 +380,7 @@ namespace Ogre
         addKeywordType("shader_profile", ADD_SHADER_PROFILE_STRING);
 
         // set up RSC_XXX style capabilities
-		addKeywordType("fixed_function", SET_CAPABILITY_ENUM_BOOL);
+        addKeywordType("fixed_function", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("automipmap", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("blending", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("anisotropy", SET_CAPABILITY_ENUM_BOOL);
@@ -368,7 +389,7 @@ namespace Ogre
         addKeywordType("hwstencil", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("vbo", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("vertex_program", SET_CAPABILITY_ENUM_BOOL);
-		addKeywordType("geometry_program", SET_CAPABILITY_ENUM_BOOL);
+        addKeywordType("geometry_program", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("fragment_program", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("scissor_test", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("two_sided_stencil", SET_CAPABILITY_ENUM_BOOL);
@@ -396,8 +417,9 @@ namespace Ogre
         addKeywordType("pbuffer", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("gl1_5_nohwocclusion", SET_CAPABILITY_ENUM_BOOL);
         addKeywordType("perstageconstant", SET_CAPABILITY_ENUM_BOOL);
+        addKeywordType("separate_shader_objects", SET_CAPABILITY_ENUM_BOOL);
 
-		addCapabilitiesMapping("fixed_function", RSC_FIXED_FUNCTION);
+        addCapabilitiesMapping("fixed_function", RSC_FIXED_FUNCTION);
         addCapabilitiesMapping("automipmap", RSC_AUTOMIPMAP);
         addCapabilitiesMapping("blending", RSC_BLENDING);
         addCapabilitiesMapping("anisotropy", RSC_ANISOTROPY);
@@ -406,7 +428,7 @@ namespace Ogre
         addCapabilitiesMapping("hwstencil", RSC_HWSTENCIL);
         addCapabilitiesMapping("vbo", RSC_VBO);
         addCapabilitiesMapping("vertex_program", RSC_VERTEX_PROGRAM);
-		addCapabilitiesMapping("geometry_program", RSC_GEOMETRY_PROGRAM);
+        addCapabilitiesMapping("geometry_program", RSC_GEOMETRY_PROGRAM);
         addCapabilitiesMapping("fragment_program", RSC_FRAGMENT_PROGRAM);
         addCapabilitiesMapping("scissor_test", RSC_SCISSOR_TEST);
         addCapabilitiesMapping("two_sided_stencil", RSC_TWO_SIDED_STENCIL);
@@ -416,7 +438,7 @@ namespace Ogre
         addCapabilitiesMapping("vertex_format_ubyte4", RSC_VERTEX_FORMAT_UBYTE4);
         addCapabilitiesMapping("infinite_far_plane", RSC_INFINITE_FAR_PLANE);
         addCapabilitiesMapping("hwrender_to_texture", RSC_HWRENDER_TO_TEXTURE);
-		addCapabilitiesMapping("texture_float", RSC_TEXTURE_FLOAT);
+        addCapabilitiesMapping("texture_float", RSC_TEXTURE_FLOAT);
         addCapabilitiesMapping("non_power_of_2_textures", RSC_NON_POWER_OF_2_TEXTURES);
         addCapabilitiesMapping("texture_3d", RSC_TEXTURE_3D);
         addCapabilitiesMapping("point_sprites", RSC_POINT_SPRITES);
@@ -427,7 +449,7 @@ namespace Ogre
         addCapabilitiesMapping("texture_compression_dxt", RSC_TEXTURE_COMPRESSION_DXT);
         addCapabilitiesMapping("texture_compression_vtc", RSC_TEXTURE_COMPRESSION_VTC);
         addCapabilitiesMapping("texture_compression_pvrtc", RSC_TEXTURE_COMPRESSION_PVRTC);
-		addCapabilitiesMapping("hwrender_to_vertex_buffer", RSC_HWRENDER_TO_VERTEX_BUFFER);
+        addCapabilitiesMapping("hwrender_to_vertex_buffer", RSC_HWRENDER_TO_VERTEX_BUFFER);
         addCapabilitiesMapping("gl1_5_novbo", RSC_GL1_5_NOVBO);
         addCapabilitiesMapping("fbo", RSC_FBO);
         addCapabilitiesMapping("fbo_arb", RSC_FBO_ARB);
@@ -435,6 +457,7 @@ namespace Ogre
         addCapabilitiesMapping("pbuffer", RSC_PBUFFER);
         addCapabilitiesMapping("gl1_5_nohwocclusion", RSC_GL1_5_NOHWOCCLUSION);
         addCapabilitiesMapping("perstageconstant", RSC_PERSTAGECONSTANT);
+        addCapabilitiesMapping("separate_shader_objects", RSC_SEPARATE_SHADER_OBJECTS);
 
     }
 

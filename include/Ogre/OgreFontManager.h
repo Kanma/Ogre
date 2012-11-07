@@ -4,7 +4,7 @@ This source file is a part of OGRE
 
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -34,19 +34,19 @@ THE SOFTWARE
 
 namespace Ogre
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Resources
-	*  @{
-	*/
-	/** Manages Font resources, parsing .fontdef files and generally organising them.*/
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Resources
+    *  @{
+    */
+    /** Manages Font resources, parsing .fontdef files and generally organising them.*/
     class _OgreExport FontManager : public ResourceManager, public Singleton< FontManager >
     {
     public:
 
-		FontManager();
-		~FontManager();
+        FontManager();
+        ~FontManager();
 
         /** @copydoc ScriptLoader::parseScript */
         void parseScript(DataStreamPtr& stream, const String& groupName);
@@ -86,17 +86,17 @@ namespace Ogre
     protected:
 
         /// Internal methods
-		Resource* createImpl(const String& name, ResourceHandle handle, 
-			const String& group, bool isManual, ManualResourceLoader* loader, 
+        Resource* createImpl(const String& name, ResourceHandle handle,
+            const String& group, bool isManual, ManualResourceLoader* loader,
             const NameValuePairList* params);
-		void parseAttribute(const String& line, FontPtr& pFont);
+        void parseAttribute(const String& line, FontPtr& pFont);
 
         void logBadAttrib(const String& line, FontPtr& pFont);
 
 
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 }
 
 #endif

@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,117 +37,123 @@ THE SOFTWARE.
 
 namespace Ogre {
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Resources
-	*  @{
-	*/
-	class _OgreExport GpuProgramManager : public ResourceManager, public Singleton<GpuProgramManager>
-	{
-	public:
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Resources
+    *  @{
+    */
+    class _OgreExport GpuProgramManager : public ResourceManager, public Singleton<GpuProgramManager>
+    {
+    public:
 
-		typedef set<String>::type SyntaxCodes;
-		typedef map<String, GpuSharedParametersPtr>::type SharedParametersMap;
+        typedef set<String>::type SyntaxCodes;
+        typedef map<String, GpuSharedParametersPtr>::type SharedParametersMap;
 
+        typedef MemoryDataStreamPtr Microcode;
+        typedef map<String, Microcode>::type MicrocodeMap;
 
-	protected:
+    protected:
 
-		SharedParametersMap mSharedParametersMap;
+        SharedParametersMap mSharedParametersMap;
+        MicrocodeMap mMicrocodeCache;
+        bool mSaveMicrocodesToCache;
+
+        static String addRenderSystemToName( const String &  name );
 
         /// Specialised create method with specific parameters
-        virtual Resource* createImpl(const String& name, ResourceHandle handle, 
+        virtual Resource* createImpl(const String& name, ResourceHandle handle,
             const String& group, bool isManual, ManualResourceLoader* loader,
             GpuProgramType gptype, const String& syntaxCode) = 0;
-	public:
-		GpuProgramManager();
-		virtual ~GpuProgramManager();
+    public:
+        GpuProgramManager();
+        virtual ~GpuProgramManager();
 
-        /** Loads a GPU program from a file of assembly. 
-		@remarks
-			This method creates a new program of the type specified as the second parameter.
-			As with all types of ResourceManager, this class will search for the file in
-			all resource locations it has been configured to look in.
-		@param name The name of the GpuProgram
-		@param groupName The name of the resource group
-		@param filename The file to load
-		@param gptype The type of program to create
+        /** Loads a GPU program from a file of assembly.
+        @remarks
+            This method creates a new program of the type specified as the second parameter.
+            As with all types of ResourceManager, this class will search for the file in
+            all resource locations it has been configured to look in.
+        @param name The name of the GpuProgram
+        @param groupName The name of the resource group
+        @param filename The file to load
+        @param gptype The type of program to create
         @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
-		*/
-		virtual GpuProgramPtr load(const String& name, const String& groupName, 
-			const String& filename, GpuProgramType gptype, 
+        */
+        virtual GpuProgramPtr load(const String& name, const String& groupName,
+            const String& filename, GpuProgramType gptype,
             const String& syntaxCode);
 
-		/** Loads a GPU program from a string of assembly code.
-		@remarks
-			The assembly code must be compatible with this manager - call the 
-			getSupportedSyntax method for details of the supported syntaxes 
-		@param name The identifying name to give this program, which can be used to
-			retrieve this program later with getByName.
-		@param groupName The name of the resource group
-		@param code A string of assembly code which will form the program to run
-		@param gptype The type of program to create.
+        /** Loads a GPU program from a string of assembly code.
+        @remarks
+            The assembly code must be compatible with this manager - call the
+            getSupportedSyntax method for details of the supported syntaxes
+        @param name The identifying name to give this program, which can be used to
+            retrieve this program later with getByName.
+        @param groupName The name of the resource group
+        @param code A string of assembly code which will form the program to run
+        @param gptype The type of program to create.
         @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
-		*/
-		virtual GpuProgramPtr loadFromString(const String& name, const String& groupName,
-			const String& code, GpuProgramType gptype,
+        */
+        virtual GpuProgramPtr loadFromString(const String& name, const String& groupName,
+            const String& code, GpuProgramType gptype,
             const String& syntaxCode);
 
-		/** Returns the syntaxes that this manager supports. */
-		virtual const SyntaxCodes& getSupportedSyntax(void) const;
-		 
+        /** Returns the syntaxes that this manager supports. */
+        virtual const SyntaxCodes& getSupportedSyntax(void) const;
+
 
         /** Returns whether a given syntax code (e.g. "ps_1_3", "fp20", "arbvp1") is supported. */
         virtual bool isSyntaxSupported(const String& syntaxCode) const;
-		
-		/** Creates a new GpuProgramParameters instance which can be used to bind
+
+        /** Creates a new GpuProgramParameters instance which can be used to bind
             parameters to your programs.
         @remarks
             Program parameters can be shared between multiple programs if you wish.
         */
         virtual GpuProgramParametersSharedPtr createParameters(void);
-        
-        /** Create a new, unloaded GpuProgram from a file of assembly. 
-        @remarks    
-            Use this method in preference to the 'load' methods if you wish to define
-            a GpuProgram, but not load it yet; useful for saving memory.
-		@par
-			This method creates a new program of the type specified as the second parameter.
-			As with all types of ResourceManager, this class will search for the file in
-			all resource locations it has been configured to look in. 
-		@param name The name of the program
-		@param groupName The name of the resource group
-		@param filename The file to load
-        @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
-		@param gptype The type of program to create
-		*/
-		virtual GpuProgramPtr createProgram(const String& name, 
-			const String& groupName, const String& filename, 
-			GpuProgramType gptype, const String& syntaxCode);
 
-		/** Create a GPU program from a string of assembly code.
-        @remarks    
+        /** Create a new, unloaded GpuProgram from a file of assembly.
+        @remarks
             Use this method in preference to the 'load' methods if you wish to define
             a GpuProgram, but not load it yet; useful for saving memory.
-		@par
-			The assembly code must be compatible with this manager - call the 
-			getSupportedSyntax method for details of the supported syntaxes 
-		@param name The identifying name to give this program, which can be used to
-			retrieve this program later with getByName.
-		@param groupName The name of the resource group
-		@param code A string of assembly code which will form the program to run
-		@param gptype The type of program to create.
+        @par
+            This method creates a new program of the type specified as the second parameter.
+            As with all types of ResourceManager, this class will search for the file in
+            all resource locations it has been configured to look in.
+        @param name The name of the program
+        @param groupName The name of the resource group
+        @param filename The file to load
         @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
-		*/
-		virtual GpuProgramPtr createProgramFromString(const String& name, 
-			const String& groupName, const String& code, 
+        @param gptype The type of program to create
+        */
+        virtual GpuProgramPtr createProgram(const String& name,
+            const String& groupName, const String& filename,
+            GpuProgramType gptype, const String& syntaxCode);
+
+        /** Create a GPU program from a string of assembly code.
+        @remarks
+            Use this method in preference to the 'load' methods if you wish to define
+            a GpuProgram, but not load it yet; useful for saving memory.
+        @par
+            The assembly code must be compatible with this manager - call the
+            getSupportedSyntax method for details of the supported syntaxes
+        @param name The identifying name to give this program, which can be used to
+            retrieve this program later with getByName.
+        @param groupName The name of the resource group
+        @param code A string of assembly code which will form the program to run
+        @param gptype The type of program to create.
+        @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
+        */
+        virtual GpuProgramPtr createProgramFromString(const String& name,
+            const String& groupName, const String& code,
             GpuProgramType gptype, const String& syntaxCode);
 
         /** General create method, using specific create parameters
-            instead of name / value pairs. 
+            instead of name / value pairs.
         */
-        virtual ResourcePtr create(const String& name, const String& group, 
-            GpuProgramType gptype, const String& syntaxCode, bool isManual = false, 
+        virtual ResourcePtr create(const String& name, const String& group,
+            GpuProgramType gptype, const String& syntaxCode, bool isManual = false,
             ManualResourceLoader* loader = 0);
 
         /** Overrides the standard ResourceManager getByName method.
@@ -158,21 +164,59 @@ namespace Ogre {
         ResourcePtr getByName(const String& name, bool preferHighLevelPrograms = true);
 
 
-		/** Create a new set of shared parameters, which can be used across many 
-			GpuProgramParameters objects of different structures.
-		@param name The name to give the shared parameters so you can refer to them
-			later.
-		*/
-		virtual GpuSharedParametersPtr createSharedParameters(const String& name);
+        /** Create a new set of shared parameters, which can be used across many
+            GpuProgramParameters objects of different structures.
+        @param name The name to give the shared parameters so you can refer to them
+            later.
+        */
+        virtual GpuSharedParametersPtr createSharedParameters(const String& name);
 
-		/** Retrieve a set of shared parameters, which can be used across many 
-		GpuProgramParameters objects of different structures.
-		*/
-		virtual GpuSharedParametersPtr getSharedParameters(const String& name) const;
+        /** Retrieve a set of shared parameters, which can be used across many
+        GpuProgramParameters objects of different structures.
+        */
+        virtual GpuSharedParametersPtr getSharedParameters(const String& name) const;
 
-		/** Get (const) access to the available shared parameter sets. 
-		*/
-		virtual const SharedParametersMap& getAvailableSharedParameters() const;
+        /** Get (const) access to the available shared parameter sets.
+        */
+        virtual const SharedParametersMap& getAvailableSharedParameters() const;
+
+        /** Get if the microcode of a shader should be saved to a cache
+        */
+        bool getSaveMicrocodesToCache();
+        /** Set if the microcode of a shader should be saved to a cache
+        */
+        void setSaveMicrocodesToCache( const bool val );
+
+        bool canGetCompiledShaderBuffer();
+        /** Check if a microcode is available for a program in the microcode cache.
+        @param name The name of the program.
+        */
+        virtual bool isMicrocodeAvailableInCache( const String & name ) const;
+        /** Returns a microcode for a program from the microcode cache.
+        @param name The name of the program.
+        */
+        virtual const Microcode & getMicrocodeFromCache( const String & name ) const;
+
+        /** Creates a microcode to be later added to the cache.
+        @param size The size of the microcode in bytes
+        */
+        virtual Microcode createMicrocode( const size_t size ) const;
+
+        /** Adds a microcode for a program to the microcode cache.
+        @param name The name of the program.
+        */
+        virtual void addMicrocodeToCache( const String & name, const Microcode & microcode );
+
+        /** Saves the microcode cache to disk.
+        @param stream The destination stream
+        */
+        virtual void saveMicrocodeCache( DataStreamPtr stream ) const;
+        /** Loads the microcode cache from disk.
+        @param stream The source stream
+        */
+        virtual void loadMicrocodeCache( DataStreamPtr stream );
+
+
 
         /** Override standard Singleton retrieval.
         @remarks
@@ -206,13 +250,13 @@ namespace Ogre {
         preventing link errors.
         */
         static GpuProgramManager* getSingletonPtr(void);
-    
 
 
-	};
 
-	/** @} */
-	/** @} */
+    };
+
+    /** @} */
+    /** @} */
 }
 
 #endif

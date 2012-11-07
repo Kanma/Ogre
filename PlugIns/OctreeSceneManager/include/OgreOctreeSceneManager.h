@@ -12,7 +12,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ THE SOFTWARE.
 #ifndef OCTREESCENEMANAGER_H
 #define OCTREESCENEMANAGER_H
 
-#include "OgreTerrainPrerequisites.h"
+#include "OgreOctreePrerequisites.h"
 #include "OgreSceneManager.h"
 #include "OgreRenderOperation.h"
 #include "OgreSphere.h"
@@ -87,8 +87,8 @@ public:
     /** Standard destructor */
     ~OctreeSceneManager();
 
-	/// @copydoc SceneManager::getTypeName
-	const String& getTypeName(void) const;
+    /// @copydoc SceneManager::getTypeName
+    const String& getTypeName(void) const;
 
     /** Initializes the manager to the given box and depth.
     */
@@ -109,8 +109,8 @@ public:
     /** Does nothing more */
     virtual void _updateSceneGraph( Camera * cam );
     /** Recurses through the octree determining which nodes are visible. */
-    virtual void _findVisibleObjects ( Camera * cam, 
-		VisibleObjectsBoundsInfo* visibleBounds, bool onlyShadowCasters );
+    virtual void _findVisibleObjects ( Camera * cam,
+        VisibleObjectsBoundsInfo* visibleBounds, bool onlyShadowCasters );
 
     /** Alerts each unculled object, notifying it that it will be drawn.
      * Useful for doing calculations only on nodes that will be drawn, prior
@@ -123,9 +123,9 @@ public:
     If any octant in the octree if completely within the view frustum,
     all subchildren are automatically added with no visibility tests.
     */
-    void walkOctree( OctreeCamera *, RenderQueue *, Octree *, 
-		VisibleObjectsBoundsInfo* visibleBounds, bool foundvisible, 
-		bool onlyShadowCasters);
+    void walkOctree( OctreeCamera *, RenderQueue *, Octree *,
+        VisibleObjectsBoundsInfo* visibleBounds, bool foundvisible,
+        bool onlyShadowCasters);
 
     /** Checks the given OctreeNode, and determines if it needs to be moved
     * to a different octant.
@@ -201,7 +201,7 @@ public:
 protected:
 
 
-	Octree::NodeList mVisible;
+    Octree::NodeList mVisible;
 
     /// The root octree
     Octree *mOctree;
@@ -235,14 +235,14 @@ protected:
 class OctreeSceneManagerFactory : public SceneManagerFactory
 {
 protected:
-	void initMetaData(void) const;
+    void initMetaData(void) const;
 public:
-	OctreeSceneManagerFactory() {}
-	~OctreeSceneManagerFactory() {}
-	/// Factory type name
-	static const String FACTORY_TYPE_NAME;
-	SceneManager* createInstance(const String& instanceName);
-	void destroyInstance(SceneManager* instance);
+    OctreeSceneManagerFactory() {}
+    ~OctreeSceneManagerFactory() {}
+    /// Factory type name
+    static const String FACTORY_TYPE_NAME;
+    SceneManager* createInstance(const String& instanceName);
+    void destroyInstance(SceneManager* instance);
 };
 
 

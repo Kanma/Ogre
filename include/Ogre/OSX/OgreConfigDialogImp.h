@@ -4,7 +4,7 @@ This source file is part of OGRE
 (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -52,12 +52,13 @@ THE SOFTWARE.
     NSButton *mOkButton;
     NSButton *mCancelButton;
     NSTextField *mOptionLabel;
-    
+
     NSDictionary *mOptions;
 }
 
 - (void)cancelButtonPressed:(id)sender;
 - (void)okButtonPressed:(id)sender;
+- (void)popUpValueChanged:(id)sender;
 
 // Getters and setters
 - (void)setOptions:(NSDictionary *)dict;
@@ -79,21 +80,21 @@ THE SOFTWARE.
 
 namespace Ogre
 {
-	class _OgreExport ConfigDialog : public UtilityAlloc
-	{
-	public:
-		ConfigDialog();
-		~ConfigDialog();
-	
-		void initialise();
-		bool display();
+    class _OgreExport ConfigDialog : public UtilityAlloc
+    {
+    public:
+        ConfigDialog();
+        ~ConfigDialog();
 
-	protected:
+        void initialise();
+        bool display();
+
+    protected:
 #ifdef __OBJC__
         OgreConfigWindowDelegate *mWindowDelegate;
 #endif
-		RenderSystem *mSelectedRenderSystem;
-	};
+        RenderSystem *mSelectedRenderSystem;
+    };
 }
 
 #endif // __OSX_CONFIG_DIALOG_H__

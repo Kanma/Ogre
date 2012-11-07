@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -68,7 +68,7 @@ bool _OgrePrivate __gtk_init_once ()
     char **argv = NULL;
     // Avoid gtk calling setlocale() otherwise
     // scanf("%f") won't work on some locales etc.
-    // Leave this on application developer's responsability.
+    // Leave this on application developer's responsibility.
     gtk_disable_setlocale ();
     return gtk_init_check (&argc, &argv);
 }
@@ -88,14 +88,14 @@ void ConfigDialog::rendererChanged (GtkComboBox *widget, gpointer data)
         if (strcmp (renderer, (*r)->getName ().c_str ()) == 0)
         {
             This->mSelectedRenderSystem = *r;
-	    This->setupRendererParams ();
+        This->setupRendererParams ();
         }
 }
 
 gboolean ConfigDialog::refreshParams (gpointer data)
 {
     ConfigDialog *This = static_cast<ConfigDialog *> (data);
-    
+
     This->setupRendererParams ();
     return FALSE;
 }
@@ -133,10 +133,10 @@ void ConfigDialog::setupRendererParams ()
     uint row = 0;
     for (ConfigOptionMap::iterator i = options.begin (); i != options.end (); i++, row++)
     {
-	if (i->second.possibleValues.empty())
-	{
-	    continue;
-	}
+    if (i->second.possibleValues.empty())
+    {
+        continue;
+    }
 
         GtkWidget *ro_label = gtk_label_new (i->second.name.c_str ());
         gtk_widget_show (ro_label);
@@ -263,7 +263,7 @@ bool ConfigDialog::createWindow ()
     // Don't show the renderer choice combobox if there's just one renderer
     if (idx > 1)
         gtk_widget_show (rs_hbox);
- 
+
     GtkWidget *ro_frame = gtk_frame_new (NULL);
     gtk_widget_show (ro_frame);
     gtk_box_pack_start (GTK_BOX (vbox), ro_frame, TRUE, TRUE, 0);

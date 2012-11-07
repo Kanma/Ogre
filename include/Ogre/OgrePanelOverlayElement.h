@@ -4,7 +4,7 @@ This source file is part of OGRE
     (Object-oriented Graphics Rendering Engine)
 For the latest info, see http://www.ogre3d.org/
 
-Copyright (c) 2000-2009 Torus Knot Software Ltd
+Copyright (c) 2000-2012 Torus Knot Software Ltd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -34,17 +34,17 @@ THE SOFTWARE.
 namespace Ogre {
 
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Overlays
-	*  @{
-	*/
-	/** OverlayElement representing a flat, single-material (or transparent) panel which can contain other elements.
+    /** \addtogroup Core
+    *  @{
+    */
+    /** \addtogroup Overlays
+    *  @{
+    */
+    /** OverlayElement representing a flat, single-material (or transparent) panel which can contain other elements.
     @remarks
         This class subclasses OverlayContainer because it can contain other elements. Like other
-        containers, if hidden it's contents are also hidden, if moved it's contents also move etc. 
-        The panel itself is a 2D rectangle which is either completely transparent, or is rendered 
+        containers, if hidden it's contents are also hidden, if moved it's contents also move etc.
+        The panel itself is a 2D rectangle which is either completely transparent, or is rendered
         with a single material. The texture(s) on the panel can be tiled depending on your requirements.
     @par
         This component is suitable for backgrounds and grouping other elements. Note that because
@@ -52,7 +52,7 @@ namespace Ogre {
         the texture is tiled only once). For a bordered panel, see it's subclass BorderPanelOverlayElement.
     @par
         Note that the material can have all the usual effects applied to it like multiple texture
-        layers, scrolling / animated textures etc. For multiple texture layers, you have to set 
+        layers, scrolling / animated textures etc. For multiple texture layers, you have to set
         the tiling level for each layer.
     */
     class _OgreExport PanelOverlayElement : public OverlayContainer
@@ -65,17 +65,17 @@ namespace Ogre {
         /** Initialise */
         virtual void initialise(void);
 
-        /** Sets the number of times textures should repeat. 
+        /** Sets the number of times textures should repeat.
         @param x The number of times the texture should repeat horizontally
         @param y The number of times the texture should repeat vertically
-        @param layer The texture layer to specify (only needs to be altered if 
+        @param layer The texture layer to specify (only needs to be altered if
             you're using a multi-texture layer material)
         */
         void setTiling(Real x, Real y, ushort layer = 0);
 
         Real getTileX(ushort layer = 0) const;
-        /** Gets the number of times the texture should repeat vertically. 
-        @param layer The texture layer to specify (only needs to be altered if 
+        /** Gets the number of times the texture should repeat vertically.
+        @param layer The texture layer to specify (only needs to be altered if
             you're using a multi-texture layer material)
         */
         Real getTileY(ushort layer = 0) const;
@@ -86,7 +86,7 @@ namespace Ogre {
         /** Get the uv coordinates for the panel*/
         void getUV(Real& u1, Real& v1, Real& u2, Real& v2) const;
 
-        /** Sets whether this panel is transparent (used only as a grouping level), or 
+        /** Sets whether this panel is transparent (used only as a grouping level), or
             if it is actually rendered.
         */
         void setTransparent(bool isTransparent);
@@ -153,8 +153,8 @@ namespace Ogre {
         static CmdUVCoords msCmdUVCoords;
 
     };
-	/** @} */
-	/** @} */
+    /** @} */
+    /** @} */
 
 }
 
