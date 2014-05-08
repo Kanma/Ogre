@@ -152,7 +152,7 @@ endif()
 
 # Set the dependencies path
 if (NOT DEFINED XMAKE_DEPENDENCIES_DIR)
-    set(XMAKE_DEPENDENCIES_DIR "${OGRE_SOURCE_DIR}/dependencies")
+    set(XMAKE_DEPENDENCIES_DIR "${OGRE_SOURCE_DIR}/Dependencies")
 endif()
 
 
