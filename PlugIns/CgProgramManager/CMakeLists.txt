@@ -69,6 +69,4 @@ xmake_add_to_list_property(PLUGIN_CGPROGRAMMANAGER COMPILE_DEFINITIONS "OGRE_CGP
 
 
 # Disable "lib" prefix on Unix
-if (CMAKE_COMPILER_IS_GNUCXX)
-  set_target_properties(Plugin_CgProgramManager PROPERTIES PREFIX "")
-endif (CMAKE_COMPILER_IS_GNUCXX)	
+set_target_properties(Plugin_CgProgramManager PROPERTIES PREFIX "")

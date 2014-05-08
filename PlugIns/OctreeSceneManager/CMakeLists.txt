@@ -38,6 +38,4 @@ xmake_add_to_list_property(PLUGIN_OCTREESCENEMANAGER COMPILE_DEFINITIONS "OGRE_T
 
 
 # Disable "lib" prefix on Unix
-if (CMAKE_COMPILER_IS_GNUCXX)
-  set_target_properties(Plugin_OctreeSceneManager PROPERTIES PREFIX "")
-endif (CMAKE_COMPILER_IS_GNUCXX)	
+set_target_properties(Plugin_OctreeSceneManager PROPERTIES PREFIX "")

@@ -44,6 +44,4 @@ xmake_project_link(PLUGIN_BSPSCENEMANAGER OGRE)
 xmake_add_to_list_property(PLUGIN_BSPSCENEMANAGER COMPILE_DEFINITIONS "OGRE_BSPPLUGIN_EXPORTS")
 
 # Disable "lib" prefix on Unix
-if (CMAKE_COMPILER_IS_GNUCXX)
-  set_target_properties(Plugin_BSPSceneManager PROPERTIES PREFIX "")
-endif (CMAKE_COMPILER_IS_GNUCXX)	
+set_target_properties(Plugin_BSPSceneManager PROPERTIES PREFIX "")

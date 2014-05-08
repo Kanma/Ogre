@@ -240,6 +240,4 @@ target_link_libraries(RenderSystem_GL ${OPENGL_LIBRARIES} ${PLATFORM_LIBS})
 xmake_add_to_list_property(RENDERSYSTEM_GL COMPILE_DEFINITIONS "OGRE_GLPLUGIN_EXPORTS")
 
 # Disable "lib" prefix on Unix
-if (CMAKE_COMPILER_IS_GNUCXX)
-  set_target_properties(RenderSystem_GL PROPERTIES PREFIX "")
-endif (CMAKE_COMPILER_IS_GNUCXX)	
+set_target_properties(RenderSystem_GL PROPERTIES PREFIX "")

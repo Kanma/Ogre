@@ -43,6 +43,4 @@ endif ()
 
 
 # Disable "lib" prefix on Unix
-if (CMAKE_COMPILER_IS_GNUCXX)
-  set_target_properties(Plugin_OctreeZone PROPERTIES PREFIX "")
-endif (CMAKE_COMPILER_IS_GNUCXX)	
+set_target_properties(Plugin_OctreeZone PROPERTIES PREFIX "")

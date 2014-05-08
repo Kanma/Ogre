@@ -59,6 +59,4 @@ xmake_add_to_list_property(PLUGIN_PCZSCENEMANAGER COMPILE_DEFINITIONS "OGRE_PCZP
 
 
 # Disable "lib" prefix on Unix
-if (CMAKE_COMPILER_IS_GNUCXX)
-  set_target_properties(Plugin_PCZSceneManager PROPERTIES PREFIX "")
-endif (CMAKE_COMPILER_IS_GNUCXX)	
+set_target_properties(Plugin_PCZSceneManager PROPERTIES PREFIX "")
