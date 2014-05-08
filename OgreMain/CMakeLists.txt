@@ -619,14 +619,14 @@ endif ()
 if (APPLE)
     set(COCOAVIEW_HEADERS ${OGRE_SOURCE_DIR}/RenderSystems/GL/include/OSX/OgreOSXCocoaView.h)
 
-    set_target_properties(Ogre PROPERTIES PUBLIC_HEADER "${HEADER_FILES};${COCOAVIEW_HEADERS}")
+    set_target_properties(Ogre PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 
     add_custom_command(TARGET Ogre POST_BUILD
       COMMAND mkdir ARGS -p ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
-      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/Threading/* ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
+      COMMAND cp ARGS ${THREAD_HEADER_FILES} ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/Threading
       COMMAND mkdir ARGS -p ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX
-      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${OGRE_SOURCE_DIR}/include/Ogre/OSX/*.h ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/
-      COMMAND /Developer/Library/PrivateFrameworks/DevToolsCore.framework/Resources/pbxcp ARGS -exclude .DS_Store -resolve-src-symlinks ${COCOAVIEW_HEADERS} ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/
+      COMMAND cp ARGS ${PLATFORM_HEADER_FILES} ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/
+      COMMAND cp ARGS ${COCOAVIEW_HEADERS} ${XMAKE_BINARY_DIR}/bin/Ogre.framework/Versions/${OGRE_VERSION}/Headers/OSX/
     )
 
     set_target_properties(Ogre PROPERTIES RESOURCE "${RESOURCE_FILES}")

@@ -220,8 +220,11 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/nvparse
   ${OGRE_SOURCE_DIR}/include/Ogre
   ${XMAKE_BINARY_DIR}/include/Ogre
-  ${OPENGL_INCLUDE_DIR}
 )
+
+if (OPENGL_INCLUDE_DIR)
+    include_directories(${OPENGL_INCLUDE_DIR})
+endif()
 
 if (APPLE)
     include_directories(${OGRE_SOURCE_DIR}/include/Ogre/OSX)

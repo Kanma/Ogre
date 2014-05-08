@@ -433,7 +433,7 @@ void reorganiseVertexBuffers(const String& desc, Mesh& mesh, SubMesh* sm, Vertex
 			}
 			else
 			{
-				response == "";
+				response = "";
 			}
 			
 		}
